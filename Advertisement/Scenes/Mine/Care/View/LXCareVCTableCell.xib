@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="LXCareVCTableCell">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="70"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F6P-ji-sPW">
+                        <rect key="frame" x="10" y="15.5" width="39.5" height="19.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.29803921570000003" green="0.29803921570000003" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lrl-dz-Aw1">
+                        <rect key="frame" x="10" y="36.5" width="35.5" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.69803921568627447" green="0.69803921568627447" blue="0.69803921568627447" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x5R-Jg-twE">
+                        <rect key="frame" x="305.5" y="25" width="39.5" height="19.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.29803921568627451" green="0.29803921568627451" blue="0.29803921568627451" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hXQ-Cc-i0a">
+                        <rect key="frame" x="355" y="27.5" width="10" height="15"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="15" id="SKn-xH-jni"/>
+                            <constraint firstAttribute="width" constant="10" id="TkC-Vg-2bh"/>
+                        </constraints>
+                        <state key="normal" backgroundImage="Organization_arrow"/>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="F6P-ji-sPW" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" constant="-10" id="8xy-IB-nye"/>
+                    <constraint firstItem="lrl-dz-Aw1" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" constant="10" id="974-i0-IbU"/>
+                    <constraint firstItem="F6P-ji-sPW" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="AGu-sZ-uMN"/>
+                    <constraint firstAttribute="trailing" secondItem="hXQ-Cc-i0a" secondAttribute="trailing" constant="10" id="SvL-WL-aZB"/>
+                    <constraint firstItem="hXQ-Cc-i0a" firstAttribute="leading" secondItem="x5R-Jg-twE" secondAttribute="trailing" constant="10" id="XYJ-ih-Aw7"/>
+                    <constraint firstItem="x5R-Jg-twE" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="mMf-p7-JEX"/>
+                    <constraint firstItem="hXQ-Cc-i0a" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="rTr-Zg-Z8t"/>
+                    <constraint firstItem="lrl-dz-Aw1" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="tFZ-Ah-cEm"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="expireTimeL" destination="lrl-dz-Aw1" id="UW7-lO-gUe"/>
+                <outlet property="nameConstrait" destination="8xy-IB-nye" id="Mf4-w9-hKQ"/>
+                <outlet property="nameL" destination="F6P-ji-sPW" id="e7k-K6-5Mi"/>
+                <outlet property="stateL" destination="x5R-Jg-twE" id="nMO-zL-EIa"/>
+            </connections>
+            <point key="canvasLocation" x="-204" y="-8"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="Organization_arrow" width="9" height="14"/>
+    </resources>
+</document>

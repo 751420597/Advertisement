@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="LXMineInfoVCTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="355" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="355" height="49.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GM7-yC-Ovp">
+                        <rect key="frame" x="8" y="15" width="39.5" height="19.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.29803921568627451" green="0.29803921568627451" blue="0.29803921568627451" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6as-sZ-qoT">
+                        <rect key="frame" x="337" y="17.5" width="10" height="15"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="10" id="1b4-7M-xQJ"/>
+                            <constraint firstAttribute="height" constant="15" id="bAv-ew-DaR"/>
+                        </constraints>
+                        <state key="normal" backgroundImage="Organization_arrow"/>
+                    </button>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="我是一" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OKt-OU-zWI">
+                        <rect key="frame" x="280" y="15.5" width="47" height="19.5"/>
+                        <nil key="textColor"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <textInputTraits key="textInputTraits"/>
+                    </textField>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="6as-sZ-qoT" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="6VJ-lZ-rag"/>
+                    <constraint firstAttribute="trailing" secondItem="6as-sZ-qoT" secondAttribute="trailing" constant="8" id="Hkf-Bm-LY3"/>
+                    <constraint firstItem="OKt-OU-zWI" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Pi5-pE-Qtp"/>
+                    <constraint firstItem="OKt-OU-zWI" firstAttribute="height" secondItem="GM7-yC-Ovp" secondAttribute="height" id="TMe-0i-Kjo"/>
+                    <constraint firstItem="6as-sZ-qoT" firstAttribute="leading" secondItem="OKt-OU-zWI" secondAttribute="trailing" constant="10" id="hg2-cH-mvN"/>
+                    <constraint firstItem="GM7-yC-Ovp" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ozY-0p-ATt"/>
+                    <constraint firstItem="GM7-yC-Ovp" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="z7Y-vA-L8s"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="arrowB" destination="6as-sZ-qoT" id="8kT-Yi-6uj"/>
+                <outlet property="btnConstrait" destination="1b4-7M-xQJ" id="Ew0-FM-VuT"/>
+                <outlet property="leadingL" destination="GM7-yC-Ovp" id="Hqb-dF-gOh"/>
+                <outlet property="trailingL" destination="OKt-OU-zWI" id="UXt-gR-usN"/>
+            </connections>
+            <point key="canvasLocation" x="-94.5" y="-138"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="Organization_arrow" width="9" height="14"/>
+    </resources>
+</document>

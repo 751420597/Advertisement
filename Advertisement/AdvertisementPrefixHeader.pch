@@ -1,0 +1,46 @@
+//
+//  AdvertisementPrefixHeader.pch
+//  Advertisement
+//
+//  Created by zuolixin on 2017/4/28.
+//  Copyright © 2017年 gomeplus. All rights reserved.
+//
+
+#ifndef AdvertisementPrefixHeader_pch
+#define AdvertisementPrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+// 系统
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+// Pod
+#import "Masonry.h"
+#import "AFNetworking.h"
+#import <YYKit/YYKit.h>
+#import "SVProgressHUD.h"
+#import "UIImageView+WebCache.h"
+#import "UIButton+WebCache.h"
+
+// .h文件
+#import "LXColorHeader.h"
+#import "LXUserDefaultHeader.h"
+#import "LXNotificaitonHeader.h"
+#import "LXDebugHeader.h"
+#import "LXServiceAPIHeader.h"
+#import "LXMacroHeader.h"
+#import "LXAccountHeader.h"
+
+// 类别
+#import "UIView+LXCorner.h"
+#import "UIView+BMLine.h"
+
+// 三方
+#import <AMapFoundationKit/AMapFoundationKit.h>
+#import <MAMapKit/MAMapKit.h>
+
+
+
+#endif /* AdvertisementPrefixHeader_pch */
