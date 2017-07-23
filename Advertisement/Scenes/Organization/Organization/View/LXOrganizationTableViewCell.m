@@ -26,7 +26,12 @@
 
 - (void)setOModel:(LXOrganizaitonModel *)oModel {
     _oModel = oModel;
-    
+    if(oModel.corAddr==nil){
+        oModel.corAddr = @"";
+    }
+    if(oModel.phone1==nil){
+        oModel.phone1 = @"";
+    }
     [self.addressL setText:oModel.corName];
     [self.detailAddressL setText:[NSString stringWithFormat:@"地址：%@", oModel.corAddr]];
     [self.phoneL setText:[NSString stringWithFormat:@"电话：%@", oModel.phone1]];

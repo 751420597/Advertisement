@@ -20,23 +20,26 @@
 #import <Photos/Photos.h>
 
 #import "LXSandBox.h"
+#define NUM @"0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
 
 @interface LXConfirmInfoViewController () <UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
-
+@property (nonatomic, strong) UILabel *lable1;
+@property (nonatomic, strong) UILabel *lable2;
+@property (nonatomic, strong) UILabel *lable3;
 @property (nonatomic, strong) UIButton *leftUploadBtn;
 @property (nonatomic, strong) UIButton *rightUploadBtn;
 @property (nonatomic, strong) UIButton *leftUploadBtn1;
-@property (nonatomic, strong) UIButton *rightUploadBtn1;
+//@property (nonatomic, strong) UIButton *rightUploadBtn1;
 
 @property (nonatomic, strong) UIImage *leftImage;
 @property (nonatomic, strong) UIImage *rightImage;
 @property (nonatomic, strong) UIImage *leftImage1;
-@property (nonatomic, strong) UIImage *rightImage1;
+//@property (nonatomic, strong) UIImage *rightImage1;
 
 @property (nonatomic, copy) NSString *leftImageID;
 @property (nonatomic, copy) NSString *rightImageID;
 @property (nonatomic, copy) NSString *leftImageID1;
-@property (nonatomic, copy) NSString *rightImageID1;
+//@property (nonatomic, copy) NSString *rightImageID1;
 @property (nonatomic, assign) NSInteger type;
 
 
@@ -59,6 +62,19 @@
     
     self.navigationItem.title = @"信息认证";
     self.view.backgroundColor = LXVCBackgroundColor;
+    self.confirmInfoModel = [[LXConfirmInfoModel alloc]init];
+    if(self.msgAuthenModel){
+        NSArray *raImageIdsArr = [self.msgAuthenModel.msgImageIds componentsSeparatedByString:@","];
+        self.leftImageID = raImageIdsArr[0];
+        self.rightImageID = raImageIdsArr[1];
+        self.leftImageID1 = raImageIdsArr[2];
+        
+        self.confirmInfoModel.siCardNo = self.msgAuthenModel.siCardNo;
+        self.confirmInfoModel.acNo = self.msgAuthenModel.acNo;
+        self.confirmInfoModel.computerNo = self.msgAuthenModel.computerNo;
+        self.confirmInfoModel.name = self.msgAuthenModel.name;
+    }
+    
     
     [self setUpTable];
 }
@@ -74,7 +90,7 @@
     
     NSMutableArray *section0 = [NSMutableArray array];
     [section0 addObject:@"真实姓名"];
-    [section0 addObject:@"身份证号"];
+    [section0 addObject:@"社保卡号"];
     [section0 addObject:@"上传照片"];
     
     NSMutableArray *section1 = [NSMutableArray array];
@@ -119,17 +135,41 @@
             LXWeakSelf(self);
             
             self.leftUploadBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.leftUploadBtn setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
+           // [self.leftUploadBtn setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
+            NSString *requestString = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.leftImageID];
+            [self.leftUploadBtn sd_setImageWithURL:[NSURL URLWithString:requestString] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
+            
             [self.leftUploadBtn addTarget:self action:@selector(leftUploadBtnClick) forControlEvents:UIControlEventTouchUpInside];
+            self.leftUploadBtn.userInteractionEnabled = _enableEdit;
+            
+            
+            _lable1 =[[UILabel alloc]init];
+            _lable1.text = @"社会保障卡正面照";
+            _lable1.textAlignment = NSTextAlignmentCenter;
+            _lable1.font = [UIFont systemFontOfSize:14.f];
+            _lable1.textColor =  [UIColor lightGrayColor];
+            [self.leftUploadBtn addSubview:_lable1];
+            [_lable1 mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.mas_equalTo(self.leftUploadBtn).mas_offset(0);
+                make.bottom.mas_equalTo(self.leftUploadBtn).mas_offset(-10);
+                make.width.mas_equalTo(self.leftUploadBtn);
+            }];
+
+           
             [cell.contentView addSubview:self.leftUploadBtn];
             [self.leftUploadBtn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.mas_equalTo(cell.contentView).mas_offset(30);
                 make.top.mas_equalTo(cell.contentView).mas_equalTo(10);
                 make.bottom.mas_equalTo(cell.contentView).mas_offset(-10);
+                
             }];
             
+            
             self.rightUploadBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.rightUploadBtn setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
+            //[self.rightUploadBtn setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
+            NSString *requestString2 = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.rightImageID];
+            [self.rightUploadBtn sd_setImageWithURL:[NSURL URLWithString:requestString2] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
+            
             [self.rightUploadBtn addTarget:self action:@selector(rightUploadBtnClick) forControlEvents:UIControlEventTouchUpInside];
             [cell.contentView addSubview:self.rightUploadBtn];
             [self.rightUploadBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -139,6 +179,20 @@
                 make.trailing.mas_equalTo(cell.contentView).mas_equalTo(-20);
                 make.width.mas_equalTo(weakself.leftUploadBtn);
             }];
+           self.rightUploadBtn .userInteractionEnabled = _enableEdit;
+            
+            _lable3 =[UILabel new];
+            _lable3.text = @"社会保障卡背面照";
+            _lable3.textAlignment = NSTextAlignmentCenter;
+            _lable3.font = [UIFont systemFontOfSize:14.f];
+            _lable3.textColor =  [UIColor lightGrayColor];
+            [self.rightUploadBtn addSubview:_lable3];
+            [_lable3 mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.mas_equalTo(self.rightUploadBtn).mas_offset(0);
+                make.bottom.mas_equalTo(self.rightUploadBtn).mas_offset(-10);
+                make.width.mas_equalTo(self.rightUploadBtn);
+            }];
+            
             
             return cell;
         }
@@ -153,17 +207,23 @@
             
             if (indexPath.row == 0) {
                 self.nameTF = cell.inputTF;
-                
+                cell.inputTF.returnKeyType = UIReturnKeyDefault;
                 if (!self.confirmInfoModel.name) {
                     self.nameTF.placeholder = @"请输入姓名";
+                }else{
+                    cell.inputTF.text = self.confirmInfoModel.name;
                 }
+                self.nameTF.enabled = _enableEdit;
             }
             else if (indexPath.row == 1) {
                 self.identifyTF = cell.inputTF;
-                
-                if (!self.confirmInfoModel.cardNo) {
-                    self.nameTF.placeholder = @"请输入身份证号";
+                cell.inputTF.returnKeyType  = UIReturnKeyDefault;
+                if (!self.confirmInfoModel.siCardNo) {
+                    self.identifyTF.placeholder = @"请输入社保卡号";
+                }else{
+                    cell.inputTF.text = self.confirmInfoModel.siCardNo;
                 }
+                self.identifyTF.enabled = _enableEdit;
             }
             
             return cell;
@@ -179,27 +239,48 @@
             LXWeakSelf(self);
             
             self.leftUploadBtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.leftUploadBtn1 setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
+            //[self.leftUploadBtn1 setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
+            
+            NSString *requestString3 = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.leftImageID1];
+            [self.leftUploadBtn1 sd_setImageWithURL:[NSURL URLWithString:requestString3] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             [self.leftUploadBtn1 addTarget:self action:@selector(leftUploadBtn1Click) forControlEvents:UIControlEventTouchUpInside];
             [cell.contentView addSubview:self.leftUploadBtn1];
             [self.leftUploadBtn1 mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.mas_equalTo(cell.contentView).mas_offset(30);
                 make.top.mas_equalTo(cell.contentView).mas_equalTo(10);
                 make.bottom.mas_equalTo(cell.contentView).mas_offset(-10);
+                make.width.mas_offset(135);
+               // make.width.mas_equalTo(weakself.leftUploadBtn);
             }];
-            
-            self.rightUploadBtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.rightUploadBtn1 setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
-            [self.rightUploadBtn1 addTarget:self action:@selector(rightUploadBtn1Click) forControlEvents:UIControlEventTouchUpInside];
-            [cell.contentView addSubview:self.rightUploadBtn1];
-            [self.rightUploadBtn1 mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.mas_equalTo(weakself.leftUploadBtn1.mas_trailing).mas_offset(20);
-                make.top.mas_equalTo(cell.contentView).mas_equalTo(10);
-                make.bottom.mas_equalTo(cell.contentView).mas_offset(-10);
-                make.trailing.mas_equalTo(cell.contentView).mas_equalTo(-20);
-                make.width.mas_equalTo(weakself.leftUploadBtn1);
+            self.leftUploadBtn1.userInteractionEnabled = _enableEdit;
+           
+            self.lable2 =[[UILabel alloc]init];
+            _lable2.text = @"鉴定证书照";
+            _lable2.textAlignment = NSTextAlignmentCenter;
+            _lable2.font = [UIFont systemFontOfSize:14.f];
+            _lable2.textColor =  [UIColor lightGrayColor];
+            [self.leftUploadBtn1 addSubview:_lable2];
+            [_lable2 mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.mas_equalTo(self.leftUploadBtn1).mas_offset(0);
+                make.bottom.mas_equalTo(self.leftUploadBtn1).mas_offset(-10);
+                make.width.mas_equalTo(self.leftUploadBtn1);
             }];
-            
+        
+//            self.rightUploadBtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
+//            [self.rightUploadBtn1 setBackgroundImage:[UIImage imageNamed:@"Order_add_image"] forState:UIControlStateNormal];
+//            [self.rightUploadBtn1 addTarget:self action:@selector(rightUploadBtn1Click) forControlEvents:UIControlEventTouchUpInside];
+//            [cell.contentView addSubview:self.rightUploadBtn1];
+//            [self.rightUploadBtn1 mas_makeConstraints:^(MASConstraintMaker *make) {
+//                make.leading.mas_equalTo(weakself.leftUploadBtn1.mas_trailing).mas_offset(20);
+//                make.top.mas_equalTo(cell.contentView).mas_equalTo(10);
+//                make.bottom.mas_equalTo(cell.contentView).mas_offset(-10);
+//                make.trailing.mas_equalTo(cell.contentView).mas_equalTo(-20);
+//                make.width.mas_equalTo(weakself.leftUploadBtn1);
+//            }];
+//            [self.rightUploadBtn1 setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+//            [self.rightUploadBtn1 setTitle:@"身份证反面照" forState:UIControlStateNormal];
+//            self.rightUploadBtn1.titleLabel.font = [UIFont systemFontOfSize:14.f];
+//            [self.rightUploadBtn1 setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, -55, 0)];
             return cell;
         }
         else  {
@@ -210,20 +291,26 @@
             
             cell.leadingL.text = leadingString;
             cell.inputTF.delegate = self;
-            
+            cell.inputTF.returnKeyType =UIReturnKeyDefault;
             if (indexPath.row == 0) {
                 self.appraisalTF = cell.inputTF;
                 
-                if (!self.confirmInfoModel.name) {
-                    self.nameTF.placeholder = @"请输入鉴定证书号";
+                if (!self.confirmInfoModel.acNo) {
+                    self.appraisalTF.placeholder = @"请输入鉴定证书号";
+                }else{
+                    cell.inputTF.text =self.confirmInfoModel.acNo;
                 }
+                self.appraisalTF.enabled = _enableEdit;
             }
             else if (indexPath.row == 1) {
                 self.computerTF = cell.inputTF;
                 
-                if (!self.confirmInfoModel.cardNo) {
-                    self.nameTF.placeholder = @"请输入电脑号";
+                if (!self.confirmInfoModel.computerNo) {
+                    self.computerTF.placeholder = @"请输入电脑号";
+                }else{
+                    cell.inputTF.text = self.confirmInfoModel.computerNo;
                 }
+                self.computerTF.enabled = _enableEdit;
             }
             
             
@@ -246,7 +333,7 @@
             [confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.edges.mas_equalTo(cell.contentView).mas_offset(UIEdgeInsetsMake(0, 0, 0, 0));
             }];
-            
+            confirmBtn.userInteractionEnabled = _enableEdit;
             return cell;
         }
         else {
@@ -303,17 +390,35 @@
         self.confirmInfoModel.name = textField.text;
     }
     else if ([self.identifyTF isEqual:textField]) {
-        self.confirmInfoModel.cardNo = textField.text;
+        self.confirmInfoModel.siCardNo = textField.text;
     }
     else if ([self.appraisalTF isEqual:textField]) {
-        self.confirmInfoModel.siCardNo = textField.text;
+        self.confirmInfoModel.acNo = textField.text;
     }
     else if ([self.computerTF isEqual:textField]) {
         self.confirmInfoModel.computerNo = textField.text;
     }
 }
-
-
+-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [textField resignFirstResponder];
+    return YES;
+}
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    if(textField !=self.nameTF){
+        NSString *bankCode= [textField.text stringByReplacingCharactersInRange:range withString:string]; //得到输入框的内容
+        
+        if (bankCode.length>19) {
+            return NO;
+        }
+        
+        NSCharacterSet *cs = [[NSCharacterSet characterSetWithCharactersInString:NUM] invertedSet];
+        NSString *filtered = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
+        BOOL  isOrNO= [string isEqualToString:filtered];
+        return isOrNO;
+    }
+    
+    return YES;
+}
 #pragma mark - Action
 
 - (void)rightUploadBtnClick {
@@ -326,10 +431,10 @@
     [self presentAlterViewController];
 }
 
-- (void)rightUploadBtn1Click {
-    self.type = 4;
-    [self presentAlterViewController];
-}
+//- (void)rightUploadBtn1Click {
+//    self.type = 4;
+//    [self presentAlterViewController];
+//}
 
 - (void)leftUploadBtn1Click {
     self.type = 3;
@@ -337,16 +442,16 @@
 }
 
 - (void)confirmBtnClick {
-    if (!(self.confirmInfoModel.name || self.confirmInfoModel.cardNo || self.confirmInfoModel.siCardNo || self.confirmInfoModel.computerNo)) {
-        [SVProgressHUD showErrorWithStatus:@"条件不够，请继续添加"];
+    if (self.confirmInfoModel.name.length<=0 && self.confirmInfoModel.acNo.length<=0&& self.confirmInfoModel.siCardNo.length<=0&& self.confirmInfoModel.computerNo.length<=0) {
+        [SVProgressHUD showInfoWithStatus:@"条件不够，请继续添加"];
         
         [SVProgressHUD dismissWithDelay:1];
         
         return;
     }
     
-    if (!(self.leftImageID || self.leftImageID1 || self.rightImageID || self.rightImageID1)) {
-        [SVProgressHUD showErrorWithStatus:@"照片不完善，请继续添加"];
+    if (self.leftImageID.length<=0 && self.leftImageID1.length<=0 && self.rightImageID.length<=0) {
+        [SVProgressHUD showInfoWithStatus:@"照片不完善，请继续添加"];
         
         [SVProgressHUD dismissWithDelay:1];
         
@@ -354,10 +459,13 @@
     }
     
     
-    self.confirmInfoModel.images = [NSString stringWithFormat:@"%@,%@,%@,%@", self.leftImageID, self.rightImageID, self.leftImageID1, self.rightImageID1];
-    self.confirmInfoModel.imageTypes = [NSString stringWithFormat:@"1,1,2,2"];
+    self.confirmInfoModel.images = [NSString stringWithFormat:@"%@,%@,%@", self.leftImageID, self.rightImageID, self.leftImageID1];
+    self.confirmInfoModel.imageTypes = [NSString stringWithFormat:@"1,1,2"];
     
-    self.infoBlock(self.confirmInfoModel);
+    if(self.infoBlock){
+        self.infoBlock(self.confirmInfoModel);
+    }
+    
     
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -587,7 +695,7 @@
     manager.requestSerializer = requsetSerialzer;
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
-    [manager POST:@"http://112.74.38.196:8081/healthcare/common/uploadimage.htm" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    [manager POST:@"http://112.74.38.196:8081/ihealthcare/common/uploadimage.htm" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         NSError *err = nil;
         
         [formData appendPartWithFileURL:imageURL name:@"image" error:&err];
@@ -609,24 +717,27 @@
         if(code==0){
             if (self.type == 1) {
                 self.leftImage = image;
-                self.leftImageID = responseObject[@"file_id"];
-                [self.leftUploadBtn setBackgroundImage:image forState:UIControlStateNormal];
+                self.leftImageID = dic[@"file_id"];
+                NSString *requestString = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.leftImageID];
+                [self.leftUploadBtn sd_setImageWithURL:[NSURL URLWithString:requestString] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             }
             else if (self.type == 2) {
                 self.rightImage = image;
-                self.rightImageID = responseObject[@"file_id"];
-                [self.rightUploadBtn setBackgroundImage:image forState:UIControlStateNormal];
+                self.rightImageID = dic[@"file_id"];
+                NSString *requestString2 = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.rightImageID];
+                [self.rightUploadBtn sd_setImageWithURL:[NSURL URLWithString:requestString2] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             }
             else if (self.type == 3) {
                 self.leftImage1 = image;
-                self.leftImage1 = responseObject[@"file_id"];
-                [self.leftUploadBtn1 setBackgroundImage:image forState:UIControlStateNormal];
+                self.leftImageID1 = dic[@"file_id"];
+                NSString *requestString3 = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.leftImageID1];
+                [self.leftUploadBtn1 sd_setImageWithURL:[NSURL URLWithString:requestString3] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             }
-            else if (self.type == 4) {
-                self.rightImage1 = image;
-                self.rightImageID1 = responseObject[@"file_id"];
-                [self.rightUploadBtn1 setBackgroundImage:image forState:UIControlStateNormal];
-            }
+//            else if (self.type == 4) {
+//                self.rightImage1 = image;
+//                self.rightImageID1 = dic[@"file_id"];
+//                [self.rightUploadBtn1 setBackgroundImage:image forState:UIControlStateNormal];
+//            }
  
         }else{
             [SVProgressHUD showErrorWithStatus:@"哎呀,出错了!"];

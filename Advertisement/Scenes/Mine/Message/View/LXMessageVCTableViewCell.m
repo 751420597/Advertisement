@@ -30,9 +30,9 @@
     self.leadingL.text = self.messageModel.title;
     self.bottomL.text = self.messageModel.content;
     if([self.messageModel.readFlag isEqualToString:@"0"]){
-        self.redButton.backgroundColor = [UIColor redColor];
+        self.redButton.hidden = NO;
     }else{
-        self.redButton.backgroundColor = [UIColor clearColor];
+        self.redButton.hidden = YES;
     }
 }
 

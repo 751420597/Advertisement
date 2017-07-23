@@ -26,8 +26,7 @@
 
 - (void)setSModel:(LXStaffModel *)sModel {
     _sModel = sModel;
-    
-    NSString *requestString = [NSString stringWithFormat:@"%@%@", GetImage, sModel.avatarImageId];
+    NSString *requestString = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, sModel.avatarImageId];
     [self.avatarImageView sd_setImageWithURL:[NSURL URLWithString:requestString] placeholderImage:[UIImage imageNamed:@"Mine_male"]];
     
     [self.nameL setText:sModel.userName];
@@ -36,7 +35,9 @@
     
     [self.workingYearsL setText:[NSString stringWithFormat:@"工作年限：%@",sModel.workYears]];
     
-    [self.starView setScorePercent:sModel.overallMerit.integerValue];
+    CGFloat sorce =sModel.overallMerit.floatValue/5;
+    
+    [self.starView setScorePercent:sorce];
 }
 
 @end

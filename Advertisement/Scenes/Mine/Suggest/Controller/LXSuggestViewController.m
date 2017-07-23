@@ -7,8 +7,8 @@
 //
 
 #import "LXSuggestViewController.h"
-
-@interface LXSuggestViewController ()
+#import "LXWaitOrderViewModel.h"
+@interface LXSuggestViewController ()<UITextViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (nonatomic, strong) UIButton *addBtn;
@@ -29,7 +29,7 @@
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.addBtn];
     barButtonItem.width = 10;
     self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
-    
+    self.textView.delegate  = self;
     [self.textView lx_setViewCornerRadius:3 borderColor:LXCellBorderColor borderWidth:1];
 }
 
@@ -37,7 +37,35 @@
 #pragma mark - Action
 
 - (void)btnClick {
-    
+    if([self.textView.text isEqualToString:@"请输入您的建议："]){
+        [SVProgressHUD showInfoWithStatus:@"请输入您的建议!"];
+        return;
+    }
+    NSDictionary *dictP = @{@"content":_textView.text};
+    LXWaitOrderViewModel *modelV = [[LXWaitOrderViewModel alloc]init];
+    [modelV tousuWithParameters:dictP completionHandler:^(NSError *error, id result) {
+        
+        [SVProgressHUD dismiss];
+        int code = [result[@"code"] intValue];
+        
+        if (code == 0) {
+            [SVProgressHUD showInfoWithStatus:@"已提交"];
+        }
+        else {
+            [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
+        }
+    }];
+
+}
+-(void)textViewDidBeginEditing:(UITextView *)textView{
+    if([textView.text isEqualToString:@"请输入您的建议："]){
+        textView.text=@"";
+    }
+}
+-(void)textViewDidEndEditing:(UITextView *)textView{
+    if(textView.text.length<=0){
+        self.textView.text = @"请输入您的建议：";
+    }
 }
 
 

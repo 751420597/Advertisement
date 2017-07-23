@@ -11,7 +11,7 @@
 #import "LXMineInfoVCTableViewCell.h"
 
 #import "LXMineInfoViewModel.h"
-
+#import "IQKeyboardManager.h"
 // Pictrue
 #import <AVFoundation/AVFoundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -40,6 +40,7 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
 @property (nonatomic, strong) LXMineInfoViewModel *viewModel;
 
 @property (nonatomic, strong) NSIndexPath *index;
+@property (nonatomic) BOOL canSelect;
 @end
 
 
@@ -51,10 +52,15 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
     }
     return self;
 }
-
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    IQKeyboardManager *manager=[IQKeyboardManager sharedManager];
+    manager.enableAutoToolbar = YES;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    IQKeyboardManager *manager=[IQKeyboardManager sharedManager];
+    manager.enableAutoToolbar = NO;
     self.navigationItem.title = @"个人信息";
     [self.view setBackgroundColor:LXVCBackgroundColor];
     
@@ -66,6 +72,7 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
     self.viewModel = [LXMineInfoViewModel new];
     
     self.birthday = @"1990-1-1";
+    self.canSelect = NO;
     [self setUpTable];
 }
 
@@ -151,6 +158,11 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
     }
     else if ([tempString isEqualToString:@"姓名"] || [tempString isEqualToString:@"手机号码"]) {
         cell.btnConstrait.constant = 0;
+        if(_canSelect){
+            cell.trailingL.enabled = YES;
+        }else{
+            cell.trailingL.enabled = NO;
+        }
         
     }else{
         cell.trailingL.enabled = NO;
@@ -159,34 +171,41 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
     cell.leadingL.text = self.dataSource[indexPath.row];
     cell.trailingL.text = self.trailingDataSource[indexPath.row];
     cell.trailingL.delegate = self;
+    cell.trailingL.returnKeyType = UIReturnKeyDefault;
     return cell;
 }
-
+-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [textField resignFirstResponder];
+    return YES;
+}
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString *tempString = self.dataSource[indexPath.row];
-    _index = indexPath;
-    if ([tempString isEqualToString:@"头像"]) {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        NSArray *titles = @[@"拍照", @"相册"];
-        
-        [self addActionTarget:alertController titles:titles];
-        [self addCancelActionTarget:alertController title:@"取消"];
-        
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
-    else if ([tempString isEqualToString:@"性别"]) {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        NSArray *titles = @[@"男", @"女"];
-        
-        [self addActionTarget:alertController titles:titles];
-        [self addCancelActionTarget:alertController title:@"取消"];
-        
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
-    else if ([tempString isEqualToString:@"生日"]) {
-        [self.view addSubview:self.bgView];
+    if(self.canSelect){
+        NSString *tempString = self.dataSource[indexPath.row];
+        _index = indexPath;
+        if ([tempString isEqualToString:@"头像"]) {
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+            NSArray *titles = @[@"拍照", @"相册"];
+            
+            [self addActionTarget:alertController titles:titles];
+            [self addCancelActionTarget:alertController title:@"取消"];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+        else if ([tempString isEqualToString:@"性别"]) {
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+            NSArray *titles = @[@"男", @"女"];
+            
+            [self addActionTarget:alertController titles:titles];
+            [self addCancelActionTarget:alertController title:@"取消"];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+        else if ([tempString isEqualToString:@"生日"]) {
+            [self.view addSubview:self.bgView];
+        }
+
     }
 }
 
@@ -355,54 +374,64 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
 }
 
 - (void)confirmBtnClick {
-    // 上传到服务器
-    LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
-    LXMineInfoVCTableViewCell *cell0 =[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-    self.mineModel.userName=cell0.trailingL.text;
-    
-    LXMineInfoVCTableViewCell *cell1 =[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
-    self.mineModel.mobile=cell1.trailingL.text;
-    
-    NSMutableDictionary *dictP = [NSMutableDictionary dictionary];
-    if (self.mineModel.tmUserId) {
-        [dictP setValue:self.mineModel.tmUserId forKey:@"userId"];
-    }
-    
-    if (self.mineModel.avatarImageId) {
-        [dictP setValue:self.mineModel.avatarImageId forKey:@"fileId"];
-    }
-    
-    if (self.mineModel.userName) {
-        [dictP setValue:self.mineModel.userName forKey:@"username"];
-    }
-    
-    if (self.mineModel.sexCode) {
-        [dictP setValue:self.mineModel.sexCode forKey: @"sexCode"];
-    }
-    
-    if (self.mineModel.mobile) {
-        [dictP setValue:self.mineModel.mobile forKey:@"mobile"];
-    }
-    
-    if (self.mineModel.birthday) {
-        [dictP setValue:self.mineModel.birthday forKey:@"birthday"];
-    }
-    
-    [self.viewModel updateMineInfoWithParameters:dictP completionHandler:^(NSError *error, id result) {
-        LXStrongSelf(self);
-        [SVProgressHUD dismiss];
-        int code = [result[@"code"] intValue];
-        if (code == 0) {
-            if(self.okBlock){
-                self.okBlock();
+    if(_canSelect){
+        // 上传到服务器
+        LXWeakSelf(self);
+        [SVProgressHUD showWithStatus:@"加载中……"];
+        LXMineInfoVCTableViewCell *cell0 =[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+        self.mineModel.userName=cell0.trailingL.text;
+        
+        LXMineInfoVCTableViewCell *cell1 =[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
+        self.mineModel.mobile=cell1.trailingL.text;
+        
+        NSMutableDictionary *dictP = [NSMutableDictionary dictionary];
+        if (self.mineModel.tmUserId) {
+            [dictP setValue:self.mineModel.tmUserId forKey:@"userId"];
+        }
+        
+        if (self.mineModel.avatarImageId) {
+            [dictP setValue:self.mineModel.avatarImageId forKey:@"fileId"];
+        }
+        
+        if (self.mineModel.userName) {
+            [dictP setValue:self.mineModel.userName forKey:@"userName"];
+        }
+        
+        if (self.mineModel.sexCode) {
+            [dictP setValue:self.mineModel.sexCode forKey: @"sexCode"];
+        }
+        
+        if (self.mineModel.mobile) {
+            [dictP setValue:self.mineModel.mobile forKey:@"mobile"];
+        }
+        
+        if (self.mineModel.birthday) {
+            [dictP setValue:self.mineModel.birthday forKey:@"birthday"];
+        }else{
+            [SVProgressHUD showInfoWithStatus:@"请选择您的生日"];
+            return;
+        }
+        
+        [self.viewModel updateMineInfoWithParameters:dictP completionHandler:^(NSError *error, id result) {
+            LXStrongSelf(self);
+            [SVProgressHUD dismiss];
+            int code = [result[@"code"] intValue];
+            if (code == 0) {
+                if(self.okBlock){
+                    self.okBlock();
+                }
+                [self.navigationController popViewControllerAnimated:YES];
             }
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-        else {
-            [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
-        }
-    }];
+            else {
+                [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
+            }
+        }];
+
+    }else{
+        self.canSelect = YES;
+        [_confirmBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [self.tableView reloadData];
+    }
 }
 
 
@@ -501,7 +530,7 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
     
     
 //    LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"正在上传照片……"];
+    [SVProgressHUD showWithStatus:@"正在上传照片……"];
 //    
 //    NSDictionary *dictP = @{@"image_type":@"png"};
 //    
@@ -528,7 +557,7 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     // 3.开始上传
-    [manager POST:@"http://112.74.38.196:8081/healthcare/common/uploadimage.htm" parameters:@{@"image_type":@"1"} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    [manager POST:@"http://112.74.38.196:8081/ihealthcare/common/uploadimage.htm" parameters:@{@"image_type":@"1"} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         NSError *err = nil;
         
         [formData appendPartWithFileData:data name:@"image" fileName:name mimeType:@"image/jpeg"];
@@ -538,13 +567,13 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
         
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         // 不做处理
-        
+       
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         // 成功回调
         id dict=[NSJSONSerialization  JSONObjectWithData:responseObject options:0 error:nil];
         NSLog(@"获取到的数据为：%@",dict);;
         int code = [dict[@"code"] intValue] ;
-        
+        [SVProgressHUD dismiss];
         if (code == 0) {
             weakSelf.mineModel.avatarImageId = dict[@"file_id"];
             NSString *requestString = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, weakSelf.mineModel.avatarImageId];
@@ -552,6 +581,7 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
             [self.avatarImageView sd_setImageWithURL:[NSURL URLWithString:requestString] placeholderImage:[UIImage imageNamed:@"Mine_male"]];
             
         }else{
+            
              [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
         }
 
@@ -690,7 +720,7 @@ static NSString *const LXMineInfoVCTableViewCellID = @"LXMineInfoVCTableViewCell
 - (UIButton *)confirmBtn {
     if (!_confirmBtn) {
         _confirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_confirmBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [_confirmBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_confirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_confirmBtn.titleLabel setFont:[UIFont systemFontOfSize:16]];
         [_confirmBtn setFrame:CGRectMake(0, 0, 40, 30)];

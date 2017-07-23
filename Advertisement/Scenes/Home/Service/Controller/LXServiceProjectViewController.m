@@ -59,15 +59,15 @@ static CGFloat LXServiceProjectTableViewRowHeight = 50;
 - (void)getServiceData {
    
     if(self.careID.length<=0){
-        [SVProgressHUD showErrorWithStatus:@"请先选择照护对象！"];
+        [SVProgressHUD showInfoWithStatus:@"请先选择照护对象！"];
         return;
     }
     self.viewModel = [LXServiceProjectViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
    
-    NSDictionary *dic =@{@"careObjId":self.careID};
+    NSDictionary *dic =@{@"careObjId":self.careID,@"servType":self.servType};
     [self.viewModel getServiceListWithParameters:dic completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);
         [SVProgressHUD dismiss];

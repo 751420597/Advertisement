@@ -30,9 +30,11 @@
     self.navigationItem.title = @"城市选择";
     self.view.backgroundColor = LXVCBackgroundColor;
  
-    CityViewController *cityViewController = [[CityViewController alloc] init];
-    
-    
+    JFCityViewController *cityViewController = [[JFCityViewController alloc] init];
+    [cityViewController choseCityBlock:^(NSString *cityName) {
+        
+    }];
+
     [self addChildViewController:cityViewController];
     [cityViewController.view setFrame:self.view.frame];
     [self.view addSubview:cityViewController.view];

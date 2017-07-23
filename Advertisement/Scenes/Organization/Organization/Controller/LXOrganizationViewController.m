@@ -51,7 +51,7 @@ static NSString *const LXOrganizationTableViewCellID = @"LXOrganizationTableView
     self.viewModel = [LXOrganizationViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     [self.viewModel getOrganizationListWithParameters:nil completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);

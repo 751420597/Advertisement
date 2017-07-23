@@ -15,5 +15,6 @@
 @property (nonatomic, copy) NSString *evaItem;
 @property (nonatomic, copy) NSString *updTime;
 @property (nonatomic, copy) NSString *validFlag;
+@property (nonatomic, copy) NSString *value;
 
 @end

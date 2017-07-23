@@ -13,5 +13,6 @@
 // 订单状态—0:待接单 1:已接单 2:已完成 3:已取消
 - (NSNumber *)getOrderListWithParameters:(NSDictionary *)parametersDict
                   completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
-
+- (NSNumber *)tousuWithParameters:(NSDictionary *)parametersDict
+                completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 @end

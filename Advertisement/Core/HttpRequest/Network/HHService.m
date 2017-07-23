@@ -24,15 +24,15 @@
 @implementation HHServiceX
 
 - (NSString *)testEnvironmentBaseUrl {
-    return @"https://112.74.38.196:8081/healthcare";
+    return @"http://112.74.38.196:8081/ihealthcare";
 }
 
 - (NSString *)developEnvironmentBaseUrl {
-    return @"http://112.74.38.196:8081/healthcare";
+    return @"http://112.74.38.196:8081/ihealthcare";//http://112.74.38.196:8081/ihealthcare
 }
 
 - (NSString *)releaseEnvironmentBaseUrl {
-    return @"http://112.74.38.196:8081/healthcare";
+    return @"http://112.74.38.196:8081/ihealthcare";
 }
 
 @end

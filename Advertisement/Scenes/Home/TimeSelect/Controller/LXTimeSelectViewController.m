@@ -38,7 +38,8 @@
 @property (nonatomic, copy) NSString *minuteTime;
 
 @property (nonatomic, strong) UILabel *repeatL;
-
+@property (nonatomic,copy)NSString *dateStr;
+@property (nonatomic,strong)NSMutableArray *dateArr;
 @end
 
 
@@ -54,9 +55,9 @@
     self.navigationItem.title = @"服务时间";
     self.view.backgroundColor = LXVCBackgroundColor;
     
-    self.repeatTime = 1;
+    self.repeatTime = 0;
     self.timeArray = [NSMutableArray array];
-    
+    self.dateArr = [NSMutableArray array];
     UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceBarButtonItem.width = -10;
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.myConfirmB];
@@ -81,9 +82,27 @@
 
 - (void)selectDateWithDate:(NSString *)date {
     LXLog(@"%@", date);
+    if(self.dateArr.count>0){
+        for (NSString *d in (NSArray*)self.dateArr) {
+            if([date isEqualToString:d]){
+                [self.calendarView reloadWithSelectTime:@"" day:date];
+                [self.timeArray removeLastObject];
+                [self.dateArr removeObject:date];
+                self.dateStr = @"";
+                break;
+            }else{
+                if(self.timeArray.count<2){
+                    self.mouthTime = date;
+                    [self.view addSubview:self.bigBGView];
+                }
+                
+            }
+        }
+    }else{
+        self.mouthTime = date;
+        [self.view addSubview:self.bigBGView];
+    }
     
-    self.mouthTime = date;
-    [self.view addSubview:self.bigBGView];
 }
 
 - (void)cannotSelectDateWithRow:(NSInteger)row {
@@ -129,25 +148,51 @@
 }
 
 - (void)confirmBtnClick {
+    [self.dateArr addObject:self.mouthTime];
+    self.dateStr = self.mouthTime;
     NSString *currentDay = nil;
+    NSString *mouth =nil;
     NSArray *tempArray = [self.mouthTime componentsSeparatedByString:@"-"];
     currentDay = tempArray.lastObject;
-    
+    mouth = tempArray[1];
+    if(currentDay.intValue<10){
+        currentDay = [NSString stringWithFormat:@"0%@", currentDay];
+    }
+    if(mouth.intValue<10){
+        mouth =[NSString stringWithFormat:@"0%@", mouth];
+    }
+    self.mouthTime = [NSString stringWithFormat:@"%@-%@-%@",tempArray[0],mouth,currentDay];
+    NSString *hourTime = nil;
     if (!self.hourTime) {
-        self.hourTime = @"0";
+        hourTime = @"00";
+        self.hourTime = hourTime;
+    }else{
+        if(self.hourTime.intValue<10){
+            hourTime = [NSString stringWithFormat:@"0%d", self.hourTime.intValue];
+        }else{
+            hourTime = [NSString stringWithFormat:@"%d", self.hourTime.intValue];
+        }
+        
+        self.hourTime = hourTime;
     }
     
     NSString *minute = nil;
     if (!self.minuteTime) {
         minute = @"00";
+        self.minuteTime = minute;
     }
     else {
-        minute = [NSString stringWithFormat:@"%2d", self.minuteTime.intValue];
+        if(self.minuteTime.intValue<10){
+            minute = [NSString stringWithFormat:@"0%d", self.minuteTime.intValue];
+        }else{
+            minute = [NSString stringWithFormat:@"%d", self.minuteTime.intValue];
+        }
+        self.minuteTime = minute;
     }
     
-    NSString *string = [NSString stringWithFormat:@"%@:%@", self.hourTime, minute];
-    
-    [self.calendarView reloadWithSelectTime:string day:currentDay];
+    NSString *string = [NSString stringWithFormat:@"%@:%@:00", self.hourTime, minute];
+    NSString *string1 = [string substringWithRange:NSMakeRange(0, string.length-3)];
+    [self.calendarView reloadWithSelectTime:string1 day:self.mouthTime];
     
     NSString *timeString = [NSString stringWithFormat:@"%@ %@", self.mouthTime, string];
     if (![self.timeArray containsObject:timeString]) {
@@ -208,7 +253,10 @@
 #pragma mark - Private
 
 - (NSString *)generateRepestStringWithInteger:(NSInteger)repeat {
-    if (repeat == 1) {
+    if (repeat == 0) {
+        return @"不重复";
+    }
+    else if (repeat == 1) {
         return @"一周";
     }
     else if (repeat == 2) {
@@ -216,9 +264,6 @@
     }
     else if (repeat == 3) {
         return @"三周";
-    }
-    else if (repeat == 4) {
-        return @"四周";
     }
     
     return @"";

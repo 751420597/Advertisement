@@ -53,7 +53,7 @@
 #pragma mark - Private Methods
 
 - (void)buildDataAndUI {
-    _scorePercent = 1;//默认为1
+    _scorePercent = 0;//默认为1
     _hasAnimation = NO;//默认为NO
     _allowIncompleteStar = NO;//默认为NO
 

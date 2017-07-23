@@ -7,7 +7,7 @@
 //
 
 #import "LXPayCallUp.h"
-
+#import <AlipaySDK/AlipaySDK.h>
 @implementation LXPayCallUp
 
 // errorMessage
@@ -17,7 +17,7 @@
 + (void)gotoZhiFuBaoPayWithModel:(LXZhiFuBaoPayModel *)zhiFuBaoModel
                     successBlock:(void (^)(NSDictionary *))successBlock
                     failureBlock:(void (^)(NSDictionary *))failureBlock; {
-    if (!zhiFuBaoModel.signedString) {
+    if (!zhiFuBaoModel.body) {
         NSMutableDictionary*errorDic = [NSMutableDictionary dictionary];
         
         [errorDic setObject:@"获取支付宝调用URL失败" forKey:@"errorMessage"];
@@ -28,11 +28,16 @@
         return;
     }
     
-    if (zhiFuBaoModel.signedString != nil) {
+    if (zhiFuBaoModel.body != nil) {
         // 发起支付宝调用
-//        [[AlipaySDK defaultService] payOrder:signedString fromScheme:AppScheme callback:^(NSDictionary *resultDic) {
-//            
-//        }];
+        [[AlipaySDK defaultService] payOrder:zhiFuBaoModel.body fromScheme:@"advertisement" callback:^(NSDictionary *resultDic) {
+            if([resultDic[@"resultStatus"] intValue]==9000){
+                successBlock(resultDic);
+            }else{
+                failureBlock(resultDic);
+                [SVProgressHUD showInfoWithStatus:resultDic[@"memo"]];
+            }
+        }];
     }
     else {
         

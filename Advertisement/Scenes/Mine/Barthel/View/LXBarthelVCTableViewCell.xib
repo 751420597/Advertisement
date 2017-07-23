@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,11 +14,14 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jRB-4m-iq0">
-                        <rect key="frame" x="10" y="14" width="35.5" height="17"/>
+                        <rect key="frame" x="10" y="14" width="130" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="130" id="vys-jm-DSJ"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -32,18 +34,31 @@
                         </constraints>
                         <state key="normal" backgroundImage="Order_arrow"/>
                     </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ThU-G2-n23">
+                        <rect key="frame" x="107" y="14" width="170" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="170" id="aVK-f2-TsN"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="ThU-G2-n23" firstAttribute="top" secondItem="jRB-4m-iq0" secondAttribute="top" id="8kD-3P-fJG"/>
                     <constraint firstItem="qqT-BN-rP6" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="9GB-dK-JbB"/>
+                    <constraint firstItem="ThU-G2-n23" firstAttribute="height" secondItem="jRB-4m-iq0" secondAttribute="height" id="BvD-Cx-qVM"/>
                     <constraint firstItem="jRB-4m-iq0" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="Kzj-Gj-ac0"/>
+                    <constraint firstItem="qqT-BN-rP6" firstAttribute="leading" secondItem="ThU-G2-n23" secondAttribute="trailing" constant="23" id="Rr1-US-xMc"/>
                     <constraint firstAttribute="trailing" secondItem="qqT-BN-rP6" secondAttribute="trailing" constant="10" id="a2L-Mh-BT9"/>
                     <constraint firstItem="jRB-4m-iq0" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="qre-za-jbz"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="leadingL" destination="jRB-4m-iq0" id="Hej-Rf-Rgr"/>
+                <outlet property="vuleLB" destination="ThU-G2-n23" id="3nA-XB-r0u"/>
             </connections>
-            <point key="canvasLocation" x="-157" y="1"/>
+            <point key="canvasLocation" x="-86" y="-3"/>
         </tableViewCell>
     </objects>
     <resources>

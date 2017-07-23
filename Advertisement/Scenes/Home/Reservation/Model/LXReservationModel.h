@@ -21,6 +21,8 @@
 
 @property (nonatomic, copy) NSString *address;
 @property (nonatomic, copy) NSString *otherContent;
+@property (nonatomic, copy) NSString *chanOrderState;
+@property (nonatomic, copy) NSString *ordPrice;
 @property (nonatomic, strong) LXReservationTimeModel *timeModel;
 
 @end

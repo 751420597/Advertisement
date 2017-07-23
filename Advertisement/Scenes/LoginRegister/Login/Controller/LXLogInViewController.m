@@ -17,8 +17,8 @@
 #import "LXRootTabbarViewController.h"
 
 #import "DHGuidePageHUD.h"
-
-
+#import <JPUSHService.h>
+#import "LXUserProtocolViewController.h"
 @interface LXLogInViewController () <UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *topBGView;
@@ -31,7 +31,6 @@
 - (IBAction)logInClick:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *userProtocol;
-- (IBAction)userProtocolTap:(id)sender;
 
 @property (nonatomic, strong) LXLogInViewModel *viewModel;
 @property (nonatomic, strong) LXVerifyModel *verifyModel;
@@ -123,11 +122,14 @@
     NSMutableAttributedString *leadingString = [[NSMutableAttributedString alloc] initWithString:@"点击登录，即表示您同意" attributes:leadingAttributes];
     
     NSDictionary *trailingAttributes = @{NSFontAttributeName : [UIFont systemFontOfSize:13], NSForegroundColorAttributeName : LXMainColor};
-    NSMutableAttributedString *trailingString = [[NSMutableAttributedString alloc] initWithString:@"<i护理用户协议>" attributes:trailingAttributes];
+    NSMutableAttributedString *trailingString = [[NSMutableAttributedString alloc] initWithString:@"<佳时护用户协议>" attributes:trailingAttributes];
     
     [leadingString appendAttributedString:trailingString];
     [self.userProtocol setAttributedText:leadingString];
     
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(userProtocolTap)];
+    [self.userProtocol addGestureRecognizer:tapRecognizer];
+   
 }
 
 
@@ -152,9 +154,9 @@
         [self.timer fire];
         int code = [result[@"code"] intValue];
         if (code==0) {
-            [SVProgressHUD showWithStatus:@"验证码已发送，请查收。"];
+            [SVProgressHUD showInfoWithStatus:@"验证码已发送，请查收。"];
             self.verifyModel = [LXVerifyModel modelWithJSON:result];
-            
+            NSLog(@"%@",result);
             [self.timer fire];
         }
         else {
@@ -185,14 +187,19 @@
     [operationQueue addOperations:@[logInOperation, checkOperation] waitUntilFinished:NO];
 }
 
-- (IBAction)userProtocolTap:(id)sender {
-    
+- (void)userProtocolTap {
+    LXUserProtocolViewController *upVC = [LXUserProtocolViewController new];
+    [self.navigationController pushViewController:upVC animated:YES];
 }
 
 - (void)checkVerifyCode {
     LXWeakSelf(self);
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    
+    if([self.verifyModel.msgCode isEqualToString:self.verifyCodeTF.text]){
+          self.isValid = YES;
+    }else{
+        self.isValid = NO;
+    }
     NSDictionary *dict = @{@"phone_no":self.phoneTF.text,
                           @"verify_no":self.verifyCodeTF.text};
     
@@ -200,7 +207,7 @@
         LXStrongSelf(self);
         
         
-        self.isValid = YES;
+      
 //        int code = [result[@"code"] intValue];
 //        if (code== 0) {
 //            self.checkModel = [LXCheckModel modelWithJSON:result];
@@ -230,8 +237,12 @@
         return;
     }
     
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
-    NSDictionary *dict = @{@"phone_no":self.phoneTF.text};
+    [SVProgressHUD showWithStatus:@"加载中……"];
+    NSString *registrationID =[LXStandardUserDefaults objectForKey:@"registrationID"];
+    if(registrationID==nil){
+        registrationID = @"";
+    }
+    NSDictionary *dict = @{@"phone_no":self.phoneTF.text,@"registration_id":registrationID};
     
     //LXWeakSelf(self);
    
@@ -246,7 +257,11 @@
                 [LXStandardUserDefaults setObject:self.phoneTF.text forKey:UserUserDefaults];
                 [LXStandardUserDefaults setObject:result[@"userId"] forKey:@"userId"];
                 [LXStandardUserDefaults synchronize];
-                
+                [JPUSHService setTags:nil alias:self.phoneTF.text fetchCompletionHandle:^(int iResCode, NSSet *iTags, NSString *iAlias) {
+                    if(iResCode==0){
+                        
+                    }
+                }];
                 LXRootTabbarViewController *tabbarVC = [LXRootTabbarViewController new];
                 [UIApplication sharedApplication].keyWindow.rootViewController = tabbarVC;
             }

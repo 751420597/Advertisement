@@ -5,6 +5,7 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -23,8 +24,8 @@
                         <color key="textColor" red="0.29803921568627451" green="0.29803921568627451" blue="0.29803921568627451" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dEu-kP-iQi">
-                        <rect key="frame" x="97.5" y="12.5" width="212.5" height="17"/>
+                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dEu-kP-iQi">
+                        <rect key="frame" x="134" y="13" width="176" height="23"/>
                         <nil key="textColor"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits"/>
@@ -33,8 +34,8 @@
                 <constraints>
                     <constraint firstItem="dEu-kP-iQi" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="9vH-nk-OX3"/>
                     <constraint firstItem="ObE-Xl-SqM" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="HDQ-rA-LiX"/>
+                    <constraint firstItem="dEu-kP-iQi" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="150" id="HTx-6P-A4d"/>
                     <constraint firstAttribute="trailing" secondItem="dEu-kP-iQi" secondAttribute="trailing" constant="10" id="LVP-hN-Jfr"/>
-                    <constraint firstItem="dEu-kP-iQi" firstAttribute="leading" secondItem="ObE-Xl-SqM" secondAttribute="trailing" constant="50" id="SfO-fR-vZW"/>
                     <constraint firstItem="ObE-Xl-SqM" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="sQw-Qs-14n"/>
                 </constraints>
             </tableViewCellContentView>

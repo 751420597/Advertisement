@@ -25,6 +25,20 @@
     }];
 }
 
+- (NSNumber *)tousuWithParameters:(NSDictionary *)parametersDict
+                       completionHandler:(HHNetworkTaskCompletionHander)completionHandler {
+    HHDataAPIConfiguration *config = [HHDataAPIConfiguration new];
+    config.requestType = HHNetworkRequestTypePost;
+    config.urlPath = feedback;
+    config.requestParameters = parametersDict;
+    
+    return [super dispatchDataTaskWithConfiguration:config completionHandler:^(NSError *error, id result) {
+        if (!error) {
+        }
+        
+        completionHandler ? completionHandler(error, result) : nil;
+    }];
+}
 
 
 //- (NSNumber *)getOrderServiceWithParameters:(NSDictionary *)parametersDict

@@ -38,18 +38,24 @@
 
 // 判断是否为有效手机号
 + (BOOL)isPhoneNumberFormatOfString:(NSString *)originString {
-    BOOL isValid;
+   
     
-    NSString* textRegex = @"^((13[0-9])|(147)|(15[^4,\\D])|(18[0,0-9]))\\d{8}$";
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", textRegex];
-    if ([predicate evaluateWithObject:originString]) {
-        isValid = TRUE;
+    if ([originString length]!=11) {
+        
+        return false;
+    }else{
+        NSString * CT = @"^1[3|4|5|7|8][0-9]{9}$";
+        NSPredicate *regextestct = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", CT];
+        
+        if (([regextestct evaluateWithObject:originString] == YES))
+        {
+            return YES;
+        }
+        else
+        {
+            return NO;
+        }
     }
-    else {
-        isValid = FALSE;
-    }
-    
-    return isValid;
 }
 
 // 判断是否为有效邮箱

@@ -24,5 +24,14 @@
 @property (nonatomic, copy) NSString *cardNo;
 @property (nonatomic, copy) NSString *personNatureId;
 @property (nonatomic, copy) NSString *careTypeId;
+@property (nonatomic, copy) NSString *livingCare;
+@property (nonatomic, copy) NSString *serviceType;
+@property (nonatomic, copy) NSString *presentAddress;
+@property (nonatomic, copy) NSString *careContactPhone;
+@property (nonatomic, copy) NSString *mcName;
+@property (nonatomic, copy) NSString *mcRela;
+@property (nonatomic, copy) NSString *mcPhone;
+@property (nonatomic, copy) NSString *msAddress;
+@property (nonatomic, copy) NSString *dmTypeId;
 
 @end

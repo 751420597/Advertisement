@@ -22,5 +22,4 @@
                         failureBlock:(LXHomeViewModelFailureBlock)failureBlock {
     
 }
-
 @end

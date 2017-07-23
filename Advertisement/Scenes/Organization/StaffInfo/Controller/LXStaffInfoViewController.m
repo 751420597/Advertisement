@@ -57,7 +57,7 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
     self.viewModel = [LXStaffInfoViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{@"cw_user_id":self.cw_user_id};
     
@@ -117,17 +117,20 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Section0Row0"];
             commonBlock(90, cell);
             
-            self.avatarIamgeview = [[UIImageView alloc] init];
-            
+            self.avatarIamgeview = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 70, 70)];
+            self.avatarIamgeview.userInteractionEnabled = YES;
             NSString *requestString = [NSString stringWithFormat:@"%@%@", GetImage, self.siModel.avatarImageId];
             [self.avatarIamgeview sd_setImageWithURL:[NSURL URLWithString:requestString] placeholderImage:[UIImage imageNamed:@"Mine_male"]];
+            self.avatarIamgeview.layer.cornerRadius = 35;
+            self.avatarIamgeview.layer.masksToBounds = YES;
             [cell.contentView addSubview:self.avatarIamgeview];
-            [self.avatarIamgeview mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.left.mas_equalTo(cell.contentView).mas_equalTo(10);
-                make.centerY.mas_equalTo(cell.contentView);
-                make.width.mas_equalTo(70);
-                make.height.mas_equalTo(70);
-            }];
+//            [self.avatarIamgeview mas_makeConstraints:^(MASConstraintMaker *make) {
+//                make.left.mas_equalTo(cell.contentView).mas_equalTo(10);
+//                make.centerY.mas_equalTo(cell.contentView);
+//                make.width.mas_equalTo(70);
+//                make.height.mas_equalTo(70);
+//            }];
+            
             
             self.nameL = [[UILabel alloc] init];
             [self.nameL setFont:[UIFont systemFontOfSize:15]];
@@ -150,11 +153,12 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
             }];
             
             self.starView = [[CWStarRateView alloc] initWithFrame:CGRectMake(LXScreenWidth - 20 - 100, 20, 80, 25) numberOfStars:5];
-            self.starView.scorePercent = self.siModel.overallMerit.integerValue;
+            self.starView.scorePercent = self.siModel.overallMerit.floatValue/5;
             self.starView.allowIncompleteStar = YES;
             self.starView.hasAnimation = NO;
+            self.starView.userInteractionEnabled = NO;
             [cell.contentView addSubview:self.starView];
-            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
         else if (indexPath.row == 1) {
@@ -180,7 +184,7 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
                 make.leading.mas_equalTo(myView.mas_trailing).mas_equalTo(5);
                 make.centerY.mas_equalTo(cell.contentView);
             }];
-            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
         else if (indexPath.row == 2) {
@@ -200,7 +204,7 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
             self.workingYearsL = [[UILabel alloc] init];
             [self.workingYearsL setFont:[UIFont systemFontOfSize:14]];
             [self.workingYearsL setTextColor:LXColorHex(0x4c4c4c)];
-            [self.workingYearsL setText:[NSString stringWithFormat:@"工作经验：%@", self.siModel.workYears]];
+            [self.workingYearsL setText:[NSString stringWithFormat:@"工作经验：%@年", self.siModel.workYears]];
             [cell.contentView addSubview:self.workingYearsL];
             [self.workingYearsL mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.mas_equalTo(btn1.mas_trailing).mas_equalTo(10);
@@ -220,13 +224,15 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
             self.identityCardL = [[UILabel alloc] init];
             [self.identityCardL setFont:[UIFont systemFontOfSize:14]];
             [self.identityCardL setTextColor:LXColorHex(0x4c4c4c)];
-            
-            NSString *cardString = [NSString stringWithFormat:@"%@", self.siModel.certNo];
-            NSString *subString = [cardString substringToIndex:cardString.length - 6];
-            NSString *tralingString = [cardString substringFromIndex:cardString.length - 2];
-            NSString *replaceString = [NSString stringWithFormat:@"%@%@%@", subString,@"****", tralingString];
-            [self.identityCardL setText:[NSString stringWithFormat:@"身份证号码：%@", replaceString]];
-            
+            if(self.siModel.certNo.length>0){
+                NSString *cardString = [NSString stringWithFormat:@"%@", self.siModel.certNo];
+                NSString *subString = [cardString substringToIndex:cardString.length - 6];
+                NSString *tralingString = [cardString substringFromIndex:cardString.length - 2];
+                NSString *replaceString = [NSString stringWithFormat:@"%@%@%@", subString,@"****", tralingString];
+                [self.identityCardL setText:[NSString stringWithFormat:@"身份证号码：%@", replaceString]];
+            }else{
+                [self.identityCardL setText:@"身份证号码："];
+            }
             [cell.contentView addSubview:self.identityCardL];
             [self.identityCardL mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.mas_equalTo(btn2.mas_trailing).mas_equalTo(10);
@@ -252,7 +258,7 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
                 make.leading.mas_equalTo(btn3.mas_trailing).mas_equalTo(10);
                 make.centerY.mas_equalTo(btn3);
             }];
-            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
     }
@@ -274,13 +280,13 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
             UILabel *baseInfo = [[UILabel alloc] init];
             [baseInfo setFont:[UIFont systemFontOfSize:15]];
             [baseInfo setTextColor:LXColorHex(0x4c4c4c)];
-            [baseInfo setText:[NSString stringWithFormat:@"用户评价（%lu）", (unsigned long)[self.dataSource[1] count]]];
+            [baseInfo setText:[NSString stringWithFormat:@"用户评价（%lu）", (unsigned long)[self.dataSource[1] count]-1]];
             [cell.contentView addSubview:baseInfo];
             [baseInfo mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.mas_equalTo(myView.mas_trailing).mas_equalTo(5);
                 make.centerY.mas_equalTo(cell.contentView);
             }];
-            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
         else {
@@ -294,7 +300,7 @@ static NSString *const LXStaffInfoVCTableViewCellID = @"LXStaffInfoVCTableViewCe
             }
             
             cell.commentModel = self.dataSource[1][indexPath.row];
-            
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
     }

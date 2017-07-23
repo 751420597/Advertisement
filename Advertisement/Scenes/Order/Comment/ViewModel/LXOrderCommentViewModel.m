@@ -15,6 +15,7 @@
     HHDataAPIConfiguration *config = [HHDataAPIConfiguration new];
     config.requestType = HHNetworkRequestTypePost;
     config.urlPath = OrderAPIComment;
+    config.requestParameters = parametersDict;
     
     return [super dispatchDataTaskWithConfiguration:config completionHandler:^(NSError *error, id result) {
         if (!error) {

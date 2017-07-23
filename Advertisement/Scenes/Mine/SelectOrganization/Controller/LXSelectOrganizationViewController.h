@@ -15,5 +15,6 @@ typedef void(^SelectOrganization)(LXOrganizaitonModel *);
 @interface LXSelectOrganizationViewController : LXRootTableViewController
 
 @property (nonatomic, copy) SelectOrganization selectOrganizationBlock;
-
+@property (nonatomic)BOOL enbleEidts;
+@property (nonatomic,strong)NSDictionary *params;
 @end

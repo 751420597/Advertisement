@@ -19,7 +19,7 @@ static NSString *const LXMessageVCTableViewCellID = @"LXMessageVCTableViewCellID
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *dataSource;
-
+@property (nonatomic, strong) UIButton *myConfirmBtn;
 @property (nonatomic, strong) LXMessageViewModel *viewModel;
 
 @end
@@ -31,20 +31,48 @@ static NSString *const LXMessageVCTableViewCellID = @"LXMessageVCTableViewCellID
     
     self.navigationItem.title = @"消息";
     [self.view setBackgroundColor:LXVCBackgroundColor];
-
+    UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
+    fixedSpaceBarButtonItem.width = -10;
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.myConfirmBtn];
+    barButtonItem.width = 10;
+    self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
     [self.view addSubview:self.tableView];
     
     [self fetchServerData];
 }
+- (UIButton *)myConfirmBtn {
+    if (!_myConfirmBtn) {
+        _myConfirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_myConfirmBtn setTitle:@"清空" forState:UIControlStateNormal];
+        [_myConfirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_myConfirmBtn.titleLabel setFont:[UIFont systemFontOfSize:16]];
+        [_myConfirmBtn setFrame:CGRectMake(0, 0, 40, 30)];
+        [_myConfirmBtn.titleLabel setTextAlignment:NSTextAlignmentRight];
+        [_myConfirmBtn addTarget:self action:@selector(myConfirmBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _myConfirmBtn;
+}
 
+-(void)myConfirmBtnClick{
+    [self.viewModel MessageDeleteAllWithParameters:nil completionHandler:^(NSError *error, id result) {
+        
+        int code = [result[@"code"] intValue];
+        if (code == 0) {
+            [self.dataSource removeAllObjects];
+            [self.tableView reloadData];
+            [SVProgressHUD showInfoWithStatus:@"消息已清空!"];
+        }
+        
+    }];
 
+}
 #pragma mark - Service
 
 - (void)fetchServerData {
     self.viewModel = [LXMessageViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     [self.viewModel getMessageListWithParameters:nil completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);
@@ -72,11 +100,11 @@ static NSString *const LXMessageVCTableViewCellID = @"LXMessageVCTableViewCellID
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+   return [self.dataSource count];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [self.dataSource count];
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -90,15 +118,46 @@ static NSString *const LXMessageVCTableViewCellID = @"LXMessageVCTableViewCellID
     
     return cell;
 }
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    self.viewModel = [LXMessageViewModel new];
+    LXMessageModel *oModel = self.dataSource[indexPath.row];
+    LXWeakSelf(self);
 
+    [self.viewModel MessageReadWithParameters:@{@"msgId":oModel.msgId} completionHandler:^(NSError *error, id result) {
+        LXStrongSelf(self);
+        int code = [result[@"code"] intValue];
+        if (code == 0) {
+            LXMessageVCTableViewCell *cell= [tableView cellForRowAtIndexPath:indexPath];
+            cell.redButton.hidden = YES;
+        }
+        
+    }];
+
+
+}
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.dataSource removeObjectAtIndex:indexPath.section];
+        [self deleteMessage:indexPath];
         
-        [self.tableView deleteSection:indexPath.section withRowAnimation:UITableViewRowAnimationFade];
     }
 }
-
+-(void)deleteMessage:(NSIndexPath *)inde{
+    LXMessageModel *oModel = self.dataSource[inde.row];
+    LXWeakSelf(self);
+    
+    [self.viewModel MessageDeleteWithParameters:@{@"msgId":oModel.msgId} completionHandler:^(NSError *error, id result) {
+        LXStrongSelf(self);
+        int code = [result[@"code"] intValue];
+        if (code == 0) {
+            [self.dataSource removeObjectAtIndex:inde.row];
+            
+            [self.tableView deleteRowAtIndexPath:inde withRowAnimation:UITableViewRowAnimationFade];
+        }
+        
+    }];
+   
+}
 
 #pragma mark - UITableViewDelegate
 

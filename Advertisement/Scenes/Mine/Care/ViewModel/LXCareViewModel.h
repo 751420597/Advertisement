@@ -12,5 +12,6 @@
 
 - (NSNumber *)getCareListWithParameters:(NSDictionary *)parametersDict
                       completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
-
+- (NSNumber *)getCareListByHomeWithParameters:(NSDictionary *)parametersDict
+                            completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 @end

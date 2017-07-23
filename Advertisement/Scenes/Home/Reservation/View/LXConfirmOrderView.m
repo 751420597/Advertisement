@@ -143,14 +143,14 @@
             make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
             make.centerY.mas_equalTo(cell.contentView);
         }];
-        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     else {
         LXConfirmViewTableViewCell *cell = [[NSBundle mainBundle] loadNibNamed:@"LXConfirmViewTableViewCell" owner:self options:nil].firstObject;
         
         cell.serviceModel = self.dataSource[indexPath.row];
-        
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     
@@ -189,7 +189,6 @@
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.showsHorizontalScrollIndicator = NO;
         _tableView.tableFooterView = [UIView new];
-        
         _tableView.rowHeight = 50;
     }
     return _tableView;
@@ -212,8 +211,16 @@
         if (self.detailB) {
             if (self.dataSource.count > 0) {
                 [self setFrame:CGRectMake(0, LXScreenHeight - LXNavigaitonBarHeight - 50 - (self.dataSource.count + 2) * 50, LXScreenWidth, 50 + (self.dataSource.count + 2) * 50)];
-                
-                [self.tableView setFrame:CGRectMake(0, 0, self.width, self.height - 50)];
+               
+                if(self.height+50+LXNavigaitonBarHeight>=LXScreenHeight){
+                    [self setFrame:CGRectMake(0, LXNavigaitonBarHeight-50-14, LXScreenWidth,LXScreenHeight-LXNavigaitonBarHeight)];
+                    [self.tableView setFrame:CGRectMake(0,0, self.width, LXScreenHeight-50-LXNavigaitonBarHeight)];
+                }else{
+                    
+                    [self.tableView setFrame:CGRectMake(0, 0, self.width, self.height - 50)];
+                    
+                }
+               
                 [self addSubview:self.tableView];
                 
                 self.detailB();

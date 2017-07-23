@@ -10,6 +10,6 @@
 
 @interface LXZhiFuBaoPayModel : NSObject
 
-@property (nonatomic, copy) NSString *signedString;
+@property (nonatomic, copy) NSString *body;
 
 @end

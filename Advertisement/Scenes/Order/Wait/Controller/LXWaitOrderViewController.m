@@ -36,7 +36,10 @@ static NSString *const LXWaitOrdetVCTableViewCellID = @"LXWaitOrdetVCTableViewCe
     }
     return self;
 }
-
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+     [self getServiceData];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -54,7 +57,7 @@ static NSString *const LXWaitOrdetVCTableViewCellID = @"LXWaitOrdetVCTableViewCe
     self.viewModel = [LXWaitOrderViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{@"orderState":@"0"};
     
@@ -62,11 +65,13 @@ static NSString *const LXWaitOrdetVCTableViewCellID = @"LXWaitOrdetVCTableViewCe
         LXStrongSelf(self);
         [SVProgressHUD dismiss];
         int code = [result[@"code"] intValue];
+        [self.dataSource removeAllObjects];
         if (code == 0) {
             NSArray *objectArray = result[@"userOrderList"];
             
             for (NSDictionary *objectDict in objectArray) {
                 LXOrderListModel *waitOrderModel = [LXOrderListModel modelWithDictionary:objectDict];
+                waitOrderModel.serveTime = [waitOrderModel.serveTime substringWithRange:NSMakeRange(0, waitOrderModel.serveTime.length-5)];
                 waitOrderModel.type = 0;
                 [self.dataSource addObject:waitOrderModel];
             }
@@ -117,6 +122,7 @@ static NSString *const LXWaitOrdetVCTableViewCellID = @"LXWaitOrdetVCTableViewCe
     LXOrderDetailViewController *odVC = [[LXOrderDetailViewController alloc] initWithType:LXReservationBottomTypeCancelOrder];
     odVC.orderId = orderListModel.ordId;
     odVC.hidesBottomBarWhenPushed = YES;
+    odVC.orderIdState = orderListModel.ordStatId;
     [self.navigationController pushViewController:odVC animated:YES];
 }
 
@@ -132,7 +138,12 @@ static NSString *const LXWaitOrdetVCTableViewCellID = @"LXWaitOrdetVCTableViewCe
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, LXScreenWidth, LXScreenHeight - LXNavigaitonBarHeight - LXTabbarBarHeight) style:UITableViewStylePlain];
+        if(_isHome){
+            _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, LXScreenWidth, LXScreenHeight - LXNavigaitonBarHeight) style:UITableViewStylePlain];
+        }else{
+            _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, LXScreenWidth, LXScreenHeight - LXNavigaitonBarHeight - LXTabbarBarHeight-44) style:UITableViewStylePlain];
+        }
+        
         _tableView.dataSource = self;
         _tableView.delegate = self;
         _tableView.showsVerticalScrollIndicator = NO;

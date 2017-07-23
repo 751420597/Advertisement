@@ -28,7 +28,20 @@
     HHDataAPIConfiguration *config = [HHDataAPIConfiguration new];
     config.requestType = HHNetworkRequestTypePost;
     config.urlPath = MineAPIBarthelLevel;
-    
+    config.requestParameters = parametersDict;
+    return [super dispatchDataTaskWithConfiguration:config completionHandler:^(NSError *error, id result) {
+        if (!error) {
+        }
+        completionHandler ? completionHandler(error, result) : nil;
+    }];
+}
+
+- (NSNumber *)getCareDetailBarthelLevelWithParameters:(NSDictionary *)parametersDict
+                          completionHandler:(HHNetworkTaskCompletionHander)completionHandler {
+    HHDataAPIConfiguration *config = [HHDataAPIConfiguration new];
+    config.requestType = HHNetworkRequestTypePost;
+    config.urlPath = careDetailBartheLevel;
+    config.requestParameters = parametersDict;
     return [super dispatchDataTaskWithConfiguration:config completionHandler:^(NSError *error, id result) {
         if (!error) {
         }

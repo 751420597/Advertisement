@@ -19,5 +19,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *waitOrder;
 @property (weak, nonatomic) IBOutlet UILabel *orderTime;
 @property (weak, nonatomic) IBOutlet UILabel *orderSum;
+@property (weak, nonatomic) IBOutlet UILabel *serveTimeLB;
 
 @end

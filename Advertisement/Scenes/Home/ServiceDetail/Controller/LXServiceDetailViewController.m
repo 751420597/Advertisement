@@ -51,7 +51,7 @@ static CGFloat LXServiceDetailBannerHeight = 175;
     self.viewModel = [LXServiceDetailViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{ @"goodsId":self.goodsId};
     
@@ -62,12 +62,14 @@ static CGFloat LXServiceDetailBannerHeight = 175;
         if (code == 0) {
             [self.dataSource removeAllObjects];
             NSMutableArray *section0 = [NSMutableArray array];
+            NSString *goodsPrice =result[@"goodsPrice"];
+            goodsPrice= [goodsPrice substringWithRange:NSMakeRange(0, goodsPrice.length-2)];
             [section0 addObject:@"服务项目"];
             [section0 addObject:result[@"goodsName"]];
             
             NSMutableArray *seciton1 = [NSMutableArray array];
             [seciton1 addObject:@"服务价格"];
-            [seciton1 addObject:[NSString stringWithFormat:@"￥：%@元/次", result[@"goodsPrice"]]];
+            [seciton1 addObject:[NSString stringWithFormat:@"￥：%@元/次", goodsPrice  ]];
             
             NSMutableArray *section2 = [NSMutableArray array];
             [section2 addObject:@"服务内容"];

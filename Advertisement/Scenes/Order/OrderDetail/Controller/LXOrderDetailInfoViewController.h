@@ -23,7 +23,8 @@ typedef enum : NSUInteger {
 @interface LXOrderDetailInfoViewController : LXRootViewController <ZJScrollPageViewChildVcDelegate>
 
 @property (nonatomic, copy) NSString *orderId;
-
+@property (nonatomic, copy) NSString *orderIdState;
+@property (nonatomic, copy) void (^updataData)();
 - (instancetype)initWithBottomType:(LXReservationBottomType)bottomeType;
 
 @end

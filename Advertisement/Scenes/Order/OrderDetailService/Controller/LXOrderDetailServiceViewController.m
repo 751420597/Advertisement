@@ -53,7 +53,7 @@ static CGFloat LXOrderDetailServiceTableViewRowHeight = 50;
     self.viewModel = [LXOrderDetailServiceViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{ @"orderId":self.orderId };
     
@@ -66,6 +66,7 @@ static CGFloat LXOrderDetailServiceTableViewRowHeight = 50;
             
             for (NSDictionary *ojectDict in objectArray) {
                 LXOrderDetailSeriviceModel *tempModel = [LXOrderDetailSeriviceModel modelWithDictionary:ojectDict];
+                tempModel.careItemPrice = [tempModel.careItemPrice substringWithRange:NSMakeRange(0, tempModel.careItemPrice.length-2)];
                 [self.dataSource addObject:tempModel];
             }
             
@@ -103,7 +104,10 @@ static CGFloat LXOrderDetailServiceTableViewRowHeight = 50;
         cell.selectionStyle = UITableViewCellSeparatorStyleNone;
         [self addCustomeLineWithArray:[self.dataSource copy] indexPath:indexPath width:LXOrderDetailServiceTableViewWidth height:LXOrderDetailServiceTableViewRowHeight color:LXCellBorderColor cell:cell];
     }
-    
+    if(_isDetail){
+        cell.arrowBtn.alpha = 0;
+        cell.selectBtn.alpha = 0;
+    }
     cell.orderDetailSeriviceModel = self.dataSource[indexPath.row];
     
     return cell;

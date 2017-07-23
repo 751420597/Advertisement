@@ -69,27 +69,54 @@ static CGFloat LXCareTableViewRowHeight = 70;
     self.viewModel = [LXCareViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
-    
-    [self.viewModel getCareListWithParameters:nil completionHandler:^(NSError *error, id result) {
-        LXStrongSelf(self);
-        [SVProgressHUD dismiss];
-        int code = [result[@"code"] intValue];
-        self.dataSource = [NSMutableArray array];
-        if (code == 0) {
-            NSArray *tempArray = result[@"careObjList"];
-            
-            for (NSDictionary *objectDict in tempArray) {
-                LXCareModel *careModel = [LXCareModel modelWithDictionary:objectDict];
-                [self.dataSource addObject:careModel];
+    [SVProgressHUD showWithStatus:@"加载中……"];
+    if(self.isAddCare){
+        [self.viewModel getCareListWithParameters:nil completionHandler:^(NSError *error, id result) {
+            LXStrongSelf(self);
+            [SVProgressHUD dismiss];
+            int code = [result[@"code"] intValue];
+            self.dataSource = [NSMutableArray array];
+            if (code == 0) {
+                NSArray *tempArray = result[@"careObjList"];
+                
+                for (NSDictionary *objectDict in tempArray) {
+                    LXCareModel *careModel = [LXCareModel modelWithDictionary:objectDict];
+                    if(careModel.checkTime.length>0){
+                    careModel.checkTime=[careModel.checkTime  substringWithRange:NSMakeRange(0, careModel.checkTime.length-2)];
+                    }
+                    [self.dataSource addObject:careModel];
+                }
+                
+                [self.tableView reloadData];
             }
-           
-            [self.tableView reloadData];
-        }
-        else {
-            [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
-        }
-    }];
+            else {
+                [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
+            }
+        }];
+
+    }else{
+        [self.viewModel getCareListByHomeWithParameters:nil completionHandler:^(NSError *error, id result) {
+            LXStrongSelf(self);
+            [SVProgressHUD dismiss];
+            int code = [result[@"code"] intValue];
+            self.dataSource = [NSMutableArray array];
+            if (code == 0) {
+                NSArray *tempArray = result[@"careObjList"];
+                
+                for (NSDictionary *objectDict in tempArray) {
+                    LXCareModel *careModel = [LXCareModel modelWithDictionary:objectDict];
+                    careModel.checkTime=[careModel.checkTime  substringWithRange:NSMakeRange(0, careModel.checkTime.length-2)];
+                    [self.dataSource addObject:careModel];
+                }
+                
+                [self.tableView reloadData];
+            }
+            else {
+                [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
+            }
+        }];
+
+    }
 }
 
 
@@ -97,7 +124,11 @@ static CGFloat LXCareTableViewRowHeight = 70;
 
 - (void)setUpTable {
     [self setUpTableViewWithFrame:CGRectMake(LXCareTableViewOriginX, LXCareTableViewOriginY, LXCareTableViewWidth,LXCareTableViewHeight) style:UITableViewStylePlain backgroundColor:LXVCBackgroundColor];
-    self.tableView.rowHeight = LXCareTableViewRowHeight;
+    if(self.isOrder){
+        self.tableView.rowHeight = 50;
+    }else{
+        self.tableView.rowHeight = LXCareTableViewRowHeight;
+    }
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
 //    NSDictionary *dict1 = @{@"小伙子":@"审核中"};
@@ -122,23 +153,52 @@ static CGFloat LXCareTableViewRowHeight = 70;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LXCareVCTableCell *cell = [tableView dequeueReusableCellWithIdentifier:LXCareVCTableCellID];
-    
-    if (!cell) {
-        cell = [[[NSBundle mainBundle] loadNibNamed:@"LXCareVCTableCell" owner:self options:nil] firstObject];
-        cell.selectionStyle = UITableViewCellSeparatorStyleNone;
-        [self addCustomeLineWithArray:[self.dataSource copy] indexPath:indexPath width:LXCareTableViewWidth height:LXCareTableViewRowHeight color:LXCellBorderColor cell:cell];
+    if(self.isOrder){
+        static NSString* indent = @"indent";
+        UITableViewCell *cell_1 = [tableView dequeueReusableCellWithIdentifier:indent];
+        
+        if (!cell_1) {
+            cell_1 = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:indent];
+            cell_1.selectionStyle = UITableViewCellSeparatorStyleNone;
+            [self addCustomeLineWithArray:[self.dataSource copy] indexPath:indexPath width:LXCareTableViewWidth height:50 color:LXCellBorderColor cell:cell_1];
+            UILabel *nameL = [[UILabel alloc]init];
+            nameL.font =[UIFont systemFontOfSize:15.f];
+            nameL.tag = 100;
+            [cell_1.contentView addSubview:nameL];
+        }
+        UILabel *nameL =[cell_1.contentView viewWithTag:100];
+        [nameL mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(cell_1);
+            make.leading.equalTo(cell_1).offset(15);
+        }];
+        LXCareModel *careModel = self.dataSource[indexPath.row];
+        
+        nameL.text = careModel.careObjName;
+       
+        
+        return cell_1;
+ 
+    }else{
+        LXCareVCTableCell *cell = [tableView dequeueReusableCellWithIdentifier:LXCareVCTableCellID];
+        
+        if (!cell) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"LXCareVCTableCell" owner:self options:nil] firstObject];
+            cell.selectionStyle = UITableViewCellSeparatorStyleNone;
+            [self addCustomeLineWithArray:[self.dataSource copy] indexPath:indexPath width:LXCareTableViewWidth height:LXCareTableViewRowHeight color:LXCellBorderColor cell:cell];
+        }
+        
+        LXCareModel *careModel = self.dataSource[indexPath.row];
+        
+        cell.nameL.text = careModel.careObjName;
+        cell.expireTimeL.text = careModel.checkTime;
+        cell.stateL.text = careModel.checkStateName;
+        
+        [self configureCellWithTableViewCell:cell value:careModel.checkStateName];
+        
+        return cell;
+ 
     }
-    
-    LXCareModel *careModel = self.dataSource[indexPath.row];
-    
-    cell.nameL.text = careModel.careObjName;
-    cell.expireTimeL.text = careModel.checkTime;
-    cell.stateL.text = careModel.checkStateName;
-    
-    [self configureCellWithTableViewCell:cell value:careModel.checkStateName];
-    
-    return cell;
+    return nil;
 }
 
 
@@ -180,14 +240,33 @@ static CGFloat LXCareTableViewRowHeight = 70;
         [self.navigationController popViewControllerAnimated:YES];
     }
     else {
-        if ([careModel.checkStateName isEqualToString:@"未通过"]) {
-            LXAddCareViewController *acVC = [LXAddCareViewController new];
+        if ([careModel.checkStateId isEqualToString:@"3"]||[careModel.checkStateId isEqualToString:@"6"]||[careModel.checkStateId isEqualToString:@"8"]) {
+            LXCareDetailViewController *acVC = [LXCareDetailViewController new];
+            LXCareModel *careModel= self.dataSource[indexPath.row];
+            acVC.checkStateId = careModel.checkStateId;
             acVC.careId = careModel.careObjId;
+            acVC.title = careModel.careObjName;
+            
+            acVC.isPass = NO;
+            acVC.reloadBlock = ^{
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self getServiceData];
+                });
+            };
             [self.navigationController pushViewController:acVC animated:YES];
         }
         else {
             LXCareDetailViewController *cdVC = [LXCareDetailViewController new];
             cdVC.careId = careModel.careObjId;
+            cdVC.title = careModel.careObjName;
+            cdVC.isPass = YES;
+            LXCareModel *careModel= self.dataSource[indexPath.row];
+            cdVC.checkStateId = careModel.checkStateId;
+            cdVC.reloadBlock = ^{
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self getServiceData];
+                });
+            };
             [self.navigationController pushViewController:cdVC animated:YES];
         }
     }
@@ -199,7 +278,10 @@ static CGFloat LXCareTableViewRowHeight = 70;
 - (void)addBtnClick {
     LXAddCareViewController *acVC = [LXAddCareViewController new];
     acVC.reloadBlock = ^{
-         [self getServiceData];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self getServiceData];
+        });
+        
     };
     [self.navigationController pushViewController:acVC animated:YES];
 }

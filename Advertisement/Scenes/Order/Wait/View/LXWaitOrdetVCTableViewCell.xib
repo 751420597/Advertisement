@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -86,17 +85,26 @@
                                         </constraints>
                                         <state key="normal" backgroundImage="Organization_arrow"/>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="服务时间" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0PS-Jw-xtS">
+                                        <rect key="frame" x="225" y="28" width="56" height="20"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstItem="0PS-Jw-xtS" firstAttribute="top" secondItem="N9W-9y-KXq" secondAttribute="top" id="1px-Oi-uUM"/>
                                     <constraint firstAttribute="bottom" secondItem="liO-NI-QlL" secondAttribute="bottom" constant="8" id="3ld-3y-WEE"/>
                                     <constraint firstItem="N9W-9y-KXq" firstAttribute="height" secondItem="cvR-fI-dtS" secondAttribute="height" id="8uO-SV-51e"/>
                                     <constraint firstItem="cvR-fI-dtS" firstAttribute="leading" secondItem="Udp-UK-AFC" secondAttribute="leading" constant="8" id="GBt-Mz-SXg"/>
                                     <constraint firstAttribute="trailing" secondItem="HbR-zC-yCT" secondAttribute="trailing" constant="15" id="Kad-d5-fmf"/>
                                     <constraint firstItem="liO-NI-QlL" firstAttribute="top" secondItem="Udp-UK-AFC" secondAttribute="top" constant="8" id="Qk9-3p-bNt"/>
+                                    <constraint firstItem="0PS-Jw-xtS" firstAttribute="bottom" secondItem="N9W-9y-KXq" secondAttribute="bottom" id="RwU-Sx-qN3"/>
                                     <constraint firstAttribute="bottom" secondItem="N9W-9y-KXq" secondAttribute="bottom" constant="3" id="U2Q-xt-nlt"/>
                                     <constraint firstAttribute="trailing" secondItem="liO-NI-QlL" secondAttribute="trailing" constant="50" id="YSG-hZ-KD7"/>
                                     <constraint firstItem="N9W-9y-KXq" firstAttribute="top" secondItem="cvR-fI-dtS" secondAttribute="bottom" constant="5" id="fFY-F7-Ckm"/>
+                                    <constraint firstItem="liO-NI-QlL" firstAttribute="leading" secondItem="0PS-Jw-xtS" secondAttribute="trailing" constant="8" id="gFj-4G-mrL"/>
                                     <constraint firstItem="HbR-zC-yCT" firstAttribute="centerY" secondItem="Udp-UK-AFC" secondAttribute="centerY" id="kyw-2A-bQY"/>
                                     <constraint firstItem="N9W-9y-KXq" firstAttribute="leading" secondItem="Udp-UK-AFC" secondAttribute="leading" constant="8" id="qFU-tz-Gy3"/>
                                     <constraint firstItem="cvR-fI-dtS" firstAttribute="top" secondItem="Udp-UK-AFC" secondAttribute="top" constant="3" id="tGd-4n-09k"/>
@@ -132,9 +140,10 @@
                 <outlet property="name" destination="JSe-4s-zaP" id="DHk-rQ-OyD"/>
                 <outlet property="orderSum" destination="N9W-9y-KXq" id="SQH-xd-iHT"/>
                 <outlet property="orderTime" destination="cvR-fI-dtS" id="pYK-NB-slF"/>
+                <outlet property="serveTimeLB" destination="0PS-Jw-xtS" id="h7J-yL-Jpv"/>
                 <outlet property="waitOrder" destination="N5U-6H-qzS" id="hyO-2I-DEM"/>
             </connections>
-            <point key="canvasLocation" x="-489.5" y="-34"/>
+            <point key="canvasLocation" x="5.5" y="24"/>
         </tableViewCell>
     </objects>
     <resources>

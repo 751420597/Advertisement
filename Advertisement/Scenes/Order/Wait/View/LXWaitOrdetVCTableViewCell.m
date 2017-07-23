@@ -30,23 +30,35 @@
 - (void)setOrderListModel:(LXOrderListModel *)orderListModel {
     _orderListModel = orderListModel;
     
-    [self.name setText:orderListModel.tmUserName];
+    if(orderListModel.tmUserName.length>0){
+        [self.name setText:orderListModel.tmUserName];
+    }else{
+        [self.name setText:orderListModel.tmUserCode];
+    }
+    
     
     [self.orderTime setText:[NSString stringWithFormat:@"下单时间：%@", orderListModel.crtTime]];
     
     [self.orderSum setText:[NSString stringWithFormat:@"服务金额：%@", orderListModel.ordAmt]];
+     [self.serveTimeLB setText:[NSString stringWithFormat:@"服务时间：%@", orderListModel.serveTime]];
     
-    if (orderListModel.type == 0) {
+    if ([orderListModel.ordStatId isEqualToString:@"1"]) {
         [self.waitOrder setText:@"待接单"];
     }
-    else if (orderListModel.type == 1) {
+    else if ([orderListModel.ordStatId isEqualToString:@"2"]) {
         [self.waitOrder setText:@"待服务"];
     }
-    else if (orderListModel.type == 2) {
-        [self.waitOrder setText:@"已完成"];
+    else if ([orderListModel.ordStatId isEqualToString:@"3"]) {
+        [self.waitOrder setText:@"服务中"];
     }
-    else if (orderListModel.type == 3) {
-        [self.waitOrder setText:@"已取消"];
+    else if ([orderListModel.ordStatId isEqualToString:@"4"]) {
+       [self.waitOrder setText:@"待支付"];
+    }else if ([orderListModel.ordStatId isEqualToString:@"5"]) {
+        [self.waitOrder setText:@"待评价"];
+    }else if ([orderListModel.ordStatId isEqualToString:@"6"]) {
+        [self.waitOrder setText:@"已评价"];
+    }else{
+         [self.waitOrder setText:@"已取消"];
     }
 }
 

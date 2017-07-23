@@ -12,7 +12,7 @@
 
 #import "LXOrderCommentViewModel.h"
 
-@interface LXOrderCommentViewController ()
+@interface LXOrderCommentViewController ()<UITextViewDelegate>
 
 @property (nonatomic, strong) UIButton *addBtn;
 
@@ -44,8 +44,20 @@
     self.starView.scorePercent = 1;
     self.starView.allowIncompleteStar = YES;
     self.starView.hasAnimation = NO;
+    
+    self.textView.text = @"您觉得服务周到吗?";
+    self.textView.delegate = self;
 }
-
+-(void)textViewDidBeginEditing:(UITextView *)textView{
+    if([textView.text isEqualToString:@"您觉得服务周到吗?"]){
+        textView.text=@"";
+    }
+}
+-(void)textViewDidEndEditing:(UITextView *)textView{
+    if(textView.text.length<=0){
+        self.textView.text = @"您觉得服务周到吗?";
+    }
+}
 
 #pragma mark - Action
 
@@ -53,7 +65,7 @@
     self.viewModel = [LXOrderCommentViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
 //    orderId	订单id	必填
 //    userId	用户id	必填
@@ -61,19 +73,20 @@
 //    starLevel	评价星级	必填
 //    evaluateContent	评价内容	必填
 //    isAnon	是否匿名-- 1 是， 0 否	必填
-
-    
+    NSString *starLevel = [NSString stringWithFormat:@"%.1f",self.starView.scorePercent*5];
+    NSString *anon = [NSString stringWithFormat:@"%d",_anonymityBtn.isSelected];
     NSDictionary *dictP = @{ 
-                             @"userCode":@"",
-                             @"starLevel":@"",
-                             @"evaluateContent":@"",
-                             @"isAnon":@""};
+                             @"orderId":self.orderId,
+                             @"starLevel":starLevel,
+                             @"evaluateContent":_textView.text,
+                             @"isAnon":anon};
     
     [self.viewModel updateCommentWithParameters:dictP completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);
         [SVProgressHUD dismiss];
         int code = [result[@"code"] intValue];
         if (code == 0) {
+            [SVProgressHUD showInfoWithStatus:@"评价已提交"];
             [self.navigationController popViewControllerAnimated:YES];
         }
         else {

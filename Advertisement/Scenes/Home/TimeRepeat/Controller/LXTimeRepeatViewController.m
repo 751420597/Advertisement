@@ -47,10 +47,10 @@ static NSString *const LXTimeRepeatVCTableViewCellID = @"LXTimeRepeatVCTableView
     [self.tableView setSeparatorColor:LXColorHex(0xf6f6f6)];
     [self.tableView setRowHeight:50];
     
+    [self.dataSource addObject:@"不重复"];
     [self.dataSource addObject:@"一周"];
     [self.dataSource addObject:@"两周"];
     [self.dataSource addObject:@"三周"];
-    [self.dataSource addObject:@"四周"];
     
     [self.view addSubview:self.tableView];
 }
@@ -90,8 +90,8 @@ static NSString *const LXTimeRepeatVCTableViewCellID = @"LXTimeRepeatVCTableView
     else if ([tempString isEqualToString:@"三周"]) {
         self.repeat = 3;
     }
-    else if ([tempString isEqualToString:@"四周"]) {
-        self.repeat = 4;
+    else if ([tempString isEqualToString:@"不重复"]) {
+        self.repeat = 0;
     }
 }
 

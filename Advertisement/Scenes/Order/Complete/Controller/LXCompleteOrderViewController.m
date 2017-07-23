@@ -27,7 +27,10 @@ static NSString *const LXCompleteOrdetVCTableViewCellID = @"LXCompleteOrdetVCTab
 @end
 
 @implementation LXCompleteOrderViewController
-
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self getServiceData];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -45,19 +48,21 @@ static NSString *const LXCompleteOrdetVCTableViewCellID = @"LXCompleteOrdetVCTab
     self.viewModel = [LXWaitOrderViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{@"orderState":@"2"};
     
     [self.viewModel getOrderListWithParameters:dictP completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);
         [SVProgressHUD dismiss];
+        [self.dataSource removeAllObjects];
         int code = [result[@"code"] intValue];
         if (code == 0) {
             NSArray *objectArray = result[@"userOrderList"];
             
             for (NSDictionary *objectDict in objectArray) {
                 LXOrderListModel *waitOrderModel = [LXOrderListModel modelWithDictionary:objectDict];
+                waitOrderModel.serveTime = [waitOrderModel.serveTime substringWithRange:NSMakeRange(0, waitOrderModel.serveTime.length-5)];
                 waitOrderModel.type = 2;
                 [self.dataSource addObject:waitOrderModel];
             }
@@ -101,6 +106,7 @@ static NSString *const LXCompleteOrdetVCTableViewCellID = @"LXCompleteOrdetVCTab
     odVC.hidesBottomBarWhenPushed = YES;
     LXOrderListModel *waitOrderModel =self.dataSource[indexPath.row];
     odVC.orderId =waitOrderModel.ordId;
+    odVC.orderIdState = waitOrderModel.ordStatId;
     [self.navigationController pushViewController:odVC animated:YES];
 }
 
@@ -116,7 +122,7 @@ static NSString *const LXCompleteOrdetVCTableViewCellID = @"LXCompleteOrdetVCTab
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, LXScreenWidth, LXScreenHeight - LXNavigaitonBarHeight - LXTabbarBarHeight) style:UITableViewStylePlain];
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, LXScreenWidth, LXScreenHeight - LXNavigaitonBarHeight - LXTabbarBarHeight-44) style:UITableViewStylePlain];
         _tableView.dataSource = self;
         _tableView.delegate = self;
         _tableView.showsVerticalScrollIndicator = NO;

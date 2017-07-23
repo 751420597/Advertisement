@@ -25,14 +25,14 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6Lm-kd-xYl">
-                        <rect key="frame" x="78" y="13.5" width="232" height="17"/>
+                        <rect key="frame" x="98" y="13.5" width="212" height="17"/>
                         <nil key="textColor"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits"/>
                     </textField>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="6Lm-kd-xYl" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="70" id="JFi-Ht-LCe"/>
+                    <constraint firstItem="6Lm-kd-xYl" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="90" id="JFi-Ht-LCe"/>
                     <constraint firstItem="6Lm-kd-xYl" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="RPj-vY-Obr"/>
                     <constraint firstItem="hkl-gq-9Md" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="cH7-76-soo"/>
                     <constraint firstAttribute="trailing" secondItem="6Lm-kd-xYl" secondAttribute="trailing" constant="10" id="erN-BU-sc1"/>

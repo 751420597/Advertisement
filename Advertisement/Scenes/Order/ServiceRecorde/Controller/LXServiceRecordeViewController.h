@@ -14,6 +14,7 @@
 @interface LXServiceRecordeViewController : LXRootTableViewController <ZJScrollPageViewChildVcDelegate>
 
 @property (nonatomic, copy) NSString *orderId;
+@property (nonatomic, copy) NSString *orderIdState;
 - (instancetype)initWithBottomType:(LXReservationBottomType)bottomeType;
 
 @end

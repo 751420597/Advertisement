@@ -8,10 +8,12 @@
 
 #import "LXRootTableViewController.h"
 
-typedef void(^BarthelConfirm)(NSDictionary *itemArray, NSString *barthelLevel);
+typedef void(^BarthelConfirm)(NSDictionary *itemArray, long barthel);
 
 @interface LXBarthelViewController : LXRootTableViewController
 
 @property (nonatomic, copy) BarthelConfirm barthelBlock;
-
+@property (nonatomic,strong)NSMutableArray *bartherLevelArr;
+@property (nonatomic)BOOL isDetail;
+@property (nonatomic)BOOL enbleEidts;
 @end

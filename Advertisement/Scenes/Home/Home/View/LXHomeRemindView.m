@@ -26,7 +26,7 @@
         self.layer.borderWidth = 0.5f;
         self.layer.borderColor = [UIColor lightGrayColor].CGColor;
         
-//        [self setBackgroundColor:[UIColor lightGrayColor]];
+        [self setBackgroundColor:[UIColor whiteColor]];
 //        [self setAlpha:0.1];
         
         self.remindString = string;

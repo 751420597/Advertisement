@@ -13,4 +13,10 @@
 - (NSNumber *)getMessageListWithParameters:(NSDictionary *)parametersDict
                         completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 
+- (NSNumber *)MessageReadWithParameters:(NSDictionary *)parametersDict
+                      completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
+- (NSNumber *)MessageDeleteWithParameters:(NSDictionary *)parametersDict
+                        completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
+- (NSNumber *)MessageDeleteAllWithParameters:(NSDictionary *)parametersDict
+                           completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 @end

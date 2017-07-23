@@ -11,5 +11,5 @@
 #import "ZJScrollPageViewDelegate.h"
 
 @interface LXWaitOrderViewController : LXRootViewController <ZJScrollPageViewChildVcDelegate>
-
+@property(nonatomic,assign)BOOL isHome;
 @end

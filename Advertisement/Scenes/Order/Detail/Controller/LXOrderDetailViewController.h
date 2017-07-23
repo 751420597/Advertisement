@@ -13,6 +13,7 @@
 @interface LXOrderDetailViewController : LXRootViewController
 
 @property (nonatomic, copy) NSString *orderId;
+@property (nonatomic, copy) NSString *orderIdState;
 - (instancetype)initWithType:(LXReservationBottomType)bottomeType;
 
 @end

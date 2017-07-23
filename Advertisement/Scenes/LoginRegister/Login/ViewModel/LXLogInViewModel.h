@@ -19,5 +19,7 @@
 
 - (NSNumber *)logInWithWithParameters:(NSDictionary *)parametersDict
                     completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
+- (NSNumber *)logOutWithWithParameters:(NSDictionary *)parametersDict
+                    completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 
 @end

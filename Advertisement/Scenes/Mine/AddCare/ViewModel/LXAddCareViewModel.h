@@ -13,4 +13,6 @@
 - (NSNumber *)addCareWithParameters:(NSDictionary *)parametersDict
                   completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 
+- (NSNumber *)upDataCareWithParameters:(NSDictionary *)parametersDict
+                     completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 @end

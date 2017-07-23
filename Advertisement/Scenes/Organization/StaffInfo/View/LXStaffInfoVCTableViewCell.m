@@ -33,7 +33,7 @@
     NSString *replaceString = [NSString stringWithFormat:@"%@%@%@", leadString, @"****", trailingString];
     [self.phoneNumber setText:replaceString];
     
-    self.starView.scorePercent = commentModel.starLvlAll.integerValue;
+    self.starView.scorePercent = commentModel.starLvlAll.floatValue/5;
     
     self.statisfyL.text = commentModel.evContent;
     

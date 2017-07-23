@@ -37,7 +37,10 @@
     self.weekLabel.font = [UIFont systemFontOfSize:17];
     self.weekLabel.textAlignment = NSTextAlignmentCenter;
     [self.weekLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.equalTo(self);
+//        make.center.equalTo(self);
+        make.centerX.mas_equalTo(self);
+        make.centerY.mas_equalTo(self).mas_offset(-13);
+        
     }];
     
     self.bottomLine = [UIImageView new];

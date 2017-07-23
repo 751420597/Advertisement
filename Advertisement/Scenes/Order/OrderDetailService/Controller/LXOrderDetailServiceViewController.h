@@ -11,5 +11,5 @@
 @interface LXOrderDetailServiceViewController : LXRootTableViewController
 
 @property (nonatomic, copy) NSString *orderId;
-
+@property (nonatomic , assign)BOOL isDetail;
 @end

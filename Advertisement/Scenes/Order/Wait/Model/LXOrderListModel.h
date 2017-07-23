@@ -18,5 +18,6 @@
 @property (nonatomic, copy) NSString *crtTime;
 @property (nonatomic, copy) NSString *ordStatId;
 @property (nonatomic, copy) NSString *ordAmt;
-
+@property (nonatomic, copy) NSString *tmUserCode;
+@property (nonatomic, copy) NSString *serveTime;
 @end

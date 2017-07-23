@@ -15,5 +15,6 @@
 
 - (NSNumber *)getBarthelLevelWithParameters:(NSDictionary *)parametersDict
                          completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
-
+- (NSNumber *)getCareDetailBarthelLevelWithParameters:(NSDictionary *)parametersDict
+                                    completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 @end

@@ -45,6 +45,7 @@
     [super viewWillAppear:animated];
     
     self.scrollPageView.hidden = NO;
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(payOK) name:@"payOK" object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -76,8 +77,12 @@
     
     // 添加
     [self.view addSubview:self.scrollPageView];
+   
 }
-
+-(void)payOK{
+     [self.scrollPageView setSelectedIndex:2 animated:YES];
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
 
 #pragma mar - ZJScrollPageViewDelegate
 

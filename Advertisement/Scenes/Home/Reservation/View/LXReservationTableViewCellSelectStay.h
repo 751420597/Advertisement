@@ -15,5 +15,5 @@
 @property (weak, nonatomic) IBOutlet UILabel *trailingL;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *leadingLConstrait;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *arrowBtnTrailingConstraint;
-
+-(void)selectBt:(BOOL)isSelect;
 @end

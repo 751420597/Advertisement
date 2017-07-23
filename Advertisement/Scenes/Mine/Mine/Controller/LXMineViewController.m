@@ -68,7 +68,7 @@ static NSString *const LXMineViewControllerTableViewID = @"LXMineViewControllerT
     self.viewModel = [LXMineViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     [self.viewModel getMineWithParameters:nil completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);
@@ -201,6 +201,8 @@ static NSString *const LXMineViewControllerTableViewID = @"LXMineViewControllerT
         [self.imageBtn setBackgroundImage:[UIImage imageNamed:@"Mine_male"] forState:UIControlStateNormal];
         [self.imageBtn setFrame:CGRectMake(0, 0, LXRate(70), LXRate(70))];
         [self.imageBtn setCenter:_topView.center];
+        self.imageBtn.layer.cornerRadius =_imageBtn.frame.size.width/2;
+        self.imageBtn.layer.masksToBounds = YES;
         [self.imageBtn addTarget:self action:@selector(avatarImageViewClick) forControlEvents:UIControlEventTouchUpInside];
         [_topView addSubview:self.imageBtn];
         

@@ -40,9 +40,9 @@ static NSString *const LXSelectOrganizationVCTableViewCellID = @"LXBarthelVCTabl
     self.viewModel = [LXSelectOrganizationViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
-    [self.viewModel getSelectOrganizaitonListWithParameters:nil completionHandler:^(NSError *error, id result) {
+    [self.viewModel getSelectOrganizaitonListWithParameters:_params completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);
         [SVProgressHUD dismiss];
         int code = [result[@"code"] intValue];
@@ -69,7 +69,7 @@ static NSString *const LXSelectOrganizationVCTableViewCellID = @"LXBarthelVCTabl
     [self setUpTableViewWithFrame:CGRectMake(10, 10, LXScreenWidth - 20, LXScreenHeight - 10 - LXNavigaitonBarHeight) style:UITableViewStylePlain backgroundColor:LXVCBackgroundColor];
     self.tableView.rowHeight = 68;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
+    self.tableView.userInteractionEnabled = _enbleEidts;
     [self.view addSubview:self.tableView];
 }
 
@@ -99,8 +99,10 @@ static NSString *const LXSelectOrganizationVCTableViewCellID = @"LXBarthelVCTabl
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     LXOrganizaitonModel *organizationModel = self.dataSource[indexPath.row];
+    if(self.selectOrganizationBlock){
+        self.selectOrganizationBlock(organizationModel);
+    }
     
-    self.selectOrganizationBlock(organizationModel);
     
     [self.navigationController popViewControllerAnimated:YES];
 }

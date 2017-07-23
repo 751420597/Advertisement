@@ -21,7 +21,7 @@
 @property (nonatomic, copy) NSString *barthelScore;
 @property (nonatomic, copy) NSString *ifPass;
 @property (nonatomic, copy) NSString *siCardNo;
-
+@property (nonatomic, copy) NSString *barthelTotScore;
 
 @property (nonatomic, copy) NSString *acNo;
 @property (nonatomic, copy) NSString *computerNo;
@@ -36,4 +36,15 @@
 @property (nonatomic, copy) NSString *barthelDescription;
 @property (nonatomic, copy) NSString *organizationDescription;
 
+@property (nonatomic, copy) NSString *livingCare;
+@property (nonatomic, copy) NSString *serviceType;
+@property (nonatomic, copy) NSString *presentAddress;
+@property (nonatomic, copy) NSString *careContactPhone;
+@property (nonatomic, copy) NSString *mcName;
+@property (nonatomic, copy) NSString *mcRela;
+@property (nonatomic, copy) NSString *mcPhone;
+@property (nonatomic, copy) NSString *msAddress;
+@property (nonatomic, copy) NSString *dmTypeId;
+@property (nonatomic, copy) NSString *longitude;
+@property (nonatomic, copy) NSString *atitude;
 @end

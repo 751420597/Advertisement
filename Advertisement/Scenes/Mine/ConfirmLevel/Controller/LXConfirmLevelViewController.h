@@ -9,11 +9,11 @@
 #import "LXRootTableViewController.h"
 
 #import "LXConfirmLevelModel.h"
-
+#import "RatingLeedInfor.h"
 typedef void(^ConfirmLevel)(LXConfirmLevelModel *levelModel);
 
 @interface LXConfirmLevelViewController : LXRootTableViewController
-
+@property (nonatomic,strong) RatingLeedInfor *ratingModel;
 @property (nonatomic, copy) ConfirmLevel levelBlock;
-
+@property (nonatomic)BOOL enableEdits;
 @end

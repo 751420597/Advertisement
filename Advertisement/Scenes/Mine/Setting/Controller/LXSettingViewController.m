@@ -13,7 +13,9 @@
 #import "LXSuggestViewController.h"
 #import "LXAboutUsViewController.h"
 #import "LXUserProtocolViewController.h"
-
+#import "LXLogInViewModel.h"
+#import "LXLogInViewController.h"
+#import "LXRootNavViewController.h"
 static NSString *const LXSettingVCTableViewCellID = @"LXSettingVCTableViewCellID";
 
 @interface LXSettingViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -120,7 +122,46 @@ static NSString *const LXSettingVCTableViewCellID = @"LXSettingVCTableViewCellID
     }
     return _tableView;
 }
+-(void)logout{
+    
+        UIAlertController *alterVC = [UIAlertController alertControllerWithTitle:nil message:@"你确定要退出当前账号?" preferredStyle:UIAlertControllerStyleAlert];
+    
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    
+        }];
+    
+        UIAlertAction *call1 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self logOff];
+        }];
+    
+        [alterVC addAction:cancel];
+        [alterVC addAction:call1];
+    
+        [self presentViewController:alterVC animated:YES completion:^{
+        
+            
+        }];
+    
+}
+-(void)logOff{
+    LXLogInViewModel *viewModel = [[LXLogInViewModel alloc]init];
+    [SVProgressHUD showWithStatus:@"请稍后..."];
+    [viewModel logOutWithWithParameters:nil completionHandler:^(NSError *error, id result) {
+        [SVProgressHUD dismiss];
+        int code = [result[@"code"] intValue];
+        if (code == 0) {
+            
+            self.view.window.rootViewController =[[LXRootNavViewController alloc] initWithRootViewController:[LXLogInViewController new]];
+            [LXStandardUserDefaults setObject:@"" forKey:UserUserDefaults];
+            [LXStandardUserDefaults setObject:@"" forKey:@"userId"];
+            [LXStandardUserDefaults synchronize];
+        }else{
+            [SVProgressHUD showInfoWithStatus:@"退出失败!"];
+        }
+        
+    }];
 
+}
 - (UIButton *)logoutBtn {
     if (!_logoutBtn) {
         _logoutBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -128,7 +169,7 @@ static NSString *const LXSettingVCTableViewCellID = @"LXSettingVCTableViewCellID
         [_logoutBtn setTitleColor:LXColorHex(0x4c4c4c) forState:UIControlStateNormal];
         [_logoutBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
         [_logoutBtn setBackgroundColor:[UIColor whiteColor]];
-        
+        [_logoutBtn addTarget:self action:@selector(logout) forControlEvents:UIControlEventTouchUpInside];
         _logoutBtn.layer.borderWidth = 1.f;
         _logoutBtn.layer.borderColor = LXCellBorderColor.CGColor;
         _logoutBtn.layer.cornerRadius = 5.f;

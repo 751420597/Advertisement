@@ -29,10 +29,9 @@
                             <constraint firstAttribute="height" constant="15" id="LPX-Pr-0QC"/>
                             <constraint firstAttribute="width" constant="15" id="b2D-Ek-wTg"/>
                         </constraints>
-                        <state key="normal" backgroundImage="Home_reservation_noamal"/>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Le6-3N-Gu1">
-                        <rect key="frame" x="65" y="13.5" width="130" height="17"/>
+                        <rect key="frame" x="135" y="13.5" width="130" height="17"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="130" id="QVH-Hb-V0b"/>
                         </constraints>
@@ -43,7 +42,7 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="n1L-wW-DGM" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="OVx-Ti-GHm"/>
-                    <constraint firstItem="l47-Bf-dax" firstAttribute="leading" secondItem="Le6-3N-Gu1" secondAttribute="trailing" constant="100" id="Ooo-2V-nbV"/>
+                    <constraint firstItem="l47-Bf-dax" firstAttribute="leading" secondItem="Le6-3N-Gu1" secondAttribute="trailing" constant="30" id="Ooo-2V-nbV"/>
                     <constraint firstAttribute="trailing" secondItem="l47-Bf-dax" secondAttribute="trailing" constant="10" id="lvN-kq-sNg"/>
                     <constraint firstItem="l47-Bf-dax" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="nnE-RO-9dT"/>
                     <constraint firstItem="Le6-3N-Gu1" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="sKW-Zu-37Y"/>
@@ -60,7 +59,4 @@
             <point key="canvasLocation" x="-147" y="-92"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="Home_reservation_noamal" width="15" height="15"/>
-    </resources>
 </document>

@@ -12,6 +12,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *leadingL;
 @property (weak, nonatomic) IBOutlet UILabel *middleL;
+@property (weak, nonatomic) IBOutlet UIButton *arrowImgV;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *middleLConstrait;
 
 @end

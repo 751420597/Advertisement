@@ -37,7 +37,7 @@
     [self.titleBtn.titleLabel setFont:[UIFont systemFontOfSize:16]];
     [self.titleBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.titleBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
-    [self.titleBtn setTitle:@"北京市" forState:UIControlStateNormal];
+    [self.titleBtn setTitle:@"广州市" forState:UIControlStateNormal];
     [self.titleBtn addTarget:self action:@selector(viewClick) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.titleBtn];
     [self.titleBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -46,7 +46,7 @@
     }];
     
     self.image = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.image setBackgroundImage:[UIImage imageNamed:@"Home_up_arrow"] forState:UIControlStateNormal];
+    //[self.image setBackgroundImage:[UIImage imageNamed:@"Home_up_arrow"] forState:UIControlStateNormal];
     [self.image addTarget:self action:@selector(viewClick) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.image];
     [self.image mas_makeConstraints:^(MASConstraintMaker *make) {

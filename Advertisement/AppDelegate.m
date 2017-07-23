@@ -31,6 +31,8 @@
 #import "LXServiceProjectViewController.h"
 #import "LXConfirmLevelViewController.h"
 #import "LXLogInViewController.h"
+#import <AlipaySDK/AlipaySDK.h>
+#import "OrderViewModel.h"
 @interface AppDelegate () <JPUSHRegisterDelegate>
 
 @end
@@ -85,6 +87,10 @@
         // 可以添加自定义categories
         // NSSet<UNNotificationCategory *> *categories for iOS10 or later
         // NSSet<UIUserNotificationCategory *> *categories for iOS8 and iOS9
+        //可以添加自定义categories
+        [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeSound |
+                                                          UIUserNotificationTypeAlert)
+                                              categories:nil];
     }
     [JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
     
@@ -94,42 +100,80 @@
                           channel:@"Test"
                  apsForProduction:NO
             advertisingIdentifier:nil];
-    
+    [JPUSHService setDebugMode];
     //2.1.9版本新增获取registration id block接口。
     [JPUSHService registrationIDCompletionHandler:^(int resCode, NSString *registrationID) {
         if(resCode == 0){
             NSLog(@"registrationID获取成功：%@",registrationID);
-            
+            [LXStandardUserDefaults setObject:registrationID forKey:@"registrationID"];
+            [LXStandardUserDefaults synchronize];
         }
         else{
             NSLog(@"registrationID获取失败，code：%d",resCode);
         }
     }];
 }
-
-- (void)application:(UIApplication *)application
-didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    
-    /// Required - 注册 DeviceToken
+// 远程推送注册成功（将得到的deviceToken传给SDK）
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    //极光推送
+    NSLog(@"%@", [NSString stringWithFormat:@"Device Token: %@", deviceToken]);
     [JPUSHService registerDeviceToken:deviceToken];
+    
+    
 }
 
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    //Optional
-    NSLog(@"did Fail To Register For Remote Notifications With Error: %@", error);
+// 远程推送注册失败（注册deviceToken失败）
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"注册推送失败"
+                                                    message:error.description
+                                                   delegate:nil
+                                          cancelButtonTitle:@"确定"
+                                          otherButtonTitles:nil];
+    [alert show];
 }
 
-// iOS 10 Support
+//iOS7及以上系统
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:
+(NSDictionary *)userInfo fetchCompletionHandler:(void (^)
+                                                 (UIBackgroundFetchResult))completionHandler {
+    // IOS 7 Support Required
+    [JPUSHService handleRemoteNotification:userInfo];
+    completionHandler(UIBackgroundFetchResultNewData);
+    //NSLog(@"收到通知:%@", [self logDic:userInfo]);
+    
+    
+    NSString *module = userInfo[@"push_key"];
+    //NSDictionary *data = [module objectFromJSONString];
+    //NSString *urlType = data[@"urlType"];
+    NSString *title = userInfo[@"aps"][@"alert"];
+    //是否登录-----在登录成功之后为YES
+    BOOL isLogin = [[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"];
+    
+    
+    
+}
+#pragma mark iOS10 前台
 - (void)jpushNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(NSInteger))completionHandler {
     // Required
     NSDictionary * userInfo = notification.request.content.userInfo;
+    
     if([notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
         [JPUSHService handleRemoteNotification:userInfo];
     }
     completionHandler(UNNotificationPresentationOptionAlert); // 需要执行这个方法，选择是否提醒用户，有Badge、Sound、Alert三种类型可以选择设置
+//    NSDictionary *userInfo = notification.request.content.userInfo;
+//    NSString *module = userInfo[@"push_key"];
+//    NSDictionary *data = [module objectFromJSONString];
+//    NSString *urlType = data[@"urlType"];
+    NSString *title = userInfo[@"aps"][@"alert"];
+    //是否登录-----在登录成功之后为YES
+    BOOL isLogin = [[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"];
+    
 }
 
-// iOS 10 Support
+#pragma mark iOS10 后台
 - (void)jpushNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
     // Required
     NSDictionary * userInfo = response.notification.request.content.userInfo;
@@ -137,13 +181,46 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
         [JPUSHService handleRemoteNotification:userInfo];
     }
     completionHandler();  // 系统要求执行这个方法
+    
+    //NSDictionary *userInfo = response.notification.request.content.userInfo;
+//   NSString *module = userInfo[@"push_key"];
+//    NSDictionary *data = [module objectFromJSONString];
+//    NSString *urlType = data[@"urlType"];
+    NSString *title = userInfo[@"aps"][@"alert"];
+    //是否登录-----在登录成功之后为YES
+    BOOL isLogin = [[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"];
+    
+    
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    
-    // Required, iOS 7 Support
-    [JPUSHService handleRemoteNotification:userInfo];
-    completionHandler(UIBackgroundFetchResultNewData);
+//支付返回处理
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString*, id> *)options
+{
+    if ([url.host isEqualToString:@"safepay"]) {
+        // 支付跳转支付宝钱包进行支付，处理支付结果
+        [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
+            NSLog(@"result = %@",resultDic);
+        }];
+        
+        // 授权跳转支付宝钱包进行支付，处理支付结果
+        [[AlipaySDK defaultService] processAuth_V2Result:url standbyCallback:^(NSDictionary *resultDic) {
+            NSLog(@"result = %@",resultDic);
+            // 解析 auth code
+            NSString *result = resultDic[@"result"];
+            NSString *authCode = nil;
+            if (result.length>0) {
+                NSArray *resultArr = [result componentsSeparatedByString:@"&"];
+                for (NSString *subResult in resultArr) {
+                    if (subResult.length > 10 && [subResult hasPrefix:@"auth_code="]) {
+                        authCode = [subResult substringFromIndex:10];
+                        break;
+                    }
+                }
+            }
+            NSLog(@"授权结果 authCode = %@", authCode?:@"");
+        }];
+    }
+    return YES;
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {

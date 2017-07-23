@@ -124,20 +124,27 @@
         if (self.bottomType == LXReservationBottomTypeCancelOrder || self.bottomType ==LXReservationBottomTypeWaitPayOrder
             ) {
             LXOrderDetailInfoViewController *rVC = [[LXOrderDetailInfoViewController alloc] initWithBottomType:self.bottomType];
+            rVC.updataData = ^{
+                
+            };
             rVC.orderId = self.orderId;
+            rVC.orderIdState = self.orderIdState;
             
             LXServiceRecordeViewController *sVC = [[LXServiceRecordeViewController alloc] initWithBottomType:LXReservationBottomTypeNone];
             sVC.orderId = self.orderId;
-            
+            sVC.orderIdState = self.orderIdState;
             _childVcs = @[rVC, sVC];
         }
         else {
-            LXOrderDetailInfoViewController *rVC = [[LXOrderDetailInfoViewController alloc] initWithBottomType:LXReservationBottomTypeNone];
+            LXOrderDetailInfoViewController *rVC = [[LXOrderDetailInfoViewController alloc] initWithBottomType:self.bottomType];
             rVC.orderId = self.orderId;
-            
+            rVC.orderIdState = self.orderIdState;
+            rVC.updataData = ^{
+                
+            };
             LXServiceRecordeViewController *sVC = [[LXServiceRecordeViewController alloc] initWithBottomType:self.bottomType];
             sVC.orderId = self.orderId;
-            
+            sVC.orderIdState = self.orderIdState;
             _childVcs = @[rVC, sVC];
         }
     }

@@ -28,7 +28,10 @@
 #import "LXReservationVCTableViewCellNormalBig.h"
 #import "LXReservationVCTableViewCellSelectEnter.h"
 #import "LXReservationTableViewCellSelectStay.h"
-
+#import "OrderViewModel.h"
+#import "LXPayCallUp.h"
+#import "LXOrderCommentViewController.h"
+#import "PayViewController.h"
 @interface LXOrderDetailInfoViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UITableView *tableView;
@@ -40,8 +43,8 @@
 @property (nonatomic, strong) UITextField *phoneTF;
 @property (nonatomic, strong) UILabel *selectCareL;
 
-@property (nonatomic, strong) UITextField *addressTF;
-@property (nonatomic, strong) UITextField *remarkTF;
+@property (nonatomic, strong) UITextView *addressTF;
+@property (nonatomic, strong) UITextView *remarkTF;
 
 @property (nonatomic, strong) UILabel *timeL1;
 @property (nonatomic, strong) UILabel *timeL2;
@@ -53,6 +56,7 @@
 @property (nonatomic, strong) LXReservationModel *reservationModel;
 
 @property (nonatomic, assign) LXReservationBottomType reservationBottomType;
+@property (nonatomic, strong) OrderViewModel *orderViewModel;
 
 @end
 
@@ -84,7 +88,7 @@
     self.viewModel = [LXOrderDetailViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{ @"orderId":self.orderId };
     
@@ -94,14 +98,15 @@
         int code = [result[@"code"] intValue];
         if (code == 0) {
             self.reservationModel = [LXReservationModel modelWithDictionary:result];
-            
+            self.reservationModel.serveTime = [ self.reservationModel.serveTime substringWithRange:NSMakeRange(0, self.reservationModel.serveTime.length-2)];
 //            LXReservationTimeModel *reservationTimeModel = [LXReservationTimeModel new];
 //            reservationTimeModel.startTime = (NSString *)(((NSArray *)result[@"serveConfig"][@"servTime"]).firstObject);
 //            reservationTimeModel.endTime = (NSString *)(((NSArray *)result[@"serveConfig"][@"servTime"]).lastObject);
 //            reservationTimeModel.repeatWeek = (NSString *)result[@"serveConfig"][@"week"];
 //            
 //            self.reservationModel.timeModel = reservationTimeModel;
-            
+            self.reservationModel.ordPrice = [ self.reservationModel.ordPrice substringWithRange:NSMakeRange(0, self.reservationModel.ordPrice.length-2)];
+             [_orderDealView setLeadingString:[NSString stringWithFormat:@"￥：%@",self.reservationModel.ordPrice]];
             [self.tableView reloadData];
         }
         else {
@@ -152,6 +157,7 @@
             cell.leadingL.text = leadingString;
             cell.middleL.text = self.reservationModel.careObjName;
             self.selectCareL = cell.middleL;
+            cell.arrowImgV.hidden = YES;
             return cell;
         }
         else {
@@ -181,15 +187,8 @@
             LXReservationTableViewCellSelectStay *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationTableViewCellSelectStay" owner:self options:nil].firstObject;
             
             cell.leadingL.text = @"服务类型";
-            cell.arrowBtnTrailingConstraint.constant = -100;
-            
-//            if ([self.reservationModel.servTypeId isEqualToString:@"1"]) {
-//                cell.trailingL.text = @"基本生活照料服务";
-//            }
-//            else if ([self.reservationModel.servTypeId isEqualToString:@"2"]) {
-//                cell.trailingL.text = @"医疗护理服务";
-//            }
             cell.trailingL.text = self.reservationModel.servTypeName;
+            cell.trailingL.textAlignment = NSTextAlignmentRight;
             return cell;
         }
         else if (indexPath.row == 1) {
@@ -209,68 +208,19 @@
             [firstl setText:@"时间"];
             [cell.contentView addSubview:firstl];
             [firstl mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.top.mas_equalTo(cell.contentView).mas_offset(10);
+                make.leading.mas_equalTo(cell.contentView).mas_offset(10);
+                make.centerY.mas_equalTo(cell.contentView);
             }];
             
             self.timeL1 = [[UILabel alloc] init];
             [cell.contentView addSubview:self.timeL1];
-            self.repeatL = [[UILabel alloc] init];
-            [cell.contentView addSubview:self.repeatL];
-            self.timeL2 = [[UILabel alloc] init];
-            [cell.contentView addSubview:self.timeL2];
-            
-            
             [self.timeL1 setFont:[UIFont systemFontOfSize:14]];
             [self.timeL1 setTextColor:LXColorHex(0xb2b2b2)];
-            [self.timeL1 setText:self.reservationModel.timeModel.startTime];
-            
+            [self.timeL1 setText:self.reservationModel.serveTime];
             [self.timeL1 mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.top.mas_equalTo(cell.contentView).mas_offset(10);
-                make.left.mas_equalTo(cell.contentView).mas_offset(70);
-                
-                make.width.mas_offset (cell.contentView.width-90);
-                make.height.mas_equalTo(firstl);
-            }];
-            
-            [self.timeL2 setFont:[UIFont systemFontOfSize:14]];
-            [self.timeL2 setTextColor:LXColorHex(0xb2b2b2)];
-            [self.timeL2 setText:self.reservationModel.timeModel.endTime];
-            self.timeL2.text = self.reservationModel.serveTime;
-            [self.timeL2 mas_makeConstraints:^(MASConstraintMaker *make) {
-                //                make.leading.mas_equalTo(cell.contentView).mas_offset(70);
-                //                make.centerY.mas_equalTo(cell.contentView);
-                
-                make.top.mas_equalTo(weakself.timeL1.mas_bottom).mas_offset(5);
-                
-                make.leading.mas_equalTo(cell.contentView).mas_offset(70);
-                make.width.equalTo(weakself.timeL1);
-                make.height.mas_equalTo(firstl);
-                //make.height.mas_equalTo(@[weakself.timeL1, weakself.repeatL]);
-            }];
-            
-            
-            [self.repeatL setFont:[UIFont systemFontOfSize:14]];
-            [self.repeatL setTextColor:LXColorHex(0xb2b2b2)];
-            [self.repeatL setText:self.reservationModel.timeModel.repeatWeek];
-            
-            [self.repeatL mas_makeConstraints:^(MASConstraintMaker *make) {
-                 make.top.mas_equalTo(weakself.timeL2.mas_bottom).mas_offset(5);
-                make.leading.mas_equalTo(cell.contentView).mas_offset(70);
-               
-                
-                make.height.width.mas_equalTo(@[weakself.timeL1, weakself.timeL2]);
-            }];
-            
-            UIButton *arrowB = [UIButton buttonWithType:UIButtonTypeCustom];
-            [arrowB setBackgroundImage:[UIImage imageNamed:@"Organization_arrow"] forState:UIControlStateNormal];
-            [cell.contentView addSubview:arrowB];
-            [arrowB mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(10);
-                make.height.mas_equalTo(15);
-                make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+                make.leading.mas_equalTo(cell.contentView).mas_offset(98);
                 make.centerY.mas_equalTo(cell.contentView);
             }];
-            
             
             return cell;
         }
@@ -278,21 +228,36 @@
     else if (indexPath.section == 2) {
         if (indexPath.row == 0) {
             LXReservationVCTableViewCellNormalBig *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormalBig" owner:self options:nil].firstObject;
-            cell.trailingTF.text = self.reservationModel.address;
-            self.addressTF =cell.trailingTF;
-            self.addressTF.enabled = NO;
-            cell.leadingL.text = leadingString;
             
+            cell.leadingL.text = leadingString;
+            self.addressTF = [[UITextView alloc]init];
+            [cell.contentView addSubview:self.addressTF];
+            self.addressTF.textAlignment = NSTextAlignmentLeft;
+            [_addressTF mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.trailing.equalTo(cell.contentView).offset(-10);
+                make.top.equalTo(cell.leadingL).offset(-8);
+                make.leading.equalTo(cell.contentView).offset(95);
+                make.bottom.equalTo(cell.contentView).offset(-10);
+            }];
+            self.addressTF.text = self.reservationModel.address;
+            self.addressTF.font =[UIFont systemFontOfSize:14.f];
             return cell;
         }
         else if (indexPath.row == 1) {
-            LXReservationVCTableViewCellNormal *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormal" owner:self options:nil].firstObject;
+             LXReservationVCTableViewCellNormalBig *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormalBig" owner:self options:nil].firstObject;
             
             cell.leadingL.text = leadingString;
-            cell.trailingTF.text = self.reservationModel.otherContent;
+            self.remarkTF = [[UITextView alloc]init];
+            [cell.contentView addSubview:self.remarkTF];
+            [_remarkTF mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.trailing.equalTo(cell.contentView).offset(-10);
+                make.top.equalTo(cell.leadingL).offset(-8);
+                make.leading.equalTo(cell.contentView).offset(95);
+                make.bottom.equalTo(cell.contentView).offset(-10);
+            }];
+            self.remarkTF.text = self.reservationModel.otherContent;
+            self.remarkTF.font =[UIFont systemFontOfSize:14.f];
             
-            self.remarkTF = cell.trailingTF;
-            self.remarkTF.enabled = NO;
             return cell;
         }
     }
@@ -305,10 +270,7 @@
 - (CGFloat )tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *tempStrig = self.dataSource[indexPath.section][indexPath.row];
     
-    if ([tempStrig isEqualToString:@"时间"]) {
-        return 100;
-    }
-    else if ([tempStrig isEqualToString:@"服务地址"]) {
+   if ([tempStrig isEqualToString:@"服务地址"]||[tempStrig isEqualToString:@"备注"]) {
         return 75;
     }
     else {
@@ -332,6 +294,7 @@
     else if ([tempStrig isEqualToString:@"服务项目"]) {
         LXOrderDetailServiceViewController *servicePVC = [[LXOrderDetailServiceViewController alloc] init];
         servicePVC.orderId = self.orderId;
+        servicePVC.isDetail = YES;
         [self.navigationController pushViewController:servicePVC animated:YES];
     }
 }
@@ -369,6 +332,103 @@
 - (LXOderDealView *)orderDealView {
     if (!_orderDealView) {
         _orderDealView = [[LXOderDealView alloc] initWithTrailingClick:^{
+            //支付
+            LXWeakSelf(self);
+            self.orderViewModel = [[OrderViewModel alloc]init];
+            if ([self.orderIdState isEqualToString:@"1"]) {
+                //[_orderDealView setTrailingString:@"取消订单"];
+                UIAlertAction *cancleAlter = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    
+                }];
+                UIAlertAction *confirmAlter = [UIAlertAction actionWithTitle:@" 确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    [self.orderViewModel cancleOrderWithParameters:@{@"orderId":self.orderId} completionHandler:^(NSError *error, id result) {
+                        int code = [result[@"code"] intValue];
+                        if(code==0){
+                            [SVProgressHUD showInfoWithStatus:@"订单取消成功"];
+                            [self.navigationController popViewControllerAnimated:YES];
+                        }else{
+                            [SVProgressHUD showErrorWithStatus:@"哎呀,出错了!"];
+                        }
+                        
+                        
+                    }];
+                    
+                }];
+                UIAlertController *alterVC =[UIAlertController alertControllerWithTitle:@"提示" message:@"开始服务时间12小时前可免费取消订单" preferredStyle:UIAlertControllerStyleAlert];
+                [alterVC addAction:cancleAlter];
+                [alterVC addAction:confirmAlter];
+                [self.navigationController presentViewController:alterVC animated:YES completion:nil];
+
+            }else if([self.orderIdState isEqualToString:@"2"]){
+                if([self.reservationModel.chanOrderState isEqualToString:@"1"]){
+                    //[_orderDealView setTrailingString:@"取消订单"];
+                    UIAlertAction *cancleAlter = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        
+                    }];
+                    UIAlertAction *confirmAlter = [UIAlertAction actionWithTitle:@" 确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        [self.orderViewModel cancleOrderWithParameters:@{@"orderId":self.orderId} completionHandler:^(NSError *error, id result) {
+                            int code = [result[@"code"] intValue];
+                            if(code==0){
+                                [SVProgressHUD showInfoWithStatus:@"订单取消成功"];
+                                [self.navigationController popViewControllerAnimated:YES];
+                            }else{
+                                [SVProgressHUD showErrorWithStatus:@"哎呀,出错了!"];
+                            }
+                            
+                            
+                        }];
+
+                    }];
+                     UIAlertController *alterVC =[UIAlertController alertControllerWithTitle:@"提示" message:@"开始服务时间12小时前可免费取消订单" preferredStyle:UIAlertControllerStyleAlert];
+                    [alterVC addAction:cancleAlter];
+                    [alterVC addAction:confirmAlter];
+                    [self.navigationController presentViewController:alterVC animated:YES completion:nil];
+                }
+                else if([self.reservationModel.chanOrderState isEqualToString:@"0"]){
+                }
+            }else if ([self.orderIdState isEqualToString:@"3"]||[self.orderIdState isEqualToString:@"4"]){
+                //[_orderDealView setTrailingString:@"待支付"];
+                PayViewController *payVC =[[PayViewController alloc]init];
+                payVC.orderId = self.orderId;
+                payVC.money = self.reservationModel.ordPrice;
+                [self.navigationController pushViewController:payVC animated:YES];
+
+            }else if ([self.orderIdState isEqualToString:@"5"]) {
+                //[_orderDealView setTrailingString:@"待评价"];
+                LXOrderCommentViewController *vc=[[LXOrderCommentViewController alloc]init];
+                
+                vc.orderId = self.orderId;
+                [self.navigationController pushViewController:vc animated:YES];
+            }else if ([self.orderIdState isEqualToString:@"6"]) {
+                [_orderDealView setTrailingString:@"已评价"];
+            }else if (self.reservationBottomType == LXReservationBottomTypeHavenCommentOrder) {
+                [_orderDealView setTrailingString:@"已评价"];
+            }
+            else if (self.reservationBottomType == LXReservationBottomTypeDeleteOrder) {
+                [_orderDealView setTrailingString:@"删除订单"];
+                UIAlertAction *cancleAlter = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    
+                }];
+                UIAlertAction *confirmAlter = [UIAlertAction actionWithTitle:@" 确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    [self.orderViewModel deleteOrderWithParameters:@{@"orderId":self.orderId} completionHandler:^(NSError *error, id result) {
+                        int code = [result[@"code"] intValue];
+                        if(code==0){
+                            [SVProgressHUD showInfoWithStatus:@"订单删除成功!"];
+                            [self.navigationController popViewControllerAnimated:YES];
+                        }else{
+                            [SVProgressHUD showErrorWithStatus:@"哎呀,出错了!"];
+                        }
+                        
+                        
+                    }];
+                    
+                }];
+                UIAlertController *alterVC =[UIAlertController alertControllerWithTitle:@"提示" message:@"确认删除该条订单？" preferredStyle:UIAlertControllerStyleAlert];
+                [alterVC addAction:cancleAlter];
+                [alterVC addAction:confirmAlter];
+                [self.navigationController presentViewController:alterVC animated:YES completion:nil];
+            }
+
             
         }];
         [_orderDealView setFrame:CGRectMake(0, LXScreenHeight - LXNavigaitonBarHeight - 50, LXScreenWidth, 50)];
@@ -386,23 +446,26 @@
         //        已评价
         //        已取消--删除订单
         
-        [_orderDealView setLeadingString:@"￥：50"];
+       
         
-        if (self.reservationBottomType == LXReservationBottomTypeCancelOrder) {
+        if ([self.orderIdState isEqualToString:@"1"]) {
             [_orderDealView setTrailingString:@"取消订单"];
-        }
-        else if (self.reservationBottomType == LXReservationBottomTypeWaitPayOrder) {
-            [_orderDealView setTrailingString:@"待支付"];
-        }
-        else if (self.reservationBottomType == LXReservationBottomTypeWaitCommentOrder) {
-            [_orderDealView setTrailingString:@"待评价"];
-        }
-        else if (self.reservationBottomType == LXReservationBottomTypeHavenCommentOrder) {
-            [_orderDealView setTrailingString:@"已评价"];
-        }
-        else if (self.reservationBottomType == LXReservationBottomTypeDeleteOrder) {
+        }else if([self.orderIdState isEqualToString:@"2"]){
+            if([self.reservationModel.chanOrderState isEqualToString:@"1"]){
+                [_orderDealView setTrailingString:@"取消订单"];
+            }else if([self.reservationModel.chanOrderState isEqualToString:@"0"]){
+                [_orderDealView setTrailingString:@"待服务"];
+            }
+        }else if ([self.orderIdState isEqualToString:@"3"]||[self.orderIdState isEqualToString:@"4"]){
+                [_orderDealView setTrailingString:@"待支付"];
+        }else if ([self.orderIdState isEqualToString:@"5"]) {
+                [_orderDealView setTrailingString:@"待评价"];
+        }else if ([self.orderIdState isEqualToString:@"6"]) {
+                [_orderDealView setTrailingString:@"已评价"];
+        }else if (self.reservationBottomType == LXReservationBottomTypeDeleteOrder) {
             [_orderDealView setTrailingString:@"删除订单"];
         }
+        
     }
     return _orderDealView;
 }

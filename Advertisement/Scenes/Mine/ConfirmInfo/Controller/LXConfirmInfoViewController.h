@@ -9,11 +9,11 @@
 #import "LXRootTableViewController.h"
 
 #import "LXConfirmInfoModel.h"
-
+#import "MsgAuthenticationInfor.h"
 typedef void(^ConfirmInfo)(LXConfirmInfoModel *confirmInfoModel);
 
 @interface LXConfirmInfoViewController : LXRootTableViewController
-
+@property (nonatomic, strong)MsgAuthenticationInfor *msgAuthenModel;
 @property (nonatomic, copy) ConfirmInfo infoBlock;
-
+@property (nonatomic)BOOL enableEdit;
 @end

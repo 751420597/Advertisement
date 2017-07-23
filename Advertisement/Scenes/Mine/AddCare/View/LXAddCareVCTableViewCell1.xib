@@ -17,14 +17,14 @@
                 <rect key="frame" x="0.0" y="0.0" width="355" height="49.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xhM-Gw-u15">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xhM-Gw-u15">
                         <rect key="frame" x="20" y="15" width="39.5" height="19.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.29803921568627451" green="0.29803921568627451" blue="0.29803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RxJ-XU-fcl">
-                        <rect key="frame" x="287.5" y="15" width="39.5" height="19.5"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RxJ-XU-fcl">
+                        <rect key="frame" x="287.5" y="25" width="39.5" height="0.0"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.29803921570000003" green="0.29803921570000003" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -41,6 +41,7 @@
                 <constraints>
                     <constraint firstItem="xhM-Gw-u15" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="4AS-RS-oIF"/>
                     <constraint firstItem="xhM-Gw-u15" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="OHd-TH-CkX"/>
+                    <constraint firstItem="RxJ-XU-fcl" firstAttribute="leading" secondItem="xhM-Gw-u15" secondAttribute="trailing" constant="15" id="Qlh-3C-8sO"/>
                     <constraint firstAttribute="trailing" secondItem="s5V-gA-Gxu" secondAttribute="trailing" constant="10" id="WWn-KH-ccW"/>
                     <constraint firstItem="RxJ-XU-fcl" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Y1t-tU-6dQ"/>
                     <constraint firstItem="s5V-gA-Gxu" firstAttribute="leading" secondItem="RxJ-XU-fcl" secondAttribute="trailing" constant="8" id="eAC-1s-MAi"/>
@@ -52,7 +53,7 @@
                 <outlet property="leadingL" destination="xhM-Gw-u15" id="KCa-xy-sZ4"/>
                 <outlet property="trailingL" destination="RxJ-XU-fcl" id="hib-qI-VUA"/>
             </connections>
-            <point key="canvasLocation" x="-166" y="3"/>
+            <point key="canvasLocation" x="-166.5" y="3"/>
         </tableViewCell>
     </objects>
     <resources>

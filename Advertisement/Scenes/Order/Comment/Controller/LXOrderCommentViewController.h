@@ -9,5 +9,5 @@
 #import "LXRootViewController.h"
 
 @interface LXOrderCommentViewController : LXRootViewController
-
+@property(nonatomic,copy)NSString *orderId;
 @end

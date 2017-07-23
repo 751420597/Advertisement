@@ -14,11 +14,13 @@
 #import "LXBarthelViewModel.h"
 #import "LXBarthelLevelModel.h"
 #import "LXBarthelTotalModel.h"
-
+#import "CareDetailBartherModel.h"
 static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID";
 
 @interface LXBarthelViewController () <UIPickerViewDataSource, UIPickerViewDelegate>
-
+{
+    NSIndexPath *index;
+}
 @property (nonatomic, strong) UIButton *addBtn;
 
 @property (nonatomic, strong) UIView *bigBGView;
@@ -37,7 +39,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
 @property (nonatomic, strong) NSMutableArray *totalDataSource;
 @property (nonatomic, assign) NSInteger totalScore;
 @property (nonatomic, strong) NSMutableArray *recordDataSource;
-
+@property (nonatomic, strong) NSMutableArray *careDetailBartherLeavlArr;
 @property (nonatomic, strong) NSMutableDictionary *recordDictionary;
 
 @end
@@ -47,16 +49,27 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.title = @"Bathel指标评定";
+    self.navigationItem.title = @"Barthel指标评定";
     self.view.backgroundColor = LXVCBackgroundColor;
     
     self.recordDictionary = [NSMutableDictionary dictionary];
+    if (_enbleEidts) {
+        UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
+        fixedSpaceBarButtonItem.width = -10;
+        UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.addBtn];
+        barButtonItem.width = 10;
+        self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
+    }
     
-    UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
-    fixedSpaceBarButtonItem.width = -10;
-    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.addBtn];
-    barButtonItem.width = 10;
-    self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
+    //详情里过来的
+    if(_isDetail){
+        self.careDetailBartherLeavlArr = [NSMutableArray array];
+        for (CareDetailBartherModel *model in (NSArray*)self.bartherLevelArr) {
+            NSDictionary *dic =model.bgList[0];
+            [self.recordDictionary setValue:dic[@"evaItemVal"] forKey:model.evaItem];
+            [self.careDetailBartherLeavlArr addObject:model];
+        }
+    }
     
     self.recordDataSource = [NSMutableArray array];
     self.totalDataSource = [NSMutableArray array];
@@ -73,7 +86,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
     self.viewModel = [LXBarthelViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     [self.viewModel getBarthelListWithParameters:nil completionHandler:^(NSError *error, id result) {
         LXStrongSelf(self);
@@ -86,10 +99,10 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
                 [self.dataSource addObject:barthelModel];
             }
             
-            for (NSDictionary *tempDict in result[@"barthelRatingList"]) {
-                LXBarthelTotalModel *barthelModel = [LXBarthelTotalModel modelWithDictionary:tempDict];
-                [self.totalDataSource addObject:barthelModel];
-            }
+//            for (NSDictionary *tempDict in result[@"barthelRatingList"]) {
+//                LXBarthelTotalModel *barthelModel = [LXBarthelTotalModel modelWithDictionary:tempDict];
+//                [self.totalDataSource addObject:barthelModel];
+//            }
             
             [self.tableView reloadData];
         }
@@ -103,7 +116,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
     [self.pickDataSource removeAllObjects];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{@"bcId":idString};
     
@@ -119,6 +132,9 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
             }
             
             [self.view addSubview:self.bigBGView];
+            [self.pickView  reloadAllComponents];//这一句必须放在下一句的前面,否则会有 bug
+            [self.pickView  selectRow:0 inComponent:0 animated:YES];
+            
         }
         else {
             [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
@@ -135,6 +151,9 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = LXVCBackgroundColor;
 
+    
+    self.tableView.userInteractionEnabled = self.enbleEidts;
+    
     [self.view addSubview:self.tableView];
 }
 
@@ -158,6 +177,13 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
     
     cell.barthelModel = barthelModel;
     
+    //详情穿过来的
+    if(_isDetail){
+        CareDetailBartherModel *careBartherModel = self.careDetailBartherLeavlArr[indexPath.row];
+        cell.careDetailBartherModel = careBartherModel;
+    }
+    
+    
     return cell;
 }
 
@@ -172,7 +198,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
     if (![self.recordDataSource containsObject:barthelModel]) {
         [self.recordDataSource addObject:barthelModel];
     }
-    
+    index = indexPath;
     [self getBarthellevelDataWithString:barthelModel.bcId];
 }
 
@@ -180,7 +206,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
 #pragma mark - Action
 
 - (void)addBtnClick {
-    if ([self.recordDataSource count] != [self.dataSource count]) {
+    if (_recordDictionary.allKeys.count != [self.dataSource count]) {
         UIAlertController *alterVC = [UIAlertController alertControllerWithTitle:nil message:@"请全部完成测评才能给出评测结果！" preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction *call1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -200,18 +226,28 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
     else {
         LXLog(@"%ld", (long)self.totalScore);
         
-        NSString *barthelLevel = nil;
-        
-        for (LXBarthelTotalModel *barthelModel in self.totalDataSource) {
-            if (self.totalScore > barthelModel.startScore.integerValue && self.totalScore < barthelModel.endScore.integerValue ) {
-                LXLog(@"%@", barthelModel.barLevel);
-                
-                barthelLevel = barthelModel.barLevel;
-            }
+       
+//        LXBarthelTotalModel *model = nil;
+//        for (LXBarthelTotalModel *barthelModel in self.totalDataSource) {
+//            if (self.totalScore > barthelModel.startScore.integerValue && self.totalScore < barthelModel.endScore.integerValue ) {
+//                LXLog(@"%@", barthelModel.barLevel);
+//                
+//                model = barthelModel;
+//            }
+//        }
+        for (int i = 0; i < _recordDictionary.allKeys.count; i++) {
+            //逐个的获取键
+            NSString * key = [_recordDictionary.allKeys objectAtIndex:i];
+            
+            //通过键，找到相对应的值
+            NSString * value = [_recordDictionary valueForKey:key];
+            //或者
+            // NSString * value = [dict objectForKey:key];
+            self.totalScore += value.intValue;
         }
-        
-        self.barthelBlock(self.recordDictionary, barthelLevel);
-        
+        if(self.barthelBlock){
+            self.barthelBlock(self.recordDictionary, self.totalScore);
+        }
         [self.navigationController popViewControllerAnimated:YES];
     }
 }
@@ -231,9 +267,12 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
         self.myLevelModel = (LXBarthelLevelModel *)self.pickDataSource[0];
     }
     
-    [self.recordDictionary setValue:self.myLevelModel.dispOrder forKey:self.myModel.evaItem];
-    self.totalScore += self.myLevelModel.dispOrder.intValue;
+    LXBarthelVCTableViewCell *cell =[self.tableView cellForRowAtIndexPath:index];
+    cell.vuleLB.text = self.myLevelModel.barContent;
+    LXBarthelModel *barthelModel = self.dataSource[index.row];
+    barthelModel.value =self.myLevelModel.barContent;
     
+    [self.recordDictionary setValue:self.myLevelModel.dispOrder forKey:self.myModel.evaItem];
     self.myLevelModel = nil;
     
     [self.bigBGView removeFromSuperview];
@@ -253,7 +292,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
 - (nullable NSAttributedString *)pickerView:(UIPickerView *)pickerView attributedTitleForRow:(NSInteger)row forComponent:(NSInteger)component {
     NSString *tempString = ((LXBarthelLevelModel *)self.pickDataSource[row]).barContent;
     
-    NSAttributedString *component0String = [[NSAttributedString alloc] initWithString:tempString attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14], NSForegroundColorAttributeName : LXMainColor}];
+    NSAttributedString *component0String = [[NSAttributedString alloc] initWithString:tempString attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:12.f], NSForegroundColorAttributeName : LXMainColor}];
     
     return component0String;
 }
@@ -262,8 +301,10 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
 #pragma mark - UIPickerViewDelegate
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+
     LXBarthelLevelModel *tempModel = (LXBarthelLevelModel *)self.pickDataSource[row];
     self.myLevelModel = tempModel;
+   
 }
 
 

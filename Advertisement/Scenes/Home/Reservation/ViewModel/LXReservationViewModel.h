@@ -13,4 +13,7 @@
 - (NSNumber *)setUpReservationWithParameters:(NSDictionary *)parametersDict
                            completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
 
+- (NSNumber *)getAddressReservationWithParameters:(NSDictionary *)parametersDict
+                                completionHandler:(HHNetworkTaskCompletionHander)completionHandler;
+
 @end

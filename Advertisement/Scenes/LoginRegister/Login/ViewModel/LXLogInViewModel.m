@@ -66,5 +66,23 @@
         completionHandler ? completionHandler(error, result) : nil;
     }];
 }
+- (NSNumber *)logOutWithWithParameters:(NSDictionary *)parametersDict
+                     completionHandler:(HHNetworkTaskCompletionHander)completionHandler{
+    HHDataAPIConfiguration *config = [HHDataAPIConfiguration new];
+    config.requestType = HHNetworkRequestTypePost;
+    config.urlPath = LoginAPILogOut;
+    config.requestParameters = parametersDict;
+    config.useHttps = NO;
+    
+    return [super dispatchDataTaskWithConfiguration:config completionHandler:^(NSError *error, id result) {
+        if (!error) {
+            
+        }
+        else {
+            
+        }
+        completionHandler ? completionHandler(error, result) : nil;
+    }];
 
+}
 @end

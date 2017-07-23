@@ -16,7 +16,7 @@
 // 支付宝
 
 // 推送
-static NSString *const JPushAppKey = @"576eb66b91cd30ad2cb793f9";
+static NSString *const JPushAppKey = @"d71f1b5a48709cb784194446";
 
 // 分享\三方登录
 

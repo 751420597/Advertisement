@@ -53,7 +53,7 @@ static CGFloat StaffCustomeLineLeftEdge = 10;
     self.viewModel = [LXStaffViewModel new];
     
     LXWeakSelf(self);
-    [SVProgressHUD showErrorWithStatus:@"加载中……"];
+    [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSDictionary *dictP = @{@"agency_id":self.agency_id};
     

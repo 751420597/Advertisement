@@ -15,6 +15,7 @@
 #import "LXOrganizationViewController.h"
 #import "LXMineViewController.h"
 #import  "LXLogInViewModel.h"
+#import "IQKeyboardManager.h"
 @interface LXRootTabbarViewController ()
 
 @property (nonatomic, strong) NSMutableArray *tabbarViewControllers;
@@ -26,6 +27,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    IQKeyboardManager *manager=[IQKeyboardManager sharedManager];
+    manager.enable = YES;
+    manager.shouldResignOnTouchOutside = YES;
+    manager.shouldToolbarUsesTextFieldTintColor = YES;
+    manager.enableAutoToolbar = YES;
     
     UITabBarItem *tabbarItem1 = [UITabBarItem appearance];
     
@@ -59,8 +65,11 @@
     [self addChildVc:mineVC title:@"我的" image:@"mine" selectedImage:@"mine_selected"];
     
     self.viewControllers = self.tabbarViewControllers;
-    
-    NSDictionary *dict = @{@"phone_no":@""};
+    NSString *registrationID =[LXStandardUserDefaults objectForKey:@"registrationID"];
+    if(registrationID==nil){
+        registrationID = @"";
+    }
+    NSDictionary *dict = @{@"phone_no":@"",@"registration_id":registrationID};
     
     //LXWeakSelf(self);
     self.viewModel = [LXLogInViewModel new];

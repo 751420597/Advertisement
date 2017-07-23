@@ -25,6 +25,11 @@
     _barthelModel = barthelModel;
     
     [self.leadingL setText:barthelModel.evaItem];
+    self.vuleLB.text = barthelModel.value;
 }
-
+-(void)setCareDetailBartherModel:(CareDetailBartherModel *)careDetailBartherModel{
+    _careDetailBartherModel = careDetailBartherModel;
+    NSDictionary *dic =careDetailBartherModel.bgList.firstObject;
+    self.vuleLB.text = dic[@"barContent"];
+}
 @end
