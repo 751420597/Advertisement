@@ -17,14 +17,7 @@
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
 
-    if (selected) {
-         [self.indexB setBackgroundImage:[UIImage imageNamed:@"Order_repeat_selected"] forState:UIControlStateNormal];
     }
-    else {
-         [self.indexB setBackgroundImage:[UIImage imageNamed:@"Order_repeat_normal"] forState:UIControlStateNormal];
-    }
-}
 
 @end

@@ -13,5 +13,6 @@
 @property (nonatomic, copy) NSString *careId;
 @property (nonatomic, assign) BOOL isPass;
 @property (nonatomic,copy)NSString *checkStateId;
+@property (nonatomic)int states;
 @property(nonatomic,copy)void (^reloadBlock)();
 @end

@@ -72,7 +72,14 @@
         self.confirmInfoModel.siCardNo = self.msgAuthenModel.siCardNo;
         self.confirmInfoModel.acNo = self.msgAuthenModel.acNo;
         self.confirmInfoModel.computerNo = self.msgAuthenModel.computerNo;
-        self.confirmInfoModel.name = self.msgAuthenModel.name;
+    }
+    
+    if(self.confirmInfoModel_0){
+        self.confirmInfoModel = self.confirmInfoModel_0;
+        NSArray *raImageIdsArr = [self.confirmInfoModel_0.images componentsSeparatedByString:@","];
+        self.leftImageID = raImageIdsArr[0];
+        self.rightImageID = raImageIdsArr[1];
+        self.leftImageID1 = raImageIdsArr[2];
     }
     
     
@@ -89,7 +96,6 @@
     
     
     NSMutableArray *section0 = [NSMutableArray array];
-    [section0 addObject:@"真实姓名"];
     [section0 addObject:@"社保卡号"];
     [section0 addObject:@"上传照片"];
     
@@ -126,7 +132,7 @@
     NSString *leadingString = self.dataSource[indexPath.section][indexPath.row];
     
     if (indexPath.section == 0) {
-        if (indexPath.row == 2) {
+        if (indexPath.row == 1) {
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row3"];
             
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -206,16 +212,6 @@
             cell.inputTF.delegate = self;
             
             if (indexPath.row == 0) {
-                self.nameTF = cell.inputTF;
-                cell.inputTF.returnKeyType = UIReturnKeyDefault;
-                if (!self.confirmInfoModel.name) {
-                    self.nameTF.placeholder = @"请输入姓名";
-                }else{
-                    cell.inputTF.text = self.confirmInfoModel.name;
-                }
-                self.nameTF.enabled = _enableEdit;
-            }
-            else if (indexPath.row == 1) {
                 self.identifyTF = cell.inputTF;
                 cell.inputTF.returnKeyType  = UIReturnKeyDefault;
                 if (!self.confirmInfoModel.siCardNo) {
@@ -353,7 +349,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        if (indexPath.row == 2) {
+        if (indexPath.row == 1) {
             return 120;
         }
         else {
@@ -386,10 +382,8 @@
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-    if ([self.nameTF isEqual:textField]) {
-        self.confirmInfoModel.name = textField.text;
-    }
-    else if ([self.identifyTF isEqual:textField]) {
+    
+   if ([self.identifyTF isEqual:textField]) {
         self.confirmInfoModel.siCardNo = textField.text;
     }
     else if ([self.appraisalTF isEqual:textField]) {
@@ -404,20 +398,17 @@
     return YES;
 }
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
-    if(textField !=self.nameTF){
-        NSString *bankCode= [textField.text stringByReplacingCharactersInRange:range withString:string]; //得到输入框的内容
+    
+        //NSString *bankCode= [textField.text stringByReplacingCharactersInRange:range withString:string]; //得到输入框的内容
         
-        if (bankCode.length>19) {
-            return NO;
-        }
+       // if (bankCode.length>19) {
+        //    return NO;
+       // }
         
         NSCharacterSet *cs = [[NSCharacterSet characterSetWithCharactersInString:NUM] invertedSet];
         NSString *filtered = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
         BOOL  isOrNO= [string isEqualToString:filtered];
         return isOrNO;
-    }
-    
-    return YES;
 }
 #pragma mark - Action
 
@@ -442,7 +433,7 @@
 }
 
 - (void)confirmBtnClick {
-    if (self.confirmInfoModel.name.length<=0 && self.confirmInfoModel.acNo.length<=0&& self.confirmInfoModel.siCardNo.length<=0&& self.confirmInfoModel.computerNo.length<=0) {
+    if (self.confirmInfoModel.acNo.length<=0&& self.confirmInfoModel.siCardNo.length<=0&& self.confirmInfoModel.computerNo.length<=0) {
         [SVProgressHUD showInfoWithStatus:@"条件不够，请继续添加"];
         
         [SVProgressHUD dismissWithDelay:1];
@@ -672,7 +663,7 @@
     NSString *totalPath = [[self imageDocument] stringByAppendingPathComponent:imageName];
     
     @synchronized (self) {
-        NSData *imageData = UIImageJPEGRepresentation(tempImage, 1.0);
+        NSData *imageData = UIImageJPEGRepresentation(tempImage, 0.5);
         [imageData writeToFile:totalPath atomically:YES];
     }
     

@@ -10,4 +10,5 @@
 
 @interface LXOrderCommentViewController : LXRootViewController
 @property(nonatomic,copy)NSString *orderId;
+@property(nonatomic,copy)NSString *payOK;
 @end

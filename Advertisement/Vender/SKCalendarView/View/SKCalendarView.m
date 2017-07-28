@@ -78,7 +78,8 @@
         NSString *nextMothFirstDay = [dateFormatter stringFromDate:self.nextMonthDate];
         NSString *temp =[nextMothFirstDay substringFromIndex:nextMothFirstDay.length-2];
         self.aWeekValue = [NSMutableArray array];
-        int days =(int)_nextCalendarManage.calendarDate.count;
+        //int days =(int)_nextCalendarManage.calendarDate.count;
+        int days = 7;
         if ([temp isEqualToString:@"01"] ) {
             
             for(int i=0;i<days;i++){
@@ -104,11 +105,16 @@
             self.nextCalendarManage = [[SKCalendarManage alloc] init];
             [self.nextCalendarManage checkThisMonthRecordFromToday:self.nextMonthDate];
             
+//            NSInteger firstCount = self.aWeekValue.count;
+//            NSInteger lastCount = _currentCalendarManage.days - firstCount;
+//            for (int i =0 ; i<42-self.aWeekValue.count; i++) {
+//                [self.aWeekValue addObject:@""];
+//            }
+//            for (int j = 0; j < lastCount; j++) {
+//                [self.aWeekValueExtra addObject:self.nextCalendarManage.calendarDate[self.nextCalendarManage.dayInWeek + j - 1]];
+//            }
             NSInteger firstCount = self.aWeekValue.count;
-            NSInteger lastCount = _currentCalendarManage.days - firstCount;
-            for (int i =0 ; i<42-self.aWeekValue.count; i++) {
-                [self.aWeekValue addObject:@""];
-            }
+            NSInteger lastCount = 7 - firstCount;
             for (int j = 0; j < lastCount; j++) {
                 [self.aWeekValueExtra addObject:self.nextCalendarManage.calendarDate[self.nextCalendarManage.dayInWeek + j - 1]];
             }
@@ -163,7 +169,7 @@
     self.weekCollectionView.backgroundColor = [UIColor whiteColor];
     self.weekCollectionView.delegate = self;
     self.weekCollectionView.dataSource = self;
-    self.weekCollectionView.scrollEnabled = NO;
+    self.weekCollectionView.userInteractionEnabled = NO;
     [self.weekCollectionView registerClass:[SKWeekCollectionViewCell class] forCellWithReuseIdentifier:@"Week"];
     [self.weekCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self);

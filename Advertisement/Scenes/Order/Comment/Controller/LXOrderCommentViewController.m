@@ -11,7 +11,7 @@
 #import "CWStarRateView.h"
 
 #import "LXOrderCommentViewModel.h"
-
+#import "LXOrderViewController.h"
 @interface LXOrderCommentViewController ()<UITextViewDelegate>
 
 @property (nonatomic, strong) UIButton *addBtn;
@@ -48,6 +48,7 @@
     self.textView.text = @"您觉得服务周到吗?";
     self.textView.delegate = self;
 }
+
 -(void)textViewDidBeginEditing:(UITextView *)textView{
     if([textView.text isEqualToString:@"您觉得服务周到吗?"]){
         textView.text=@"";
@@ -87,14 +88,29 @@
         int code = [result[@"code"] intValue];
         if (code == 0) {
             [SVProgressHUD showInfoWithStatus:@"评价已提交"];
-            [self.navigationController popViewControllerAnimated:YES];
+            if([self.payOK isEqualToString:@"ok"]){
+                for (UIViewController *vc in self.navigationController.viewControllers) {
+                    if([vc isKindOfClass:[LXOrderViewController class]]){
+                    [self.navigationController popToViewController:vc animated:YES];
+                    }
+                }
+            }else{
+                [self.navigationController popViewControllerAnimated:YES];
+
+            }
         }
         else {
             [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
         }
     }];
 }
-
+-(void)popToUpperViewController{
+    for (UIViewController *vc in self.navigationController.viewControllers) {
+        if([vc isKindOfClass:[LXOrderViewController class]]){
+            [self.navigationController popToViewController:vc animated:YES];
+        }
+    }
+}
 - (IBAction)anonymityBtnClick:(id)sender {
     UIButton *tempBtn = (UIButton *)sender;
     tempBtn.selected = !tempBtn.selected;

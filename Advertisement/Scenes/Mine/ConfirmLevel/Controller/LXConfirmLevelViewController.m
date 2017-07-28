@@ -22,7 +22,8 @@
 
 #import "LXSandBox.h"
 #import "LXJudge.h"
-
+#define NUM @"0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+#define NUM2 @"0123456789"
 @interface LXConfirmLevelViewController () <UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate,UIScrollViewDelegate>
 @property (nonatomic, strong) UILabel *lable1;
 @property (nonatomic, strong) UILabel *lable2;
@@ -151,8 +152,6 @@
             default:
                 break;
         }
-        
-        self.confirmLevelModel.cardNo = self.ratingModel.cardNo;
         self.confirmLevelModel.personNatureId = self.ratingModel.personNatureId;
         self.confirmLevelModel.livingCare = self.ratingModel.livingCareType;
         self.confirmLevelModel.careTypeId = self.ratingModel.careTypeId;
@@ -166,6 +165,71 @@
         self.confirmLevelModel.dmTypeId = self.ratingModel.dmTypeId;
         self.confirmLevelModel.siCardNo = self.ratingModel.siCardNo;
         
+    }
+    
+    if(self.levelModel){
+        self.confirmLevelModel =self.levelModel;
+        NSArray *raImageIdsArr = [self.confirmLevelModel.images componentsSeparatedByString:@","];
+        switch (raImageIdsArr.count) {
+            case 5:
+                self.leftImageID = raImageIdsArr[0];
+                self.rightImageID = raImageIdsArr[1];
+                self.heardImgID = raImageIdsArr[2];
+                self.bottomeImageID1 = raImageIdsArr[3];
+                break;
+            case 6:
+                self.leftImageID = raImageIdsArr[0];
+                self.rightImageID = raImageIdsArr[1];
+                self.heardImgID = raImageIdsArr[2];
+                self.bottomeImageID1 = raImageIdsArr[3];
+                self.bottomeImageID2 = raImageIdsArr[4];
+                break;
+            case 7:
+                self.leftImageID = raImageIdsArr[0];
+                self.rightImageID = raImageIdsArr[1];
+                self.heardImgID = raImageIdsArr[2];
+                self.bottomeImageID1 = raImageIdsArr[3];
+                self.bottomeImageID2 = raImageIdsArr[4];
+                self.bottomeImageID3 = raImageIdsArr[5];
+                
+                break;
+            case 8:
+                self.leftImageID = raImageIdsArr[0];
+                self.rightImageID = raImageIdsArr[1];
+                self.heardImgID = raImageIdsArr[2];
+                self.bottomeImageID1 = raImageIdsArr[3];
+                self.bottomeImageID2 = raImageIdsArr[4];
+                self.bottomeImageID3 = raImageIdsArr[5];
+                self.bottomeImageID4 = raImageIdsArr[6];
+                break;
+            case 9:
+                self.leftImageID = raImageIdsArr[0];
+                self.rightImageID = raImageIdsArr[1];
+                self.heardImgID = raImageIdsArr[2];
+                self.bottomeImageID1 = raImageIdsArr[3];
+                self.bottomeImageID2 = raImageIdsArr[4];
+                self.bottomeImageID3 = raImageIdsArr[5];
+                self.bottomeImageID4 = raImageIdsArr[6];
+                self.bottomeImageID5 = raImageIdsArr[7];
+                break;
+            case 10:
+                self.leftImageID = raImageIdsArr[0];
+                self.rightImageID = raImageIdsArr[1];
+                self.heardImgID = raImageIdsArr[2];
+                self.bottomeImageID1 = raImageIdsArr[3];
+                self.bottomeImageID2 = raImageIdsArr[4];
+                self.bottomeImageID3 = raImageIdsArr[5];
+                self.bottomeImageID4 = raImageIdsArr[6];
+                self.bottomeImageID5 = raImageIdsArr[7];
+                self.bottomeImageID6 = raImageIdsArr[8];
+                break;
+                
+            default:
+                break;
+                
+                
+        }
+
     }
     [self setUpTable];
 }
@@ -188,7 +252,6 @@
 
 - (void)updateData {
     NSMutableArray *section00 = [NSMutableArray array];
-    [section00 addObject:@"身份证号"];
     [section00 addObject:@"人员类别"];
     [section00 addObject:@"待遇类别"];
     [section00 addObject:@"待遇类型"];
@@ -233,7 +296,7 @@
     NSString *leadingString = self.dataSource[indexPath.section][indexPath.row];
     
     if (indexPath.section == 0) {
-        if (indexPath.row == 7) {
+        if (indexPath.row == 6) {
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row3"];
             
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -253,7 +316,7 @@
             }];
             
             self.socialTF = [[UITextField alloc] init];
-            [self.socialTF setFont:[UIFont systemFontOfSize:16]];
+            [self.socialTF setFont:[UIFont systemFontOfSize:14]];
             [self.socialTF setTextColor:LXColorHex(0x4c4c4c)];
             self.socialTF.userInteractionEnabled = _enableEdits;
             if (self.confirmLevelModel.siCardNo) {
@@ -266,7 +329,7 @@
             self.socialTF.delegate = self;
             [cell.contentView addSubview:self.socialTF];
             [self.socialTF mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+                make.trailing.mas_equalTo(cell.contentView).mas_offset(-15);
                 make.centerY.mas_equalTo(label1);
             }];
             
@@ -324,7 +387,7 @@
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
-        else if (indexPath.row == 8) {
+        else if (indexPath.row == 7) {
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row3"];
             
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -369,7 +432,7 @@
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
-        else if (indexPath.row == 9) {
+        else if (indexPath.row == 8) {
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row3"];
             
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -404,6 +467,9 @@
             [self.leftBottomUploadBtn1 sd_setImageWithURL:[NSURL URLWithString:requestString3] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             [self.leftBottomUploadBtn1 addTarget:self action:@selector(leftBottomUploadBtnClick1) forControlEvents:UIControlEventTouchUpInside];
             self.leftBottomUploadBtn1.userInteractionEnabled = _enableEdits;
+            if(!_enableEdits&&self.bottomeImageID1.length<=1){
+                self.leftBottomUploadBtn1.hidden = YES;
+            }
             [_scrollView addSubview:self.leftBottomUploadBtn1];
             self.leftBottomUploadBtn1.frame = CGRectMake(0, 0, 135, 100);
             
@@ -427,6 +493,9 @@
             [self.leftBottomUploadBtn2 sd_setImageWithURL:[NSURL URLWithString:requestString3_2] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             [self.leftBottomUploadBtn2 addTarget:self action:@selector(leftBottomUploadBtnClick2) forControlEvents:UIControlEventTouchUpInside];
             self.leftBottomUploadBtn2.userInteractionEnabled = _enableEdits;
+            if(!_enableEdits&&self.bottomeImageID2.length<=1){
+                self.leftBottomUploadBtn2.hidden = YES;
+            }
             [_scrollView addSubview:self.leftBottomUploadBtn2];
             self.leftBottomUploadBtn2.frame = CGRectMake(135+20, 0, 135, 100);
             
@@ -449,6 +518,9 @@
             [self.leftBottomUploadBtn3 sd_setImageWithURL:[NSURL URLWithString:requestString3_3] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             [self.leftBottomUploadBtn3 addTarget:self action:@selector(leftBottomUploadBtnClick3) forControlEvents:UIControlEventTouchUpInside];
             self.leftBottomUploadBtn3.userInteractionEnabled = _enableEdits;
+            if(!_enableEdits&&self.bottomeImageID3.length<=1){
+                self.leftBottomUploadBtn3.hidden = YES;
+            }
             [_scrollView addSubview:self.leftBottomUploadBtn3];
             self.leftBottomUploadBtn3.frame = CGRectMake((135+20)*2, 0, 135, 100);
             
@@ -471,6 +543,9 @@
             [self.leftBottomUploadBtn4 sd_setImageWithURL:[NSURL URLWithString:requestString3_4] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             [self.leftBottomUploadBtn4 addTarget:self action:@selector(leftBottomUploadBtnClick4) forControlEvents:UIControlEventTouchUpInside];
             self.leftBottomUploadBtn4.userInteractionEnabled = _enableEdits;
+            if(!_enableEdits&&self.bottomeImageID4.length<=1){
+                self.leftBottomUploadBtn4.hidden = YES;
+            }
             [_scrollView addSubview:self.leftBottomUploadBtn4];
             self.leftBottomUploadBtn4.frame = CGRectMake((135+20)*3, 0, 135, 100);
             
@@ -494,6 +569,9 @@
             [self.leftBottomUploadBtn5 sd_setImageWithURL:[NSURL URLWithString:requestString3_5] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             [self.leftBottomUploadBtn5 addTarget:self action:@selector(leftBottomUploadBtnClick5) forControlEvents:UIControlEventTouchUpInside];
             self.leftBottomUploadBtn5.userInteractionEnabled = _enableEdits;
+            if(!_enableEdits&&self.bottomeImageID5.length<=1){
+                self.leftBottomUploadBtn5.hidden = YES;
+            }
             [_scrollView addSubview:self.leftBottomUploadBtn5];
             self.leftBottomUploadBtn5.frame = CGRectMake((135+20)*4, 0, 135, 100);
             
@@ -509,12 +587,15 @@
                 make.width.mas_equalTo(self.leftBottomUploadBtn5);
             }];
 
-            //photo5
+            //photo6
             self.leftBottomUploadBtn6 = [UIButton buttonWithType:UIButtonTypeCustom];
             NSString *requestString3_6 = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.bottomeImageID6];
             [self.leftBottomUploadBtn6 sd_setImageWithURL:[NSURL URLWithString:requestString3_6] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"Order_add_image"]];
             [self.leftBottomUploadBtn6 addTarget:self action:@selector(leftBottomUploadBtnClick6) forControlEvents:UIControlEventTouchUpInside];
             self.leftBottomUploadBtn6.userInteractionEnabled = _enableEdits;
+            if(!_enableEdits&&self.bottomeImageID6.length<=1){
+                self.leftBottomUploadBtn6.hidden = YES;
+            }
             [_scrollView addSubview:self.leftBottomUploadBtn6];
             self.leftBottomUploadBtn6.frame = CGRectMake((135+20)*5, 0, 135, 100);
             
@@ -534,26 +615,16 @@
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
         }
-        else if (indexPath.row == 0 || indexPath.row == 5 || indexPath.row == 6||indexPath.row == 10 || indexPath.row == 11|| indexPath.row == 13)  {
+        else if ( indexPath.row == 4 || indexPath.row == 5||indexPath.row == 9 || indexPath.row == 10|| indexPath.row == 12)  {
             LXConfirmLevelVCTableViewCell1 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXConfirmLevelVCTableViewCell1" owner:self options:nil].firstObject;
             
             [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             
             cell.leadingL.text = leadingString;
-            if ([leadingString isEqualToString:@"身份证号"]) {
-                self.nameTF = cell.trailingTF;
-                self.nameTF.delegate = self;
-                self.nameTF.userInteractionEnabled = _enableEdits;
-                if (self.confirmLevelModel.cardNo) {
-                    [self.nameTF setText:self.confirmLevelModel.cardNo];
-                }
-                else {
-                    [self.nameTF setPlaceholder:@"请输入身份证号"];
-                }
-            }
-            else if ([leadingString isEqualToString:@"现住址"]) {
+            if ([leadingString isEqualToString:@"现住址"]) {
                 self.ageTF = cell.trailingTF;
+                 [self.ageTF setTextColor:LXColorHex(0x4c4c4c)];
                 self.ageTF.delegate = self;
                 self.ageTF.userInteractionEnabled = _enableEdits;
                 if (self.confirmLevelModel.presentAddress) {
@@ -566,6 +637,7 @@
             else if ([leadingString isEqualToString:@"联系电话"]) {
                 self.identifyTF = cell.trailingTF;
                 self.identifyTF.delegate = self;
+                 [self.identifyTF setTextColor:LXColorHex(0x4c4c4c)];
                 self.identifyTF.userInteractionEnabled = _enableEdits;
                 if (self.confirmLevelModel.careContactPhone) {
                     [self.identifyTF setText:self.confirmLevelModel.careContactPhone];
@@ -577,6 +649,7 @@
                 self.socialTF = cell.trailingTF;
                 self.socialTF.delegate = self;
                 self.socialTF.userInteractionEnabled = _enableEdits;
+                self.socialTF.textAlignment = NSTextAlignmentRight;
                 if (self.confirmLevelModel.siCardNo) {
                     [self.socialTF setText:self.confirmLevelModel.siCardNo];
                 }
@@ -587,6 +660,7 @@
             else if ([leadingString isEqualToString:@"代理人姓名"]) {
                 self.mcNameTF = cell.trailingTF;
                 self.mcNameTF.delegate = self;
+                [self.mcNameTF setTextColor:LXColorHex(0x4c4c4c)];
                 self.mcNameTF.userInteractionEnabled = _enableEdits;
                 if (self.confirmLevelModel.mcName) {
                     [self.mcNameTF setText:self.confirmLevelModel.mcName];
@@ -597,6 +671,7 @@
             }else if ([leadingString isEqualToString:@"关系"]) {
                 self.mcRelaTF = cell.trailingTF;
                 self.mcRelaTF.delegate = self;
+                [self.mcRelaTF setTextColor:LXColorHex(0x4c4c4c)];
                 self.mcRelaTF.userInteractionEnabled = _enableEdits;
                 if (self.confirmLevelModel.mcRela) {
                     [self.mcRelaTF setText:self.confirmLevelModel.mcRela];
@@ -606,6 +681,7 @@
                 }
             }else if ([leadingString isEqualToString:@"联系地址(邮寄地址)"]) {
                 self.msAddresTF = cell.trailingTF;
+                [self.msAddresTF setTextColor:LXColorHex(0x4c4c4c)];
                 self.msAddresTF.delegate = self;
                 self.msAddresTF.userInteractionEnabled = _enableEdits;
                 if (self.confirmLevelModel.msAddress) {
@@ -616,7 +692,7 @@
                 }
             }
             return cell;
-        }else if(indexPath.row ==12){
+        }else if(indexPath.row ==11){
             LXConfirmLevelVCTableViewCell1 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXConfirmLevelVCTableViewCell1" owner:self options:nil].firstObject;
             
             [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
@@ -626,6 +702,7 @@
             self.mcPhoneTF = cell.trailingTF;
             self.mcPhoneTF.delegate = self;
             self.mcPhoneTF.userInteractionEnabled = _enableEdits;
+            [self.mcPhoneTF setTextColor:LXColorHex(0x4c4c4c)];
             if (self.confirmLevelModel.mcPhone) {
                 [self.mcPhoneTF setText:self.confirmLevelModel.mcPhone];
             }
@@ -644,6 +721,9 @@
             cell.leadingL.text = leadingString;
             
             if ([leadingString isEqualToString:@"人员类别"]) {
+                if(!self.enableEdits){
+                    cell.arrowBT.hidden = YES;
+                }
                 if ([self.confirmLevelModel.personNatureId isEqualToString:@"1"]) {
                     cell.trailingL.text = @"在职";
                 }
@@ -658,6 +738,9 @@
                 }
             }
             else if ([leadingString isEqualToString:@"待遇类别"]) {
+                if(!self.enableEdits){
+                    cell.arrowBT.hidden = YES;
+                }
                 if ([self.confirmLevelModel.livingCare isEqualToString:@"1"]) {
                     cell.trailingL.text = @"生活照料";
                 }
@@ -670,6 +753,9 @@
             }
 
             else if ([leadingString isEqualToString:@"待遇类型"]) {
+                if(!self.enableEdits){
+                    cell.arrowBT.hidden = YES;
+                }
                 if ([self.confirmLevelModel.careTypeId isEqualToString:@"1"]) {
                     cell.trailingL.text = @"居家护理";
                 }
@@ -681,6 +767,9 @@
                 }
             }
             else if ([leadingString isEqualToString:@"评估类别"]) {
+                if(!self.enableEdits){
+                    cell.arrowBT.hidden = YES;
+                }
                 if ([self.confirmLevelModel.serviceType isEqualToString:@"1"]) {
                     cell.trailingL.text = @"首次评估";
                 }
@@ -694,6 +783,9 @@
                 }
             }
             else if ([leadingString isEqualToString:@"送达方式"]) {
+                if(!self.enableEdits){
+                    cell.arrowBT.hidden = YES;
+                }
                 if ([self.confirmLevelModel.dmTypeId isEqualToString:@"1"]) {
                     cell.trailingL.text = @"邮寄";
                 }
@@ -715,8 +807,8 @@
         
         if(indexPath.row==0){
             CGRect frame = cell.leadingLa.frame;
-            frame.size.width  =LXScreenWidth-28*2;
-            frame.size.height = 85;
+            frame.size.width  =LXScreenWidth-25*2;
+            frame.size.height = 75;
             frame.origin.y = 0;
             UILabel *lable = [[UILabel alloc]initWithFrame:frame];
             lable.text =leadingString;
@@ -725,8 +817,19 @@
             lable.textColor = cell.leadingLa.textColor;
             [cell.contentView addSubview:lable];
             
+        }else if(indexPath.row==1){
+            CGRect frame = cell.leadingLa.frame;
+            frame.size.width = LXScreenWidth-25*2;
+            frame.size.height = 40;
+            frame.origin.y = 0;
+            UILabel *lable = [[UILabel alloc]initWithFrame:frame];
+            lable.text =leadingString;
+            lable.numberOfLines = 0;
+            lable.font =cell.leadingLa.font;
+            lable.textColor = cell.leadingLa.textColor;
+            [cell.contentView addSubview:lable];
         }else{
-            cell.leadingLa.text = leadingString;
+            cell.leadingLa .text= leadingString;
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
@@ -738,7 +841,9 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
         if(indexPath.row==0){
-            return 85;
+            return 75;
+        }else if(indexPath.row==1){
+            return 40;
         }else{
             return 30;
         }
@@ -813,10 +918,7 @@
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-    if ([self.nameTF isEqual:textField]) {
-        self.confirmLevelModel.cardNo = textField.text;
-    }
-    else if ([self.ageTF isEqual:textField]) {
+     if ([self.ageTF isEqual:textField]) {
         self.confirmLevelModel.presentAddress = textField.text;
     }
     else if ([self.identifyTF isEqual:textField]) {
@@ -840,8 +942,27 @@
         if(keyword.length>=24){
             return NO;
         }
+        NSCharacterSet *cs = [[NSCharacterSet characterSetWithCharactersInString:NUM] invertedSet];
+        NSString *filtered = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
+        BOOL  isOrNO= [string isEqualToString:filtered];
         
+        return isOrNO;
+
+    }else if(textField == self.mcPhoneTF){
+        NSCharacterSet *cs = [[NSCharacterSet characterSetWithCharactersInString:NUM2] invertedSet];
+        NSString *filtered = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
+        BOOL  isOrNO= [string isEqualToString:filtered];
+        
+        return isOrNO;
+    }else if (textField == self.identifyTF){
+        NSCharacterSet *cs = [[NSCharacterSet characterSetWithCharactersInString:NUM2] invertedSet];
+        NSString *filtered = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
+        BOOL  isOrNO= [string isEqualToString:filtered];
+        
+        return isOrNO;
+
     }
+    
     return YES;
 }
 
@@ -894,12 +1015,8 @@
     self.confirmLevelModel.images= [NSString stringWithFormat:@"%@,%@,%@,%@,%@,%@,%@,%@,%@", self.leftImageID, self.rightImageID,self.heardImgID,self.bottomeImageID1,self.bottomeImageID2,self.bottomeImageID3,self.bottomeImageID4,self.bottomeImageID5,self.bottomeImageID6];
    // NSArray* array = [imgeID componentsSeparatedByString:@","];
     
-    
-    
-    
-    
     self.confirmLevelModel.imageTypes = [NSString stringWithFormat:@"5,5,4,3,3,3,3,3,3"];
-    if (self.confirmLevelModel.cardNo.length>0 && self.confirmLevelModel.personNatureId.length>0  && self.confirmLevelModel.careTypeId.length>0  && self.confirmLevelModel.images.length>0 && self.confirmLevelModel.imageTypes.length>0 && self.confirmLevelModel.mcName.length>0 && self.confirmLevelModel.mcRela.length>0 && self.confirmLevelModel.mcPhone.length>0 && self.confirmLevelModel.msAddress.length>0 && self.confirmLevelModel.dmTypeId.length>0 &&self.confirmLevelModel.siCardNo.length>0 &&self.confirmLevelModel.livingCare.length>0 &&self.confirmLevelModel.serviceType.length>0 &&self.confirmLevelModel.presentAddress.length>0 &&self.confirmLevelModel.careContactPhone.length>0 ) {
+    if (self.confirmLevelModel.personNatureId.length>0  && self.confirmLevelModel.careTypeId.length>0  && self.confirmLevelModel.images.length>0 && self.confirmLevelModel.imageTypes.length>0 && self.confirmLevelModel.mcName.length>0 && self.confirmLevelModel.mcRela.length>0 && self.confirmLevelModel.mcPhone.length>0 && self.confirmLevelModel.msAddress.length>0 && self.confirmLevelModel.dmTypeId.length>0 &&self.confirmLevelModel.siCardNo.length>0 &&self.confirmLevelModel.livingCare.length>0 &&self.confirmLevelModel.serviceType.length>0 &&self.confirmLevelModel.presentAddress.length>0 &&self.confirmLevelModel.careContactPhone.length>0 ) {
         
     }else{
         [SVProgressHUD showInfoWithStatus:@"条件不够，请继续添加"];
@@ -908,15 +1025,10 @@
         
         return;
     }
-    if(![LXJudge isIdentityCardOfString:self.confirmLevelModel.cardNo]){
-        [SVProgressHUD showInfoWithStatus:@"身份证号不符合规则!"];
-        [SVProgressHUD dismissWithDelay:1];
-        return;
+    if(self.levelBlock){
+        self.levelBlock(self.confirmLevelModel);
+        
     }
-    
-    
-    
-    self.levelBlock(self.confirmLevelModel);
     
     [self.navigationController popViewControllerAnimated:YES];
 }

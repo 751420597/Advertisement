@@ -13,9 +13,13 @@
 static NSString *const LXTimeRepeatVCTableViewCellID = @"LXTimeRepeatVCTableViewCellID";
 
 @interface LXTimeRepeatViewController ()
-
+{
+    BOOL isSelect;
+    NSIndexPath *index;
+}
 @property (nonatomic, strong) UIButton *addBtn;
 @property (nonatomic, assign) NSInteger repeat;
+
 
 @end
 
@@ -28,8 +32,8 @@ static NSString *const LXTimeRepeatVCTableViewCellID = @"LXTimeRepeatVCTableView
     self.navigationItem.title = @"重复次数";
     self.view.backgroundColor = LXVCBackgroundColor;
     
-    self.repeat = 1;
-    
+    self.repeat = self.repeatT;
+    index = [NSIndexPath indexPathForRow:self.repeat inSection:0];
     UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceBarButtonItem.width = -10;
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.addBtn];
@@ -69,7 +73,14 @@ static NSString *const LXTimeRepeatVCTableViewCellID = @"LXTimeRepeatVCTableView
         cell = [[[NSBundle mainBundle] loadNibNamed:@"LXTimeRepeatVCTableViewCell" owner:self options:nil] firstObject];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
-    
+    if(indexPath.row==self.repeat){
+        isSelect = YES;
+        [cell.indexB setBackgroundImage:[UIImage imageNamed:@"Order_repeat_selected"] forState:UIControlStateNormal];
+    }else{
+        isSelect = NO;
+        [cell.indexB setBackgroundImage:[UIImage imageNamed:@"Order_repeat_normal"] forState:UIControlStateNormal];
+        
+    }
     cell.repeatL.text = self.dataSource[indexPath.row];
     
     return cell;
@@ -93,6 +104,15 @@ static NSString *const LXTimeRepeatVCTableViewCellID = @"LXTimeRepeatVCTableView
     else if ([tempString isEqualToString:@"不重复"]) {
         self.repeat = 0;
     }
+    LXTimeRepeatVCTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+     [cell.indexB setBackgroundImage:[UIImage imageNamed:@"Order_repeat_selected"] forState:UIControlStateNormal];
+    
+    if (indexPath !=index) {
+        LXTimeRepeatVCTableViewCell *cell1 = [tableView cellForRowAtIndexPath:index];
+        [cell1.indexB setBackgroundImage:[UIImage imageNamed:@"Order_repeat_normal"] forState:UIControlStateNormal];
+    }
+    
+    index = indexPath;
 }
 
 

@@ -16,5 +16,7 @@ static NSString *const StandardUserDefaults = @"StandardUserDefaults";
 static NSString *const BoolLoadIntroducePage = @"BoolLoadIntroducePage";
 static NSString *const UserUserDefaults = @"UserUserDefaults";
 
+static NSString *const dengjirenzheng = @"dengjirenzheng";
+static NSString *const xinxirenzheng = @"xinxirenzheng";
 
 #endif /* LXUserDefaultHeader_h */

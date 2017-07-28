@@ -24,7 +24,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xs3-HT-a4v">
-                        <rect key="frame" x="254.5" y="13" width="37.5" height="18"/>
+                        <rect key="frame" x="262.5" y="13" width="37.5" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.29803921570000003" green="0.29803921570000003" blue="0.29803921570000003" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -42,12 +42,13 @@
                     <constraint firstItem="xs3-HT-a4v" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="2n4-c1-7mu"/>
                     <constraint firstItem="3dm-1r-9hi" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="JuZ-SD-oSz"/>
                     <constraint firstItem="3dm-1r-9hi" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="KfX-UY-WNX"/>
-                    <constraint firstItem="G8g-Ab-co1" firstAttribute="leading" secondItem="xs3-HT-a4v" secondAttribute="trailing" constant="8" id="LeF-so-kOb"/>
+                    <constraint firstItem="G8g-Ab-co1" firstAttribute="leading" secondItem="xs3-HT-a4v" secondAttribute="trailing" id="LeF-so-kOb"/>
                     <constraint firstItem="G8g-Ab-co1" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="l07-Wi-Hlu"/>
                     <constraint firstAttribute="trailing" secondItem="G8g-Ab-co1" secondAttribute="trailing" constant="10" id="o7w-Qw-PjL"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="arrowBT" destination="G8g-Ab-co1" id="AJi-sc-3sU"/>
                 <outlet property="leadingL" destination="3dm-1r-9hi" id="00X-mn-r1r"/>
                 <outlet property="trailingL" destination="xs3-HT-a4v" id="zjC-tS-E9P"/>
             </connections>

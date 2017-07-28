@@ -15,16 +15,16 @@
     // Initialization code
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    if (selected) {
-        [self.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_selected"] forState:UIControlStateNormal];
-    }
-    else {
-        [self.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_normal"] forState:UIControlStateNormal];
-    }
-}
+//- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+//    [super setSelected:selected animated:animated];
+//
+//    if (selected) {
+//        [self.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_selected"] forState:UIControlStateNormal];
+//    }
+//    else {
+//        [self.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_normal"] forState:UIControlStateNormal];
+//    }
+//}
 
 - (void)setServiceProjectModel:(LXServiceProjectModel *)serviceProjectModel {
     _serviceProjectModel = serviceProjectModel;

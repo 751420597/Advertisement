@@ -12,5 +12,5 @@
 
 @property (nonatomic, copy) dispatch_block_t noNetBlock;
 @property (nonatomic, assign) BOOL hideNoNetView;
-
+-(void)popToUpperViewController;
 @end

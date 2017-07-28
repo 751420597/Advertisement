@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "LXBarthelLevelModel.h"
 @interface LXBarthelModel : NSObject
 
 @property (nonatomic, copy) NSString *bcId;

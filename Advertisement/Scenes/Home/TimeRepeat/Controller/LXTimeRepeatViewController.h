@@ -13,5 +13,5 @@ typedef void(^TimeRepeat)(NSInteger);
 @interface LXTimeRepeatViewController : LXRootTableViewController
 
 @property (nonatomic, copy) TimeRepeat myblock;
-
+@property (nonatomic) NSInteger repeatT;
 @end

@@ -41,6 +41,7 @@
 #import <AMapFoundationKit/AMapFoundationKit.h>
 #import <MAMapKit/MAMapKit.h>
 
-
+#import "WBPopMenuModel.h"
+#import "WBPopMenuSingleton.h"
 
 #endif /* AdvertisementPrefixHeader_pch */

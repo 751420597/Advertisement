@@ -15,6 +15,7 @@
 #import "LXSelectOrganizationViewController.h"
 #import "LXConfirmLevelViewController.h"
 #import "LXConfirmInfoViewController.h"
+#import "LXConfirmLevelModel.h"
 
 #import "LXAddCareViewModel.h"
 #import "LXAddCareModel.h"
@@ -23,6 +24,7 @@
 #import <AMapFoundationKit/AMapFoundationKit.h>
 #import <AMapSearchKit/AMapSearchKit.h>
 #import <AMapLocationKit/AMapLocationKit.h>
+#import "LXBarthelLevelModel.h"
 static NSString *const LXAddCareVCTableViewCellID = @"LXAddCareVCTableViewCellID";
 static CGFloat const LXBGViewHeight = 246.f;
 
@@ -35,12 +37,13 @@ static CGFloat const LXBGViewHeight = 246.f;
 
 @property (nonatomic, strong) UITextField *nameTF;
 @property (nonatomic, strong) UITextField *addressTF;
-
-@property (nonatomic, strong) UISwitch *switch1;
+@property (nonatomic, strong) UITextField * carNoTF;
+//@property (nonatomic, strong) UISwitch *switch1;
 @property (nonatomic, assign) BOOL isSetInfo;
 
 @property (nonatomic, strong) UIDatePicker *datePicker;
 @property (nonatomic, copy  ) NSString *birthday;
+@property (nonatomic,copy)NSString *carNo;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *confirmButton;
 @property (nonatomic, strong) UIView *bgView;
@@ -51,6 +54,10 @@ static CGFloat const LXBGViewHeight = 246.f;
 @property (nonatomic, strong) LXAddCareModel *addCareModel;
 @property (nonatomic, strong) NSMutableArray *Title;
 @property (nonatomic, strong) AMapLocationManager *locationManager;
+@property (nonatomic, strong) LXConfirmLevelModel *levelModel;
+@property (nonatomic, strong) LXConfirmInfoModel *confirmInfoModel;
+
+@property (nonatomic,strong) NSDictionary *cheackDic;
 @end
 
 
@@ -119,8 +126,8 @@ static CGFloat const LXBGViewHeight = 246.f;
 - (void)setUpTable {
     if(self.tableView==nil){
         [self setUpTableViewWithFrame:CGRectMake(10, 10, LXScreenWidth - 20, LXScreenHeight - LXNavigaitonBarHeight - 10) style:UITableViewStyleGrouped backgroundColor:LXVCBackgroundColor];
-        self.tableView.sectionFooterHeight = 20;
-        self.tableView.sectionHeaderHeight = 20;
+        //self.tableView.sectionFooterHeight = 20;
+        //self.tableView.sectionHeaderHeight = 20;
         [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
         [self.view addSubview:self.tableView];
     }
@@ -141,18 +148,20 @@ static CGFloat const LXBGViewHeight = 246.f;
     NSMutableArray *section0 = [NSMutableArray array];
     [section0 addObject:@"姓名"];
     [section0 addObject:@"性别"];
+    [section0 addObject:@"身份证号"];
     [section0 addObject:@"出生日期"];
     [section0 addObject:@"服务地址"];
     [section0 addObject:@"Barthel评定表"];
     [section0 addObject:@"选择护理机构"];
-    NSMutableArray *section1 = [NSMutableArray array];
    
-    [section1 addObject:@"是否已通过长护险待遇评定"];
-    if (self.isSetInfo) {
-        [section1 addObject:@"信息认证"];
+    
+    if (self.states==1) {
+        
+        [section0 addObject:@"认证信息"];
     }
-    else {
-        [section1 addObject:@"等级认证"];
+    else if(self.states==0) {
+        
+        [section0 addObject:@"待遇申请"];
     }
     
     
@@ -163,7 +172,6 @@ static CGFloat const LXBGViewHeight = 246.f;
     [section2 addObject:@"更换机构，需要机构审核。"];
     
     [self.dataSource addObject:section0];
-    [self.dataSource addObject:section1];
     [self.dataSource addObject:section2];
     
     self.trailingArray = [NSMutableArray array];
@@ -184,6 +192,13 @@ static CGFloat const LXBGViewHeight = 246.f;
     }
     else {
         [section00 addObject:@"性别"];
+    }
+    
+    if (self.addCareModel.cardNo) {
+        [section00 addObject:self.addCareModel.cardNo];
+    }
+    else {
+        [section00 addObject:@"请输入身份证号"];
     }
     
     if (self.addCareModel.birthday) {
@@ -213,12 +228,21 @@ static CGFloat const LXBGViewHeight = 246.f;
         [section00 addObject:@"选择护理机构"];
     }
     
-    NSMutableArray *section11 = [NSMutableArray array];
     
-    
-    [section11 addObject:@"是否已通过长护险待遇评定"];
-    [section11 addObject:@"去认证"];
-    
+    if(self.states==0){
+        if(self.addCareModel.mcName.length>0){
+            [section00 addObject:@"去查看"];
+        }else{
+            [section00 addObject:@"去申请"];
+        }
+        
+    }else if(self.states==1){
+        if( self.addCareModel.computerNo .length>0){
+            [section00 addObject:@"去查看"];
+        }else{
+            [section00 addObject:@"去填写"];
+        }
+    }
     
     NSMutableArray *section22 = [NSMutableArray array];
     [section22 addObject:@"申请长护险待遇通过用户，可享受长护险待遇。"];
@@ -227,7 +251,6 @@ static CGFloat const LXBGViewHeight = 246.f;
     [section22 addObject:@"更换机构，需要机构审核。"];
     
     [self.trailingArray addObject:section00];
-    [self.trailingArray addObject:section11];
     [self.trailingArray addObject:section22];
     [self.tableView reloadData];
 }
@@ -256,16 +279,14 @@ static CGFloat const LXBGViewHeight = 246.f;
     NSString *trailingString= nil;
     trailingString = self.trailingArray[indexPath.section][indexPath.row];
     
-   
-    
     if (indexPath.section == 0) {
-        if (indexPath.row == 3) {
+        if (indexPath.row == 4) {
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row3"];
             
             [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:75 color:LXCellBorderColor cell:cell];
             
             UILabel *label1 = [[UILabel alloc] init];
-            [label1 setFont:[UIFont systemFontOfSize:16]];
+            [label1 setFont:[UIFont systemFontOfSize:14.5]];
             [label1 setTextColor:LXColorHex(0x4c4c4c)];
             [label1 setText:leadingString];
             [cell.contentView addSubview:label1];
@@ -282,7 +303,7 @@ static CGFloat const LXBGViewHeight = 246.f;
             else {
                 self.addressTF.placeholder = @"请输入地址";
             }
-            self.addressTF.font = [UIFont systemFontOfSize:14.3f];
+            self.addressTF.font = [UIFont systemFontOfSize:14.5f];
             self.addressTF.delegate = self;
             self.addressTF.textAlignment = NSTextAlignmentLeft;
             self.addressTF.returnKeyType = UIReturnKeyDefault;
@@ -309,7 +330,7 @@ static CGFloat const LXBGViewHeight = 246.f;
             [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
             
             UILabel *label1 = [[UILabel alloc] init];
-            [label1 setFont:[UIFont systemFontOfSize:16]];
+            [label1 setFont:[UIFont systemFontOfSize:14.5]];
             [label1 setTextColor:LXColorHex(0x4c4c4c)];
             [label1 setText:leadingString];
             [cell.contentView addSubview:label1];
@@ -319,7 +340,7 @@ static CGFloat const LXBGViewHeight = 246.f;
             }];
             
             self.nameTF = [[UITextField alloc] init];
-            
+            self.nameTF.font = [UIFont systemFontOfSize:14.5];
             if (self.addCareModel.name) {
                 [self.nameTF setText:self.addCareModel.name];
             }
@@ -340,6 +361,44 @@ static CGFloat const LXBGViewHeight = 246.f;
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             return cell;
         }
+        else if (indexPath.row == 2) {
+            UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row0"];
+            
+            [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
+            
+            UILabel *label1 = [[UILabel alloc] init];
+            [label1 setFont:[UIFont systemFontOfSize:14.5]];
+            [label1 setTextColor:LXColorHex(0x4c4c4c)];
+            [label1 setText:leadingString];
+            [cell.contentView addSubview:label1];
+            [label1 mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.mas_equalTo(cell.contentView).mas_offset(20);
+                make.centerY.mas_equalTo(cell.contentView);
+            }];
+            
+            self.carNoTF = [[UITextField alloc] init];
+            self.carNoTF.font = [UIFont systemFontOfSize:14.5];
+            if (self.addCareModel.cardNo) {
+                [self.carNoTF setText:self.addCareModel.cardNo];
+            }
+            else {
+                self.carNoTF.placeholder = @"请输入身份证号";
+            }
+            
+            self.carNoTF.delegate = self;
+            self.carNoTF.returnKeyType = UIReturnKeyDefault;
+            self.carNoTF.textAlignment = NSTextAlignmentRight;
+            [cell.contentView addSubview:self.carNoTF];
+            [self.carNoTF mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+                make.leading.mas_equalTo(cell.contentView).mas_offset(100);
+                make.centerY.mas_equalTo(cell.contentView);
+            }];
+            
+            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+            return cell;
+        }
+
         else {
             LXAddCareVCTableViewCell1 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell1" owner:self options:nil].firstObject;
             
@@ -352,7 +411,9 @@ static CGFloat const LXBGViewHeight = 246.f;
             return cell;
         }
     }
+    /*
     else if (indexPath.section == 1) {
+        
         if (indexPath.row == 0) {
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton1row1"];
             
@@ -369,7 +430,6 @@ static CGFloat const LXBGViewHeight = 246.f;
             }];
             
             self.switch1 = [[UISwitch alloc] init];
-            
             if (self.isSetInfo) {
                 self.switch1.on = YES;
             }
@@ -386,8 +446,11 @@ static CGFloat const LXBGViewHeight = 246.f;
             
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             return cell;
+         
         }
-        else {
+        else
+         
+         if{
             LXAddCareVCTableViewCell1 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell1" owner:self options:nil].firstObject;
             
              [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
@@ -398,7 +461,8 @@ static CGFloat const LXBGViewHeight = 246.f;
             return cell;
         }
     }
-    else if (indexPath.section == 2) {
+     */
+    else if (indexPath.section == 1) {
         LXAddCareVCTableViewCell2 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell2" owner:self options:nil].firstObject;
         
         [cell.contentView setBackgroundColor:LXVCBackgroundColor];
@@ -413,7 +477,7 @@ static CGFloat const LXBGViewHeight = 246.f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 2) {
+    if (indexPath.section == 1) {
         return 30;
     }
     
@@ -447,18 +511,20 @@ static CGFloat const LXBGViewHeight = 246.f;
     else if ([tempString isEqualToString:@"Barthel评定表"]) {
         LXBarthelViewController *bVC = [LXBarthelViewController new];
         bVC.enbleEidts = YES;
+        bVC.cheackDic = self.cheackDic;
         LXWeakSelf(self);
         bVC.barthelBlock = ^(NSDictionary *itemArray, long barthel) {
             NSMutableString *barthelItem = [NSMutableString string];
             NSMutableString *barthelScorce = [NSMutableString string];
-            
+            self.cheackDic = itemArray;
             if (itemArray.count > 0) {
                 NSArray *item = itemArray.allKeys;
                 NSArray *scorce = itemArray.allValues;
                 
                 for (int i = 0; i < itemArray.count; i++) {
                     [barthelItem appendString:[NSString stringWithFormat:@"%@,", item[i]]];
-                    [barthelScorce appendString:[NSString stringWithFormat:@"%@,", scorce[i]]];
+                    LXBarthelLevelModel *model = scorce[i];
+                    [barthelScorce appendString:[NSString stringWithFormat:@"%@,", model.dispOrder]];
                 }
             }
             //barthelModel =barthel;
@@ -481,6 +547,7 @@ static CGFloat const LXBGViewHeight = 246.f;
         }
         sVC.params = @{@"longitude":self.addCareModel.longitude,@"latitude":self.addCareModel.atitude};
         sVC.enbleEidts = YES;
+        sVC.objID = self.addCareModel.agencyId;
         LXWeakSelf(self);
         sVC.selectOrganizationBlock = ^(LXOrganizaitonModel *model) {
             weakself.addCareModel.agencyId = model.corId;
@@ -491,12 +558,14 @@ static CGFloat const LXBGViewHeight = 246.f;
         
         [self.navigationController pushViewController:sVC animated:YES];
     }
-    else if ([tempString isEqualToString:@"等级认证"]) {
+    else if ([tempString isEqualToString:@"待遇申请"]) {
         LXConfirmLevelViewController *sVC = [LXConfirmLevelViewController new];
+        sVC.levelModel = self.levelModel;
         sVC.enableEdits = YES;
         LXWeakSelf(self);
         sVC.levelBlock = ^(LXConfirmLevelModel *levelModel) {
-            weakself.addCareModel.cardNo = levelModel.cardNo;
+            weakself.levelModel = levelModel;
+            //weakself.addCareModel.cardNo = levelModel.cardNo;
             weakself.addCareModel.personNatureId = levelModel.personNatureId;
             weakself.addCareModel.careTypeId = levelModel.careTypeId;
             weakself.addCareModel.images = levelModel.images;
@@ -512,21 +581,25 @@ static CGFloat const LXBGViewHeight = 246.f;
             weakself.addCareModel.mcPhone = levelModel.mcPhone;
             weakself.addCareModel.msAddress = levelModel.msAddress;
             weakself.addCareModel.dmTypeId = levelModel.dmTypeId;
+             [weakself setUpTable];
         };
         
         [self.navigationController pushViewController:sVC animated:YES];
     }
-    else if ([tempString isEqualToString:@"信息认证"]) {
+    else if ([tempString isEqualToString:@"认证信息"]) {
         LXConfirmInfoViewController *sVC = [LXConfirmInfoViewController new];
+        sVC.confirmInfoModel_0 =self.confirmInfoModel;
         sVC.enableEdit =YES;
         LXWeakSelf(self)
         sVC.infoBlock = ^(LXConfirmInfoModel *confirmInfoModel) {
-            weakself.addCareModel.name = confirmInfoModel.name;
+            weakself.confirmInfoModel = confirmInfoModel;
+            //weakself.addCareModel.name = confirmInfoModel.name;
             weakself.addCareModel.acNo = confirmInfoModel.acNo;
             weakself.addCareModel.siCardNo = confirmInfoModel.siCardNo;
             weakself.addCareModel.computerNo = confirmInfoModel.computerNo;
             weakself.addCareModel.images = confirmInfoModel.images;
             weakself.addCareModel.imageTypes = confirmInfoModel.imageTypes;
+             [weakself setUpTable];
         };
         
         [self.navigationController pushViewController:sVC animated:YES];
@@ -534,10 +607,7 @@ static CGFloat const LXBGViewHeight = 246.f;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section != 2) {
-        NSString *tempString = self.dataSource[indexPath.section][indexPath.row];
-        
-        if (!([tempString isEqualToString:@"是否已通过长护险待遇评定"] || [tempString isEqualToString:@"等级认证"] || [tempString isEqualToString:@"信息认证"])) {
+    if (indexPath.section != 1) {
             UIButton *starBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             [starBtn setBackgroundImage:[UIImage imageNamed:@"Mine_care_add"] forState:UIControlStateNormal];
             [cell.contentView addSubview:starBtn];
@@ -548,7 +618,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                 make.centerY.mas_equalTo(cell.contentView);
             }];
         }
-    }
+    
 }
 
 
@@ -567,6 +637,9 @@ static CGFloat const LXBGViewHeight = 246.f;
             [self.search AMapGeocodeSearch:request];
         }
         
+    }
+    if (textField== self.carNoTF) {
+        self.addCareModel.cardNo = textField.text;
     }
 }
 /* 理编码回调. */
@@ -647,6 +720,7 @@ static CGFloat const LXBGViewHeight = 246.f;
     [self updateView];
 }
 
+/*
 - (void)switchValue {
     if (self.switch1.isOn) {
         self.addCareModel.ifPass = @"1";
@@ -659,7 +733,7 @@ static CGFloat const LXBGViewHeight = 246.f;
     
     [self updateView];
 }
-
+*/
 - (void)myConfirmBtnClick {
     self.viewModel = [LXAddCareViewModel new];
     
@@ -667,7 +741,7 @@ static CGFloat const LXBGViewHeight = 246.f;
     [SVProgressHUD showWithStatus:@"加载中……"];
     
     NSMutableDictionary *dictP = [NSMutableDictionary dictionary];
-    
+
     if (self.addCareModel.userId) {
         [dictP setValue:self.addCareModel.userId forKey:@"userId"];
     }
@@ -687,6 +761,15 @@ static CGFloat const LXBGViewHeight = 246.f;
         [SVProgressHUD showInfoWithStatus:@"请选择性别"];
         return;
     }
+    
+    if (self.addCareModel.cardNo) {
+        [dictP setValue:self.addCareModel.cardNo forKey:@"cardNo"];
+    }
+    else {
+        [SVProgressHUD showInfoWithStatus:@"请输入身份证号"];
+        return;
+    }
+    
     
     if (self.addCareModel.birthday) {
         [dictP setValue:self.addCareModel.birthday forKey:@"birthday"];
@@ -731,17 +814,20 @@ static CGFloat const LXBGViewHeight = 246.f;
         
     }
     
-    if (![self.addCareModel.ifPass isEqualToString:@"1"]) {
-        [dictP setValue:@"0" forKey:@"ifPass"];
+    if(self.states==0){
+        
         if (self.addCareModel.cardNo.length>0 && self.addCareModel.personNatureId.length>0 && self.addCareModel.careTypeId.length>0 && self.addCareModel.images.length>0 && self.addCareModel.imageTypes.length>0&&self.addCareModel.siCardNo.length>0){
-            [dictP setValue:self.addCareModel.cardNo forKey:@"cardNo"];
+            
+            [dictP setValue:@"0" forKey:@"ifPass"];
+            [dictP setValue:@"1" forKey:@"ratingLeed"];
+            
             [dictP setValue:self.addCareModel.personNatureId forKey:@"personNatureId"];
             [dictP setValue:self.addCareModel.careTypeId forKey:@"careTypeId"];
             [dictP setValue:self.addCareModel.images forKey:@"imageIds"];
             [dictP setValue:self.addCareModel.imageTypes forKey:@"imageTypes"];
             [dictP setValue:self.addCareModel.siCardNo forKey:@"siCardNo"];
             
-           
+            
             [dictP setValue:self.addCareModel.livingCare forKey:@"livingCareType"];
             [dictP setValue:self.addCareModel.serviceType forKey:@"serviceType"];
             [dictP setValue:self.addCareModel.presentAddress forKey:@"presentAddress"];
@@ -752,13 +838,14 @@ static CGFloat const LXBGViewHeight = 246.f;
             [dictP setValue:self.addCareModel.msAddress forKey:@"msAddress"];
             [dictP setValue:self.addCareModel.dmTypeId forKey:@"dmTypeId"];
             
-            [dictP setValue:@"1" forKey:@"ratingLeed"];
+            
         }else{
-            [dictP setValue:@"0" forKey:@"ratingLeed"];
+            [SVProgressHUD showInfoWithStatus:@"待遇申请不能为空"];
+            return;
         }
-        
     }
-    else {
+    
+    else if(self.states==1){
         if (self.addCareModel.acNo.length>0 && self.addCareModel.computerNo.length>0 && self.addCareModel.images.length>0 && self.addCareModel.imageTypes.length>0 && self.addCareModel.siCardNo.length>0) {
             
             [dictP setValue:self.addCareModel.acNo forKey:@"acNo"];
@@ -771,9 +858,12 @@ static CGFloat const LXBGViewHeight = 246.f;
             [dictP setValue:@"0" forKey:@"ratingLeed"];
         }
         else {
-            [SVProgressHUD showInfoWithStatus:@"信息认证不能为空"];
+            [SVProgressHUD showInfoWithStatus:@"认证信息不能为空"];
             return;
         }
+    } else{
+        [dictP setValue:@"0" forKey:@"ifPass"];
+        [dictP setValue:@"0" forKey:@"ratingLeed"];
     }
     
     [self.viewModel addCareWithParameters:dictP completionHandler:^(NSError *error, id result) {
@@ -784,6 +874,7 @@ static CGFloat const LXBGViewHeight = 246.f;
             if(self.reloadBlock){
                 self.reloadBlock();
             }
+            
             [SVProgressHUD showInfoWithStatus:@"您的申请已成功提交，审核完成结果会通知给您，请耐心等待!"];
             [self.navigationController popViewControllerAnimated:YES];
         }

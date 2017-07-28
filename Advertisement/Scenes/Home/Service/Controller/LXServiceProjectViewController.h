@@ -11,5 +11,8 @@
 @interface LXServiceProjectViewController : LXRootTableViewController
 @property(nonatomic,copy)NSString *careID;
 @property(nonatomic,copy)NSString *servType;
-@property (nonatomic,copy) void(^addBlock)(NSArray *arr);
+@property(nonatomic,strong)NSMutableArray *indexArr;
+@property(nonatomic,strong)NSMutableArray *selectArr_pass;
+@property (nonatomic,copy) void(^addBlock)(NSArray *arr,NSArray* index);
+
 @end

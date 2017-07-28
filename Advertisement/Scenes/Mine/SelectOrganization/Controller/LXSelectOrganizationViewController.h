@@ -17,4 +17,5 @@ typedef void(^SelectOrganization)(LXOrganizaitonModel *);
 @property (nonatomic, copy) SelectOrganization selectOrganizationBlock;
 @property (nonatomic)BOOL enbleEidts;
 @property (nonatomic,strong)NSDictionary *params;
+@property (nonatomic,strong)NSString *objID;
 @end

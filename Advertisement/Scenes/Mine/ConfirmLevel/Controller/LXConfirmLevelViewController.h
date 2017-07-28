@@ -15,5 +15,7 @@ typedef void(^ConfirmLevel)(LXConfirmLevelModel *levelModel);
 @interface LXConfirmLevelViewController : LXRootTableViewController
 @property (nonatomic,strong) RatingLeedInfor *ratingModel;
 @property (nonatomic, copy) ConfirmLevel levelBlock;
+@property(nonatomic,strong) LXConfirmLevelModel *levelModel;
+
 @property (nonatomic)BOOL enableEdits;
 @end

@@ -62,19 +62,38 @@
     fixedSpaceBarButtonItem.width = -10;
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.myConfirmB];
     self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
+    NSThread *thread = [[NSThread alloc]initWithTarget:self selector:@selector(creatView) object:nil];
+    [thread start];
     
+    self.repeatTime = self.repeatTimeInter;
+    [self.repeatL setText:[self generateRepestStringWithInteger:self.repeatTime]];
     [SVProgressHUD showWithStatus:@"加载中……"];
 }
+-(void)creatView{
+     [self.view addSubview:self.calendarView];
+    [self.view addSubview:self.repeatView];
+    if(self.timeStringArr.count>0&&![self.timeStringArr[0] isEqualToString:@""]){
+        self.timeArray = self.timeStringArr;
+       
+        for (NSString *time in self.timeArray) {
+            NSArray *tempArr0 =[time componentsSeparatedByString:@" "];
+            NSArray *tempArray = [tempArr0[0] componentsSeparatedByString:@"-"];
+            NSString *month = tempArray[1];
+            NSString *date = [NSString stringWithFormat:@"%@-%d-%@",tempArray[0],month.intValue ,tempArray.lastObject];
+            [self.dateArr addObject:date];
+            [self.calendarView reloadWithSelectTime:[time substringWithRange:NSMakeRange(11, 5)] day:date];
+        }
+        
+    }
 
+}
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    [self.view addSubview:self.calendarView];
-    [self.view addSubview:self.repeatView];
 }
 
 
@@ -83,21 +102,40 @@
 - (void)selectDateWithDate:(NSString *)date {
     LXLog(@"%@", date);
     if(self.dateArr.count>0){
-        for (NSString *d in (NSArray*)self.dateArr) {
-            if([date isEqualToString:d]){
-                [self.calendarView reloadWithSelectTime:@"" day:date];
-                [self.timeArray removeLastObject];
-                [self.dateArr removeObject:date];
-                self.dateStr = @"";
-                break;
-            }else{
-                if(self.timeArray.count<2){
-                    self.mouthTime = date;
-                    [self.view addSubview:self.bigBGView];
+         BOOL  isHave = NO;
+            for (NSString *d in (NSArray*)self.dateArr) {
+                if([date isEqualToString:d]){
+                    [self.calendarView reloadWithSelectTime:@"" day:date];
+                    for (NSString *timeS in self.timeArray) {
+                        NSArray *tempArray = [timeS componentsSeparatedByString:@"-"];
+                        NSArray *dataArray =[date componentsSeparatedByString:@"-"];
+                        NSString *temp0 = tempArray[0];
+                         NSString *temp1 = tempArray[1];
+                         NSString *temp2 = tempArray.lastObject;
+                        
+                        NSString *data0  = dataArray[0];
+                         NSString *data1  = dataArray[1];
+                         NSString *data2  = dataArray.lastObject;
+                        
+                        if(temp0.intValue==data0.intValue&&temp1.intValue==data1.intValue&&temp2.intValue==data2.intValue){
+                            [self.timeArray removeObject:timeS];
+                            break;
+                        }
+                    }
+                    [self.dateArr removeObject:date];
+                    self.dateStr = @"";
+                    isHave = YES;
+                    break;
                 }
                 
             }
-        }
+            if(!isHave){
+                self.mouthTime = date;
+                [self.view addSubview:self.bigBGView];
+            }
+        
+
+        
     }else{
         self.mouthTime = date;
         [self.view addSubview:self.bigBGView];
@@ -134,6 +172,7 @@
     LXWeakSelf(self);
     
     LXTimeRepeatViewController *trVC = [LXTimeRepeatViewController new];
+    trVC.repeatT = self.repeatTime;
     trVC.myblock = ^(NSInteger repeat) {
         weakself.repeatTime = repeat;
         
@@ -274,6 +313,7 @@
 
 - (SKCalendarView *)calendarView {
     if (!_calendarView) {
+        
         _calendarView = [[SKCalendarView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 420)];
         
         _calendarView.delegate = self;
@@ -291,7 +331,7 @@
         
     }
     
-    [SVProgressHUD dismiss];
+  [SVProgressHUD dismiss];
     
     return _calendarView;
 }
@@ -386,9 +426,11 @@
         [_pickDataSource addObject:component1];
         
         NSMutableArray *component2 = [NSMutableArray array];
-        for (int i = 0; i <= 60 ; i++) {
-            [component2 addObject:[NSString stringWithFormat:@"%d分", i]];
-        }
+//        for (int i = 0; i <= 60 ; i++) {
+//            [component2 addObject:[NSString stringWithFormat:@"%d分", i]];
+//        }
+        [component2 addObject:@"0分"];
+         [component2 addObject:@"30分"];
         [_pickDataSource addObject:component2];
     }
     return _pickDataSource;

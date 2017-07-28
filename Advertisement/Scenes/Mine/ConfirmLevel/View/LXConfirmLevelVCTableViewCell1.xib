@@ -35,7 +35,7 @@
                     <constraint firstItem="dEu-kP-iQi" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="9vH-nk-OX3"/>
                     <constraint firstItem="ObE-Xl-SqM" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="HDQ-rA-LiX"/>
                     <constraint firstItem="dEu-kP-iQi" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="150" id="HTx-6P-A4d"/>
-                    <constraint firstAttribute="trailing" secondItem="dEu-kP-iQi" secondAttribute="trailing" constant="10" id="LVP-hN-Jfr"/>
+                    <constraint firstAttribute="trailing" secondItem="dEu-kP-iQi" secondAttribute="trailing" constant="15" id="LVP-hN-Jfr"/>
                     <constraint firstItem="ObE-Xl-SqM" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="sQw-Qs-14n"/>
                 </constraints>
             </tableViewCellContentView>

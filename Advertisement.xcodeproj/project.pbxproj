@@ -7,8 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F1784901F248D6400F33E3A /* WBPopMenuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F1784851F248D6400F33E3A /* WBPopMenuModel.m */; };
+		5F1784911F248D6400F33E3A /* WBPopMenuSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F1784871F248D6400F33E3A /* WBPopMenuSingleton.m */; };
+		5F1784921F248D6400F33E3A /* WBPopMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F1784891F248D6400F33E3A /* WBPopMenuView.m */; };
+		5F1784931F248D6400F33E3A /* WBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F17848B1F248D6400F33E3A /* WBTableViewCell.m */; };
+		5F1784941F248D6400F33E3A /* WBTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F17848D1F248D6400F33E3A /* WBTableViewDataSource.m */; };
+		5F1784951F248D6400F33E3A /* WBTableViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F17848F1F248D6400F33E3A /* WBTableViewDelegate.m */; };
 		5F4679E71F1DCCFD00F2CD72 /* user.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F4679E61F1DCCFD00F2CD72 /* user.html */; };
 		5F4679E91F1DCD0600F2CD72 /* aboutUS.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F4679E81F1DCD0600F2CD72 /* aboutUS.html */; };
+		5F4811391F24F16600798059 /* ReservationStadusController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4811381F24F16600798059 /* ReservationStadusController.m */; };
 		5F544DB71F135EF300727CAA /* itemModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F544DB61F135EF300727CAA /* itemModel.m */; };
 		5F544DBA1F14749E00727CAA /* MsgAuthenticationInfor.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F544DB91F14749E00727CAA /* MsgAuthenticationInfor.m */; };
 		5F544DBD1F1474AA00727CAA /* RatingLeedInfor.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F544DBC1F1474AA00727CAA /* RatingLeedInfor.m */; };
@@ -302,8 +309,22 @@
 /* Begin PBXFileReference section */
 		34A1FD275DA1476A7FFC8D39 /* Pods-Advertisement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Advertisement.release.xcconfig"; path = "Pods/Target Support Files/Pods-Advertisement/Pods-Advertisement.release.xcconfig"; sourceTree = "<group>"; };
 		3BA42BEB2236020CAA94C0DB /* Pods-Advertisement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Advertisement.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Advertisement/Pods-Advertisement.debug.xcconfig"; sourceTree = "<group>"; };
+		5F1784841F248D6400F33E3A /* WBPopMenuModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBPopMenuModel.h; sourceTree = "<group>"; };
+		5F1784851F248D6400F33E3A /* WBPopMenuModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBPopMenuModel.m; sourceTree = "<group>"; };
+		5F1784861F248D6400F33E3A /* WBPopMenuSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBPopMenuSingleton.h; sourceTree = "<group>"; };
+		5F1784871F248D6400F33E3A /* WBPopMenuSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBPopMenuSingleton.m; sourceTree = "<group>"; };
+		5F1784881F248D6400F33E3A /* WBPopMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBPopMenuView.h; sourceTree = "<group>"; };
+		5F1784891F248D6400F33E3A /* WBPopMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBPopMenuView.m; sourceTree = "<group>"; };
+		5F17848A1F248D6400F33E3A /* WBTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBTableViewCell.h; sourceTree = "<group>"; };
+		5F17848B1F248D6400F33E3A /* WBTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBTableViewCell.m; sourceTree = "<group>"; };
+		5F17848C1F248D6400F33E3A /* WBTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBTableViewDataSource.h; sourceTree = "<group>"; };
+		5F17848D1F248D6400F33E3A /* WBTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBTableViewDataSource.m; sourceTree = "<group>"; };
+		5F17848E1F248D6400F33E3A /* WBTableViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBTableViewDelegate.h; sourceTree = "<group>"; };
+		5F17848F1F248D6400F33E3A /* WBTableViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBTableViewDelegate.m; sourceTree = "<group>"; };
 		5F4679E61F1DCCFD00F2CD72 /* user.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = user.html; sourceTree = "<group>"; };
 		5F4679E81F1DCD0600F2CD72 /* aboutUS.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = aboutUS.html; sourceTree = "<group>"; };
+		5F4811371F24F16600798059 /* ReservationStadusController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReservationStadusController.h; sourceTree = "<group>"; };
+		5F4811381F24F16600798059 /* ReservationStadusController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReservationStadusController.m; sourceTree = "<group>"; };
 		5F544DB51F135EF300727CAA /* itemModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = itemModel.h; sourceTree = "<group>"; };
 		5F544DB61F135EF300727CAA /* itemModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = itemModel.m; sourceTree = "<group>"; };
 		5F544DB81F14749E00727CAA /* MsgAuthenticationInfor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgAuthenticationInfor.h; sourceTree = "<group>"; };
@@ -866,6 +887,25 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		5F1784831F248D6400F33E3A /* PopMenuView */ = {
+			isa = PBXGroup;
+			children = (
+				5F1784841F248D6400F33E3A /* WBPopMenuModel.h */,
+				5F1784851F248D6400F33E3A /* WBPopMenuModel.m */,
+				5F1784861F248D6400F33E3A /* WBPopMenuSingleton.h */,
+				5F1784871F248D6400F33E3A /* WBPopMenuSingleton.m */,
+				5F1784881F248D6400F33E3A /* WBPopMenuView.h */,
+				5F1784891F248D6400F33E3A /* WBPopMenuView.m */,
+				5F17848A1F248D6400F33E3A /* WBTableViewCell.h */,
+				5F17848B1F248D6400F33E3A /* WBTableViewCell.m */,
+				5F17848C1F248D6400F33E3A /* WBTableViewDataSource.h */,
+				5F17848D1F248D6400F33E3A /* WBTableViewDataSource.m */,
+				5F17848E1F248D6400F33E3A /* WBTableViewDelegate.h */,
+				5F17848F1F248D6400F33E3A /* WBTableViewDelegate.m */,
+			);
+			path = PopMenuView;
+			sourceTree = "<group>";
+		};
 		5FA722EE1F0550CF00ED305A /* OpenSDK1.7.8 */ = {
 			isa = PBXGroup;
 			children = (
@@ -1025,6 +1065,8 @@
 			children = (
 				E25169631EEAFAF600BA7086 /* LXReservationViewController.h */,
 				E25169641EEAFAF600BA7086 /* LXReservationViewController.m */,
+				5F4811371F24F16600798059 /* ReservationStadusController.h */,
+				5F4811381F24F16600798059 /* ReservationStadusController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -2206,6 +2248,7 @@
 		E28AE3A01EB31FA90033F610 /* Vender */ = {
 			isa = PBXGroup;
 			children = (
+				5F1784831F248D6400F33E3A /* PopMenuView */,
 				5FCC2AE21F0D2D400050BADA /* IQKeyboardManager */,
 				E2A4E8DD1EF3CEF600D3BDCF /* JFCityViewController */,
 				E2A4E8C81EF3762F00D3BDCF /* DHGuidePageHUD */,
@@ -3373,6 +3416,7 @@
 				E267173E1EFA0AB300D25AA1 /* LXOrderListModel.m in Sources */,
 				E2B880391F00B0E6008652B2 /* LXWeixinPayModel.m in Sources */,
 				E2A7BEB51EF8CCFA00BCC7FB /* LXStaffInfoViewModel.m in Sources */,
+				5F1784941F248D6400F33E3A /* WBTableViewDataSource.m in Sources */,
 				5FCC2B121F0D2D400050BADA /* IQTitleBarButtonItem.m in Sources */,
 				E25169711EEC35CA00BA7086 /* LXStaffViewController.m in Sources */,
 				E2A7BEAC1EF8C6F700BCC7FB /* LXStaffViewModel.m in Sources */,
@@ -3416,6 +3460,7 @@
 				E25169661EEAFAF600BA7086 /* LXReservationViewController.m in Sources */,
 				E2810F851EE7D7A2003610DC /* HHNetworkAPIRecorder.m in Sources */,
 				E2810FE11EE80023003610DC /* LXWaitOrdetVCTableViewCell.m in Sources */,
+				5F1784911F248D6400F33E3A /* WBPopMenuSingleton.m in Sources */,
 				E2597F071EF2441300AAAF6D /* LXTimeRepeatViewController.m in Sources */,
 				5FDCF3AC1F0636F4009FA12E /* OrderViewModel.m in Sources */,
 				E2A4E8DC1EF3C7AE00D3BDCF /* LXSelectCityViewController.m in Sources */,
@@ -3442,6 +3487,7 @@
 				E2CAFC441EE94A1B0063E5DB /* LXSettingVCTableViewCell.m in Sources */,
 				E269842B1EF11C700025D46B /* SKCalendarCollectionViewCell.m in Sources */,
 				E2A4E8FC1EF3CEF600D3BDCF /* JFSearchView.m in Sources */,
+				5F1784951F248D6400F33E3A /* WBTableViewDelegate.m in Sources */,
 				E293C2821EFCB1E10017B54C /* LXMessageModel.m in Sources */,
 				E2A4E8F41EF3CEF600D3BDCF /* JFAreaDataManager.m in Sources */,
 				E2597F251EF2776000AAAF6D /* LXAddCareVCTableViewCell2.m in Sources */,
@@ -3453,7 +3499,9 @@
 				5FDCF3A91F061A1A009FA12E /* MapApiViewModel.m in Sources */,
 				E2CA0D481EE6A3B100249BC0 /* ZJCollectionView.m in Sources */,
 				E202080C1EFDB8250044DD52 /* LXConfirmLevelVCTableViewCell2.m in Sources */,
+				5F4811391F24F16600798059 /* ReservationStadusController.m in Sources */,
 				E2810FAB1EE7D952003610DC /* LXOrganizationTableViewCell.m in Sources */,
+				5F1784931F248D6400F33E3A /* WBTableViewCell.m in Sources */,
 				E2810F911EE7D7A2003610DC /* HHUserAPIManager.m in Sources */,
 				E251696A1EEB0ABF00BA7086 /* LXConfirmOrderView.m in Sources */,
 				E267178D1EFA70A500D25AA1 /* LXServiceDetailModel.m in Sources */,
@@ -3525,11 +3573,13 @@
 				E25169751EEC39C800BA7086 /* LXStaffVCTableViewCell.m in Sources */,
 				E2CA0D4C1EE6A3B100249BC0 /* ZJSegmentStyle.m in Sources */,
 				E2597F2E1EF284B800AAAF6D /* LXBarthelViewController.m in Sources */,
+				5F1784901F248D6400F33E3A /* WBPopMenuModel.m in Sources */,
 				E2810F891EE7D7A2003610DC /* HHNormalAPIManager.m in Sources */,
 				E2C480A81EEEA3820004EF5A /* LXServiceProjectViewController.m in Sources */,
 				E2A4E8FB1EF3CEF600D3BDCF /* JFCityViewController.m in Sources */,
 				5FCC2B0C1F0D2D400050BADA /* IQUIWindow+Hierarchy.m in Sources */,
 				E28FDE821EFB5DC300EF704B /* LXOrderDetailModel.m in Sources */,
+				5F1784921F248D6400F33E3A /* WBPopMenuView.m in Sources */,
 				E2A4E8D41EF3C0FE00D3BDCF /* LXHomeTitleView.m in Sources */,
 				E2CA0D661EE6A9DE00249BC0 /* LXHavenOrderViewController.m in Sources */,
 				E2A4E8CE1EF3762F00D3BDCF /* DHGifImageOperation.m in Sources */,

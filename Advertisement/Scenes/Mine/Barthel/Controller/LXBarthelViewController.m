@@ -61,12 +61,17 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
         self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
     }
     
+    if(self.cheackDic.allKeys.count>0){
+        _isDetail = NO;
+        self.recordDictionary =[NSMutableDictionary dictionaryWithDictionary:self.cheackDic] ;
+    }
     //详情里过来的
     if(_isDetail){
         self.careDetailBartherLeavlArr = [NSMutableArray array];
         for (CareDetailBartherModel *model in (NSArray*)self.bartherLevelArr) {
             NSDictionary *dic =model.bgList[0];
-            [self.recordDictionary setValue:dic[@"evaItemVal"] forKey:model.evaItem];
+            LXBarthelLevelModel *model2 = [LXBarthelLevelModel modelWithDictionary:dic];
+            [self.recordDictionary setValue:model2 forKey:model.evaItem];
             [self.careDetailBartherLeavlArr addObject:model];
         }
     }
@@ -132,7 +137,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
             }
             
             [self.view addSubview:self.bigBGView];
-            [self.pickView  reloadAllComponents];//这一句必须放在下一句的前面,否则会有 bug
+            [self.pickView  reloadAllComponents];
             [self.pickView  selectRow:0 inComponent:0 animated:YES];
             
         }
@@ -173,8 +178,21 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
         [self addCustomeLineWithArray:[self.dataSource copy] indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
     }
     
+
     LXBarthelModel *barthelModel = self.dataSource[indexPath.row];
-    
+    if(self.cheackDic.allKeys>0){
+        
+        [self.cheackDic.allKeys enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            if([self.cheackDic.allKeys[idx] isEqualToString:barthelModel.evaItem]){
+                LXBarthelLevelModel *model = self.cheackDic.allValues[idx];
+                barthelModel.value =model.barContent;
+                *stop = YES;
+            }
+        }];
+        
+       
+    }
     cell.barthelModel = barthelModel;
     
     //详情穿过来的
@@ -182,7 +200,6 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
         CareDetailBartherModel *careBartherModel = self.careDetailBartherLeavlArr[indexPath.row];
         cell.careDetailBartherModel = careBartherModel;
     }
-    
     
     return cell;
 }
@@ -240,10 +257,10 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
             NSString * key = [_recordDictionary.allKeys objectAtIndex:i];
             
             //通过键，找到相对应的值
-            NSString * value = [_recordDictionary valueForKey:key];
+            LXBarthelLevelModel * valueModel = [_recordDictionary valueForKey:key];
             //或者
             // NSString * value = [dict objectForKey:key];
-            self.totalScore += value.intValue;
+            self.totalScore += valueModel.dispOrder.intValue;
         }
         if(self.barthelBlock){
             self.barthelBlock(self.recordDictionary, self.totalScore);
@@ -272,7 +289,7 @@ static NSString *const LXBarthelVCTableViewCellID = @"LXBarthelVCTableViewCellID
     LXBarthelModel *barthelModel = self.dataSource[index.row];
     barthelModel.value =self.myLevelModel.barContent;
     
-    [self.recordDictionary setValue:self.myLevelModel.dispOrder forKey:self.myModel.evaItem];
+    [self.recordDictionary setValue:self.myLevelModel forKey:self.myModel.evaItem];
     self.myLevelModel = nil;
     
     [self.bigBGView removeFromSuperview];

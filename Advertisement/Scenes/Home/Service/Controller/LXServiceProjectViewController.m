@@ -29,6 +29,7 @@ static CGFloat LXServiceProjectTableViewRowHeight = 50;
 @property (nonatomic, strong) LXServiceProjectViewModel *viewModel;
 
 @property (nonatomic, strong) NSMutableArray *selectArray;
+@property (nonatomic, strong) NSMutableArray *selectArrayIndex;
 
 @end
 
@@ -41,6 +42,7 @@ static CGFloat LXServiceProjectTableViewRowHeight = 50;
     self.navigationItem.title = @"服务项目";
     self.view.backgroundColor = LXVCBackgroundColor;
     self.selectArray = [NSMutableArray array];
+    self.selectArrayIndex = [NSMutableArray array];
     
     UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceBarButtonItem.width = -10;
@@ -75,13 +77,23 @@ static CGFloat LXServiceProjectTableViewRowHeight = 50;
         if (code == 0) {
             NSArray *objectArray = result[@"goodsList"];
             if(objectArray.count==0){
-                [SVProgressHUD showErrorWithStatus:@"该照护对象未审核或审核失败！"];
+                [SVProgressHUD showErrorWithStatus:@"该机构无此类型服务项目！"];
             }else{
                 for (NSDictionary *ojectDict in objectArray) {
                     LXServiceProjectModel *tempModel = [LXServiceProjectModel modelWithDictionary:ojectDict];
                     [self.dataSource addObject:tempModel];
                 }
                 
+                if(self.indexArr.count>0){
+                    [self.indexArr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                        NSString *str =[NSString stringWithFormat:@"%@",obj] ;
+                        LXServiceProjectModel *model = self.dataSource[str.intValue];
+                        model.isSelect = YES;
+                        [self.selectArray addObject:model];
+                        [self.selectArrayIndex addObject:@(str.intValue)];
+                    }];
+                    
+                }
                 [self.tableView reloadData];
             }
             
@@ -123,6 +135,14 @@ static CGFloat LXServiceProjectTableViewRowHeight = 50;
     LXWeakSelf(self);
     
     LXServiceProjectModel *serviceProjectModel = self.dataSource[indexPath.row];
+    if(serviceProjectModel.isSelect){
+       
+            [cell.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_selected"] forState:UIControlStateNormal];
+        }
+        else{
+            [cell.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_normal"] forState:UIControlStateNormal];
+    }
+    
     
     cell.serviceProjectModel = serviceProjectModel;
     cell.cellSelectBlock = ^{
@@ -146,10 +166,14 @@ static CGFloat LXServiceProjectTableViewRowHeight = 50;
     
     if (![weakself.selectArray containsObject:serviceProjectModel]) {
         [weakself.selectArray addObject:serviceProjectModel];
+        [weakself.selectArrayIndex addObject:@(indexPath.row)];
+        serviceProjectModel.isSelect = YES;
         LXServiceProjectVCTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         [cell.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_selected"] forState:UIControlStateNormal];
     }else{
         [weakself.selectArray removeObject:serviceProjectModel];
+         serviceProjectModel.isSelect = NO;
+         [weakself.selectArrayIndex removeObject:@(indexPath.row)];
         LXServiceProjectVCTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         [cell.arrowBtn setBackgroundImage:[UIImage imageNamed:@"Home_cell_normal"] forState:UIControlStateNormal];
     }
@@ -160,7 +184,7 @@ static CGFloat LXServiceProjectTableViewRowHeight = 50;
 
 - (void)addBtnClick {
     if(self.addBlock){
-        self.addBlock(self.selectArray);
+        self.addBlock(self.selectArray,self.selectArrayIndex);
     }
     [self.navigationController popViewControllerAnimated:YES];
 }

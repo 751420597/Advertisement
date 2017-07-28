@@ -18,7 +18,7 @@
 #import "LXServiceProjectViewController.h"
 #import "LXTimeSelectViewController.h"
 #import "LXCareViewController.h"
-
+#import "ReservationStadusController.h"
 #import "LXReservationVCTableViewCellNormal.h"
 #import "LXReservationVCTableViewCellNormalBig.h"
 #import "LXReservationVCTableViewCellSelectEnter.h"
@@ -45,14 +45,9 @@
 @property (nonatomic, strong) UITextView *remarkTV;
 @property (nonatomic, copy) NSString *remarkString;
 
-@property (nonatomic, strong) UILabel *timeL1;
-@property (nonatomic, strong) UILabel *timeL2;
-@property (nonatomic, strong) UILabel *repeatL;
-
-@property (nonatomic, copy) NSString *timeL1String;
-@property (nonatomic, copy) NSString *timeL2String;
 @property (nonatomic, strong) NSMutableArray *timeArray;
 @property (nonatomic, copy) NSString *repeatLString;
+@property (nonatomic, copy) NSString *timeString;
 
 @property (nonatomic, strong) LXConfirmOrderView *confirmView;
 @property (nonatomic, strong) LXOderDealView *orderDealView;
@@ -70,6 +65,9 @@
 @property (nonatomic, copy) NSString *atitude;
 @property (nonatomic, copy) NSString *addrId;
 @property (nonatomic, copy) NSString *goodsName;
+@property (nonatomic,strong) NSArray *timeArray_0;
+
+@property (nonatomic, strong) NSMutableArray *indexArr1;
 @end
 
 
@@ -95,11 +93,10 @@
     self.atitude = @"";
     self.goodsName = @"";
     
-    self.serverType = 1;
+    self.serverType = 0;
     self.timeArray = [NSMutableArray array];
-    self.timeL1String = @"预约时间";
-    self.timeL2String  = @"预约时间";
-    self.repeatLString = @"重复次数";
+    self.indexArr1 =[NSMutableArray array];
+    
     self.careName = @"请选择照护对象";
     self.careID = nil;
     self.search = [[AMapSearchAPI alloc] init];
@@ -122,17 +119,6 @@
                                                  name:SVProgressHUDDidReceiveTouchEventNotification
                                                object:nil];
    
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    
-    if (self.serverType == 1) {
-        self.stayCell = (LXReservationTableViewCellSelectStay *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    }
-    else if (self.serverType == 2) {
-        self.stayCell = (LXReservationTableViewCellSelectStay *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -201,7 +187,8 @@
     [self.confirmView removeFromSuperview];
     self.confirmView = nil;
     [self.view addSubview:self.confirmView];
-    self.confirmView.totalSum = [NSString stringWithFormat:@"总价：%ld", (long)self.totalPrice];
+    self.confirmView.totalSum = [NSString stringWithFormat:@"总价：%ld", (long)self.totalPrice*self.timeArray_0.count];
+    self.confirmView.timeArr = self.timeArray_0;
     self.confirmView.dataSource = self.orderArray;
     [self.view bringSubviewToFront:self.confirmView];
     
@@ -211,169 +198,34 @@
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [self.dataSource count];
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.dataSource[section] count];
+    if(section==0){
+        return 4;
+    }else if (section==1){
+        return 3;
+    }else{
+        return 1;
+    }
+    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LXWeakSelf(self);
     
-    NSString *leadingString = self.dataSource[indexPath.section][indexPath.row];
+    NSString *leadingString =self.dataSource[indexPath.section][indexPath.row];
     
     if (indexPath.section == 0) {
         if (indexPath.row == 2) {
             LXReservationVCTableViewCellSelectEnter *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellSelectEnter" owner:self options:nil].firstObject;
-            
+            cell.middleL.textColor = LXMainColor;
             cell.leadingL.text = leadingString;
             cell.middleL.text = self.careName;
             self.selectCareL = cell.middleL;
             
             return cell;
-        }else {
-            LXReservationVCTableViewCellNormal *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormal" owner:self options:nil].firstObject;
-            
-            if (indexPath.row == 0) {
-                self.nameTF = cell.trailingTF;
-                self.nameTF.delegate = self;
-                self.nameTF.returnKeyType = UIReturnKeyDefault;
-                if (self.nameString.length > 0) {
-                    self.nameTF.text = self.nameString;
-                }
-                else {
-                    self.nameTF.placeholder = @"请输入联系人的姓名";
-                }
-            }
-            else {
-                self.phoneTF = cell.trailingTF;
-                self.phoneTF.delegate =self;
-                self.phoneTF.returnKeyType = UIReturnKeyDefault;
-                if (self.phoneString.length > 0) {
-                    self.phoneTF.text = self.phoneString;
-                }
-                else {
-                    self.phoneTF.placeholder = @"请输入联系电话";
-                }
-            }
-            
-            cell.leadingL.text = leadingString;
-            
-            return cell;
-        }
-    }
-    else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            LXReservationTableViewCellSelectStay *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationTableViewCellSelectStay" owner:self options:nil].firstObject;
-            
-            cell.leadingL.text = @"服务类型";
-            cell.trailingL.text = @"基本生活照料服务";
-            if(self.serverType==1){
-                [cell selectBt:YES];
-            }else{
-                [cell selectBt:NO];
-            }
-            return cell;
-        }
-        else if (indexPath.row == 1) {
-            LXReservationTableViewCellSelectStay *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationTableViewCellSelectStay" owner:self options:nil].firstObject;
-            
-            cell.leadingLConstrait.constant = - 100;
-            cell.trailingL.text = @"医疗护理服务";
-            if(self.serverType==2){
-                [cell selectBt:YES];
-            }else{
-                [cell selectBt:NO];
-            }
-            return cell;
-        }
-        else if (indexPath.row == 2) {
-            LXReservationVCTableViewCellSelectEnter *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellSelectEnter" owner:self options:nil].firstObject;
-            
-            cell.middleLConstrait.constant = -100;
-            cell.leadingL.text = leadingString;
-            cell.middleL.text =self.goodsName;
-            return cell;
         }else if (indexPath.row==3){
-            
-            UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"section1row2"];
-            
-            UILabel *firstl = [[UILabel alloc] init];
-            [firstl setFont:[UIFont systemFontOfSize:14]];
-            [firstl setTextColor:LXColorHex(0x4c4c4c)];
-            [firstl setText:@"时间"];
-            [cell.contentView addSubview:firstl];
-            [firstl mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.top.mas_equalTo(cell.contentView).mas_offset(10);
-            }];
-            
-            self.timeL1 = [[UILabel alloc] init];
-            [cell.contentView addSubview:self.timeL1];
-            self.repeatL = [[UILabel alloc] init];
-            [cell.contentView addSubview:self.repeatL];
-            self.timeL2 = [[UILabel alloc] init];
-            [cell.contentView addSubview:self.timeL2];
-            
-            
-            [self.timeL1 setFont:[UIFont systemFontOfSize:14]];
-            [self.timeL1 setTextColor:LXColorHex(0xb2b2b2)];
-            [self.timeL1 setText:self.timeL1String];
-            
-            [self.timeL1 mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(cell.contentView).mas_offset(10);
-                make.leading.mas_equalTo(cell.contentView).mas_offset(98);
-                
-                make.height.mas_equalTo(@[weakself.timeL2, weakself.repeatL]);
-            }];
-            
-            [self.timeL2 setFont:[UIFont systemFontOfSize:14]];
-            [self.timeL2 setTextColor:LXColorHex(0xb2b2b2)];
-            [self.timeL2 setText:self.timeL2String];
-            
-            [self.timeL2 mas_makeConstraints:^(MASConstraintMaker *make) {
-                //                make.leading.mas_equalTo(cell.contentView).mas_offset(70);
-                //                make.centerY.mas_equalTo(cell.contentView);
-                
-                make.top.mas_equalTo(weakself.timeL1.mas_bottom).mas_offset(5);
-                make.bottom.mas_equalTo(weakself.repeatL.mas_top).mas_offset(-5);
-                make.leading.mas_equalTo(cell.contentView).mas_offset(98);
-                
-                //make.height.mas_equalTo(@[weakself.timeL1, weakself.repeatL]);
-            }];
-            
-            
-            [self.repeatL setFont:[UIFont systemFontOfSize:14]];
-            [self.repeatL setTextColor:LXColorHex(0xb2b2b2)];
-            [self.repeatL setText:self.repeatLString];
-            
-            [self.repeatL mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.mas_equalTo(cell.contentView).mas_offset(98);
-                make.bottom.mas_equalTo(cell.contentView).mas_offset(-10);
-                
-                //make.height.mas_equalTo(@[weakself.timeL1, weakself.timeL2]);
-            }];
-            
-            UIButton *arrowB = [UIButton buttonWithType:UIButtonTypeCustom];
-            [arrowB setBackgroundImage:[UIImage imageNamed:@"Organization_arrow"] forState:UIControlStateNormal];
-            [cell.contentView addSubview:arrowB];
-            [arrowB mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(10);
-                make.height.mas_equalTo(15);
-                make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
-                make.centerY.mas_equalTo(cell.contentView);
-            }];
-            
-            
-            return cell;
-            
-        }
-
-        
-        
-    }
-    else if (indexPath.section == 2) {
-        if (indexPath.row == 0) {
             LXReservationVCTableViewCellNormalBig *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormalBig" owner:self options:nil].firstObject;
             
             cell.leadingL.text = leadingString;
@@ -396,11 +248,78 @@
                 [self.addressTV setTextColor:LXColorHex(0xb2b2b2)];
                 self.addressTV.text = @"请输入你的联系地址";
             }
-            
-
             return cell;
         }
-        else if (indexPath.row == 1) {
+        else {
+            LXReservationVCTableViewCellNormal *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormal" owner:self options:nil].firstObject;
+            
+            if (indexPath.row == 0) {
+                self.nameTF = cell.trailingTF;
+                self.nameTF.delegate = self;
+                self.nameTF.returnKeyType = UIReturnKeyDefault;
+                if (self.nameString.length > 0) {
+                    self.nameTF.text = self.nameString;
+                }
+                else {
+                    self.nameTF.placeholder = @"请输入联系人的姓名";
+                    [self.nameTF setValue:LXMainColor forKeyPath:@"_placeholderLabel.textColor"];
+                }
+            }
+            else {
+                self.phoneTF = cell.trailingTF;
+                self.phoneTF.delegate =self;
+                self.phoneTF.returnKeyType = UIReturnKeyDefault;
+                if (self.phoneString.length > 0) {
+                    self.phoneTF.text = self.phoneString;
+                }
+                else {
+                    self.phoneTF.placeholder = @"请输入联系电话";
+                    [self.phoneTF setValue:LXMainColor forKeyPath:@"_placeholderLabel.textColor"];
+                }
+            }
+            
+            cell.leadingL.text = leadingString;
+            
+            return cell;
+        }
+    }
+    
+    else if (indexPath.section == 1) {
+       
+            LXReservationVCTableViewCellSelectEnter *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellSelectEnter" owner:self options:nil].firstObject;
+            
+            cell.leadingL.text = leadingString;
+        cell.middleL.textColor = LXMainColor;
+        if (indexPath.row==1) {
+            if(self.goodsName.length<=0){
+                cell.middleL.text =@"请选择服务项目";
+            }else{
+                cell.middleL.text =self.goodsName;
+            }
+        }else if (indexPath.row==2){
+            if(self.timeString.length<=0){
+                cell.middleL.text =@"请选择服务时间";
+            }else{
+                cell.middleL.text =self.timeString;
+            }
+        }else{
+            if(self.serverType ==1){
+                cell.middleL.text =@"基本生活照料服务";
+
+            }else if(self.serverType ==2){
+                cell.middleL.text =@"医疗护理服务";
+
+            }else{
+                cell.middleL.text =@"请选择服务类型";
+
+            }
+        }
+            
+         return cell;
+    
+    }
+    else if (indexPath.section == 2) {
+         if (indexPath.row == 0) {
             LXReservationVCTableViewCellNormalBig *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormalBig" owner:self options:nil].firstObject;
             
             cell.leadingL.text = leadingString;
@@ -409,10 +328,10 @@
             self.remarkTV = [[UITextView alloc]init];
             [cell.contentView addSubview:self.remarkTV];
             [_remarkTV mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(cell.contentView).offset(10);
                 make.trailing.equalTo(cell.contentView).offset(-10);
-                make.top.equalTo(cell.leadingL).offset(-8);
-                make.width.offset(250);
-                make.bottom.equalTo(cell.contentView).offset(-10);
+                make.top.equalTo(cell.contentView).offset(0);
+                make.bottom.equalTo(cell.contentView);
             }];
             self.remarkTV.delegate = self;
             self.remarkTV.font =[UIFont systemFontOfSize:14.f];
@@ -452,7 +371,23 @@
         }
     }
 }
-
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UILabel *label =[UILabel new];
+    label.frame = CGRectMake(0, 0, 100, 20);
+    label.font = [UIFont systemFontOfSize:14.5];
+    if(section==0){
+        label.text = @"丨基本信息";
+    }else if (section==1){
+        label.text = @"丨服务信息";
+    }else{
+        label.text = @"丨备注";
+    }
+    
+    return label;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 30;
+}
 -(void)textViewDidEndEditing:(UITextView *)textView{
     if(textView == self.addressTV){
         self.addressString = self.addressTV.text;
@@ -497,7 +432,7 @@
     if ([tempStrig isEqualToString:@"时间"]) {
         return 100;
     }
-    else if ([tempStrig isEqualToString:@"服务地址"]||[tempStrig isEqualToString:@"备注"]) {
+    else if ([tempStrig isEqualToString:@"服务地址"]||[tempStrig isEqualToString:@""]) {
         return 65;
     }
     else {
@@ -513,64 +448,91 @@
     if ([tempStrig isEqualToString:@"照护对象"]) {
         LXCareViewController *careViewController = [[LXCareViewController alloc] initWithIsAddCare:NO];
         careViewController.isOrder = YES;
+        careViewController.careID_0 = self.careID;
         LXWeakSelf(self);
         careViewController.selectBlock = ^(NSString *careID, NSString *name) {
              [SVProgressHUD showWithStatus:@"正在获取对象地址.."];
             weakself.careID = careID;
             weakself.careName = name;
             [weakself selectObjAdress:careID];
+            weakself.orderArray = [NSMutableArray array];
+            weakself.indexArr1 =[NSMutableArray array];
+            weakself.goodsName = @"";
+            weakself.totalPrice = 0;
+            weakself.timeString = @"";
+            weakself.serverType = 0;
             [weakself updateView];
+            
         };
         
         [self.navigationController pushViewController:careViewController animated:YES];
     }
-    else if ([tempStrig isEqualToString:@"时间"]) {
+    else if ([tempStrig isEqualToString:@"服务时间"]) {
         LXTimeSelectViewController *timeSVC = [[LXTimeSelectViewController alloc] init];
-        
+        NSString *repeatWeek = nil;
+        repeatWeek = self.repeatLString;
+        if([repeatWeek isEqualToString:@"一周"]){
+            repeatWeek=@"1";
+        }else if([repeatWeek isEqualToString:@"两周"]){
+            repeatWeek = @"2";
+        }else if([repeatWeek isEqualToString:@"三周"]){
+            repeatWeek = @"3";
+        }else if([repeatWeek isEqualToString:@"四周"]){
+            repeatWeek=@"4";
+        } else{
+            repeatWeek=@"0";
+        }
+        timeSVC.repeatTimeInter =repeatWeek.integerValue;
+        timeSVC.timeStringArr = (NSMutableArray *)[self.timeString componentsSeparatedByString:@","];
         LXWeakSelf(self);
         timeSVC.selectBlock = ^(NSArray *timeArray, NSString *repeat) {
-            if ([timeArray count] == 0) {
-                weakself.timeL1String = @"预约时间";
-                weakself.timeL2String  = @"预约时间";
-            }
-            else if ([timeArray count] == 1) {
+            weakself.timeString = @"";
+            weakself.timeArray_0 = timeArray;
+             if ([timeArray count] == 1) {
                 NSString *time1 =[timeArray[0] substringToIndex:16];
 //                NSString *time11= [time1 substringFromIndex:5];
 //                NSString *time111 =[time11 stringByReplacingOccurrencesOfString:@"-" withString:@"月"];
 //                weakself.timeL1String =[time111 stringByReplacingOccurrencesOfString:@" " withString:@"日 "] ;
-                weakself.timeL1String = time1;
-                weakself.timeL2String  = @"预约时间";
+                weakself.timeString = time1;
+                
             }
             else if ([timeArray count] >= 2) {
-                NSString *time1 =[timeArray[0] substringToIndex:16];
+//                NSString *time1 =[timeArray[0] substringToIndex:16];
 //                NSString *time11= [time1 substringFromIndex:5];
 //                NSString *time111 =[time11 stringByReplacingOccurrencesOfString:@"-" withString:@"月"];
 //                weakself.timeL1String =[time111 stringByReplacingOccurrencesOfString:@" " withString:@"日 "] ;
-                weakself.timeL1String = time1;
+               
                 
-                NSString *time2 =[timeArray[1] substringToIndex:16];
+//                NSString *time2 =[timeArray[1] substringToIndex:16];
 //                NSString *time22= [time2 substringFromIndex:5];
 //                NSString *time222 =[time22 stringByReplacingOccurrencesOfString:@"-" withString:@"月"];
 //                weakself.timeL2String =[time222 stringByReplacingOccurrencesOfString:@" " withString:@"日 "] ;
-                weakself.timeL2String =time2;
+                
+                for (NSString *timeS in timeArray) {
+                  NSString *tempS =  [timeS substringToIndex:16];
+                     weakself.timeString =[weakself.timeString stringByAppendingString:[NSString stringWithFormat:@"%@,",tempS]];
+                }
+                weakself.timeString = [weakself.timeString substringToIndex:weakself.timeString.length-1];
                 
             }
-        
-            weakself.timeArray = [timeArray mutableCopy];
             weakself.repeatLString = repeat;
-            
             [weakself updateView];
         };
         
         [self.navigationController pushViewController:timeSVC animated:YES];
     }
     else if ([tempStrig isEqualToString:@"服务项目"]) {
+        if(self.serverType<1){
+            [SVProgressHUD showInfoWithStatus:@"请先选择服务类型"];
+            [SVProgressHUD dismissWithDelay:1.5];
+            return;
+        }
         LXServiceProjectViewController *servicePVC = [[LXServiceProjectViewController alloc] init];
-        servicePVC.addBlock = ^(NSArray *arr) {
+        servicePVC.addBlock = ^(NSArray *arr,NSArray *indexArr) {
             self.totalPrice = 0;
             self.goodsName = @"";
             self.orderArray = [NSMutableArray arrayWithArray:arr];
-            
+            self.indexArr1 =[NSMutableArray arrayWithArray:indexArr];
             if (self.orderArray.count > 0) {
                 for (LXServiceProjectModel *model in self.orderArray) {
                     self.totalPrice += model.price.integerValue;
@@ -581,22 +543,27 @@
             [self updateView];
         };
         servicePVC.careID = self.careID;
+        servicePVC.indexArr = self.indexArr1;
+        servicePVC.selectArr_pass = self.orderArray;
         servicePVC.servType =[NSString stringWithFormat:@"%ld",self.serverType] ;
         [self.navigationController pushViewController:servicePVC animated:YES];
     }
     else if ([tempStrig isEqualToString:@"服务类型"]) {
-        self.serverType = 1;
-        self.orderArray = [NSMutableArray array];
-        self.goodsName = @"";
-        self.totalPrice = 0;
-        [self updateView];
-    }
-    else if ([tempStrig isEqualToString:@"服务类型1"]) {
-        self.serverType = 2;
-        self.goodsName = @"";
-        self.totalPrice = 0;
-        self.orderArray = [NSMutableArray array];
-        [self updateView];
+        LXWeakSelf(self);
+        ReservationStadusController *statusVC =[ReservationStadusController new];
+        statusVC.careID_0 =[NSString stringWithFormat:@"%ld",self.serverType];
+        statusVC.black = ^(NSInteger reID) {
+            if(reID != weakself.serverType){
+                weakself.serverType = reID;
+                weakself.orderArray = [NSMutableArray array];
+                weakself.indexArr1 =[NSMutableArray array];
+                weakself.goodsName = @"";
+                weakself.totalPrice = 0;
+                weakself.timeString = @"";
+                [weakself updateView];
+            }
+        };
+        [self.navigationController pushViewController:statusVC animated:YES];
     }else{
         return;
     }
@@ -695,23 +662,22 @@
         return;
     }
     
-    NSString *repeatWeek = nil;
-    NSMutableString *serTime = nil;
-    repeatWeek = self.repeatLString;
-    if ([self.timeArray count] > 0) {
-        serTime = [@"" mutableCopy];
-        for (NSString *tempString in self.timeArray) {
-            
-            [serTime appendString:[NSString stringWithFormat:@"%@,",tempString]];
-
-        }
-    }
-    else {
+    NSString *serTime = @"";
+    if(self.timeString.length<=0) {
         [SVProgressHUD showInfoWithStatus:@"请选择预约时间"];
         return;
+    }else{
+        NSArray *timeArr = [self.timeString componentsSeparatedByString:@","];
+        if(timeArr.count==1){
+            serTime= [self.timeString stringByAppendingString:@":00"];
+        }else if (timeArr.count>=2){
+            for (NSString *t in timeArr) {
+                serTime=[serTime stringByAppendingString:[NSString stringWithFormat:@"%@,",[t stringByAppendingString:@":00"]] ];
+            }
+            serTime = [serTime substringToIndex:serTime.length-1];
+        }
     }
     
-    LXLog(@"Time%@", [serTime substringFromIndex:serTime.length - 1]);
     
     if(self.addressString.length<=0) {
         [SVProgressHUD showInfoWithStatus:@"请输入地址"];
@@ -728,6 +694,9 @@
         orderPrice = @(self.totalPrice);
         goodsPrice = @(self.totalPrice);
     }
+    
+    NSString *repeatWeek = nil;
+    repeatWeek = self.repeatLString;
     if([repeatWeek isEqualToString:@"一周"]){
         repeatWeek=@"1";
     }else if([repeatWeek isEqualToString:@"两周"]){
@@ -754,7 +723,7 @@
                              @"contactUser":_nameString,
                              @"contactPhone":_phoneString,
                              @"careObjId":careObject,
-                             @"servTime":[serTime substringWithRange:NSMakeRange(0, serTime.length-1)],
+                             @"servTime":serTime,
                              @"repeatWeek":repeatWeek,
                              @"address":_addressString,
                              @"otherContent":_remarkString,
@@ -805,6 +774,7 @@
         LXWeakSelf(self);
         
         _confirmView = [[LXConfirmOrderView alloc] initWithDetailBlock:^{
+            
             [weakself.view bringSubviewToFront:weakself.confirmView];
         } confirmBlock:^{
             [weakself setUpReservation];
@@ -824,9 +794,9 @@
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.showsHorizontalScrollIndicator = NO;
         _tableView.tableFooterView = [UIView new];
-        _tableView.sectionFooterHeight = 10;
-        _tableView.sectionHeaderHeight = 0;
-        _tableView.contentInset = UIEdgeInsetsMake(-35, 0, 0, 0);
+        _tableView.sectionFooterHeight = 0.1;
+        //_tableView.sectionHeaderHeight = 0;
+        //_tableView.contentInset = UIEdgeInsetsMake(-35, 0, 0, 0);
         
         //_tableView.allowsMultipleSelection = YES;
     }
@@ -841,20 +811,19 @@
         [seciton0 addObject:@"联系人"];
         [seciton0 addObject:@"手机"];
         [seciton0 addObject:@"照护对象"];
-        
+        [seciton0 addObject:@"服务地址"];
         
         [_dataSource addObject:seciton0];
         
         NSMutableArray *section1 = [NSMutableArray array];
         [section1 addObject:@"服务类型"];
-        [section1 addObject:@"服务类型1"];
         [section1 addObject:@"服务项目"];
-        [section1 addObject:@"时间"];
+        [section1 addObject:@"服务时间"];
         [_dataSource addObject:section1];
         
         NSMutableArray *seciton2 = [NSMutableArray array];
-        [seciton2 addObject:@"服务地址"];
-        [seciton2 addObject:@"备注"];
+       
+        [seciton2 addObject:@""];
         [_dataSource addObject:seciton2];
     }
     return _dataSource;

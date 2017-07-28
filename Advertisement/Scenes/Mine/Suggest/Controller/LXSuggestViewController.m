@@ -37,7 +37,7 @@
 #pragma mark - Action
 
 - (void)btnClick {
-    if([self.textView.text isEqualToString:@"请输入您的建议："]){
+    if([self.textView.text isEqualToString:@"请输入您的建议："]||self.textView.text.length==0){
         [SVProgressHUD showInfoWithStatus:@"请输入您的建议!"];
         return;
     }
@@ -55,6 +55,7 @@
             [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
         }
     }];
+    
 
 }
 -(void)textViewDidBeginEditing:(UITextView *)textView{

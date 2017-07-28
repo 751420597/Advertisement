@@ -27,7 +27,9 @@
 #import <AMapSearchKit/AMapSearchKit.h>
 #import <AMapLocationKit/AMapLocationKit.h>
 #import "CareDetailBartherModel.h"
+#import "LXBarthelLevelModel.h"
 static CGFloat const LXBGViewHeight = 246.f;
+
 @interface LXCareDetailViewController () <UITextFieldDelegate,MAMapViewDelegate,AMapSearchDelegate,AMapLocationManagerDelegate>
 {
     BOOL enbleEidts;
@@ -52,8 +54,9 @@ static CGFloat const LXBGViewHeight = 246.f;
 @property (nonatomic, strong) LXBarthelViewModel*bartheViewModel;
 @property (nonatomic, copy) NSMutableString *barthelItem;
 @property (nonatomic, copy) NSMutableString *barthelScorce;
+@property (nonatomic, strong) UITextField * carNoTF;
 //@property (nonatomic, assign) BOOL isSetInfo;
-
+@property (nonatomic,strong) NSDictionary *cheackDic;
 @end
 
 
@@ -67,10 +70,10 @@ static CGFloat const LXBGViewHeight = 246.f;
     self.view.backgroundColor = LXVCBackgroundColor;
     self.search = [[AMapSearchAPI alloc] init];
     self.search.delegate = self;
-    [self setUpTable];
+    
     
 //    self.isSetInfo = YES;
-    enbleEidts = YES;
+    enbleEidts = NO;
     [self getServiceData];
 }
 
@@ -97,19 +100,19 @@ static CGFloat const LXBGViewHeight = 246.f;
             [self loadData];
             
             if([self.careDetailModel.sevenDays isEqualToString:@"1"]){
-                enbleEidts  =YES;
+//                enbleEidts  =YES;
                 UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
                 fixedSpaceBarButtonItem.width = -10;
                 UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.myConfirmBtn];
                 barButtonItem.width = 10;
                 self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
             }else{
-                enbleEidts = NO;
+//                enbleEidts = NO;
             }
 
             
             if([self.checkStateId isEqualToString:@"3"]||[self.checkStateId isEqualToString:@"6"]||[self.checkStateId isEqualToString:@"8"]){
-                enbleEidts  =YES;
+//                enbleEidts  =YES;
                 UIBarButtonItem *fixedSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
                 fixedSpaceBarButtonItem.width = -10;
                 UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.myConfirmBtn];
@@ -117,7 +120,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                 self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
 
             }else{
-                enbleEidts  =NO;
+//                enbleEidts  =NO;
                 
             }
 
@@ -129,7 +132,7 @@ static CGFloat const LXBGViewHeight = 246.f;
 //            barButtonItem.width = 10;
 //            self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
             
-            [self.tableView reloadData];
+            [self setUpTable];
             
             
         }
@@ -187,20 +190,22 @@ static CGFloat const LXBGViewHeight = 246.f;
     NSMutableArray *section0 = [NSMutableArray array];
     [section0 addObject:@"姓名"];
     [section0 addObject:@"性别"];
+    [section0 addObject:@"身份证号"];
     [section0 addObject:@"出生日期"];
     [section0 addObject:@"服务地址"];
     [section0 addObject:@"Barthel评定表"];
     [section0 addObject:@"选择护理机构"];
     
-    NSMutableArray *section1 = [NSMutableArray array];
-    [section1 addObject:@"是否已通过长护险待遇评定"];
     
-    if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
-         [section1 addObject:@"信息认证"];
+    if ([self.msgAuInforModel.ifPass isEqualToString:@"0"]&&[self.ratingInforModel.ratingLeed isEqualToString:@"1"]) {
+        
+        [section0 addObject:@"待遇申请"];
     }
-    else {
-         [section1 addObject:@"等级认证"];
+    else if([self.msgAuInforModel.ifPass isEqualToString:@"1"]&&[self.ratingInforModel.ratingLeed isEqualToString:@"0"]) {
+        
+        [section0 addObject:@"认证信息"];
     }
+
     
     
     NSMutableArray *section2 = [NSMutableArray array];
@@ -210,7 +215,6 @@ static CGFloat const LXBGViewHeight = 246.f;
     [section2 addObject:@"更换机构，需要机构审核。"];
     
     [self.dataSource addObject:section0];
-    [self.dataSource addObject:section1];
     [self.dataSource addObject:section2];
     
     [self.view addSubview:self.tableView];
@@ -265,7 +269,7 @@ static CGFloat const LXBGViewHeight = 246.f;
             return cell;
         }
         else if (indexPath.section == 1) {
-            if (indexPath.row == 3) {
+            if (indexPath.row == 4) {
                 UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row3"];
                 
                 [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:75 color:LXCellBorderColor cell:cell];
@@ -281,13 +285,14 @@ static CGFloat const LXBGViewHeight = 246.f;
                 }];
                 
                 self.addressTF = [[UITextField alloc] init];
+                self.addressTF.textAlignment = NSTextAlignmentRight;
                 self.addressTF.font =[UIFont systemFontOfSize:14.f];
+                self.addressTF.textColor = LXColorHex(0x4c4c4c);
                 if (self.careDetailModel.address) {
                     [self.addressTF setText:self.careDetailModel.address];
                 }
                 self.addressTF.enabled = enbleEidts;
                 self.addressTF.delegate = self;
-                self.addressTF.textAlignment = NSTextAlignmentLeft;
                 self.addressTF.returnKeyType = UIReturnKeyDefault;
                 [cell.contentView addSubview:self.addressTF];
                 [self.addressTF mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -299,7 +304,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 return cell;
             }
-            else if (indexPath.row == 0) {
+            else if (indexPath.row == 0||indexPath.row==2) {
                 UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row0"];
                 
                 [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
@@ -313,22 +318,42 @@ static CGFloat const LXBGViewHeight = 246.f;
                     make.leading.mas_equalTo(cell.contentView).mas_offset(20);
                     make.centerY.mas_equalTo(cell.contentView);
                 }];
-                
-                self.nameTF = [[UITextField alloc] init];
-                self.nameTF.enabled = enbleEidts;
-                if (self.careDetailModel.name) {
-                    [self.nameTF setText:self.careDetailModel.name];
+                if(indexPath.row==0){
+                    self.nameTF = [[UITextField alloc] init];
+                    self.nameTF.enabled = enbleEidts;
+                    if (self.careDetailModel.name) {
+                        [self.nameTF setText:self.careDetailModel.name];
+                    }
+                    self.nameTF.font =[UIFont systemFontOfSize:14.f];
+                    self.nameTF.returnKeyType = UIReturnKeyDefault;
+                    self.nameTF.delegate = self;
+                    self.nameTF.textAlignment = NSTextAlignmentRight;
+                    [cell.contentView addSubview:self.nameTF];
+                    self.nameTF.textColor = LXColorHex(0x4c4c4c);
+                    [self.nameTF mas_makeConstraints:^(MASConstraintMaker *make) {
+                        make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+                        make.leading.mas_equalTo(cell.contentView).mas_offset(100);
+                        make.centerY.mas_equalTo(cell.contentView);
+                    }];
+                }else{
+                    self.carNoTF = [[UITextField alloc] init];
+                    self.carNoTF.enabled = enbleEidts;
+                    if (self.careDetailModel.cardNo) {
+                        [self.carNoTF setText:self.careDetailModel.cardNo];
+                    }
+                    self.carNoTF.font =[UIFont systemFontOfSize:14.f];
+                    self.carNoTF.returnKeyType = UIReturnKeyDefault;
+                    self.carNoTF.delegate = self;
+                    self.carNoTF.textColor = LXColorHex(0x4c4c4c);
+                    self.carNoTF.textAlignment = NSTextAlignmentRight;
+                    [cell.contentView addSubview:self.carNoTF];
+                    [self.carNoTF mas_makeConstraints:^(MASConstraintMaker *make) {
+                        make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+                        make.leading.mas_equalTo(cell.contentView).mas_offset(100);
+                        make.centerY.mas_equalTo(cell.contentView);
+                    }];
                 }
                 
-                self.nameTF.returnKeyType = UIReturnKeyDefault;
-                self.nameTF.delegate = self;
-                self.nameTF.textAlignment = NSTextAlignmentRight;
-                [cell.contentView addSubview:self.nameTF];
-                [self.nameTF mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
-                    make.leading.mas_equalTo(cell.contentView).mas_offset(100);
-                    make.centerY.mas_equalTo(cell.contentView);
-                }];
                 
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 return cell;
@@ -343,6 +368,9 @@ static CGFloat const LXBGViewHeight = 246.f;
                 cell.btnWidth.constant = 0;
                 
                 if (indexPath.row == 1) {
+                    if(enbleEidts){
+                        cell.btnWidth.constant = 10;
+                    }
                     if ([self.careDetailModel.sexCode isEqualToString:@"1"]) {
                         cell.trailingL.text = @"男";
                     }
@@ -350,15 +378,18 @@ static CGFloat const LXBGViewHeight = 246.f;
                         cell.trailingL.text = @"女";
                     }
                 }
-                else if (indexPath.row == 2) {
-                    
+                
+                else if (indexPath.row == 3) {
+                    if(enbleEidts){
+                        cell.btnWidth.constant = 10;
+                    }
                     cell.trailingL.text = self.careDetailModel.birthday;
                 }
-                else if (indexPath.row == 4) {
+                else if (indexPath.row == 5) {
                     cell.btnWidth.constant = 10;
                     cell.trailingL.text = self.careDetailModel.barthelTotScore;
                 }
-                else if (indexPath.row == 5) {
+                else if (indexPath.row == 6) {
                     if(enbleEidts){
                         cell.btnWidth.constant = 10;
                     }
@@ -372,14 +403,19 @@ static CGFloat const LXBGViewHeight = 246.f;
 
                     }
                    
+                }else{
+                    cell.trailingL.text = @"点击查看";
+                    cell.btnWidth.constant = 10;
+                    
                 }
-                
                 
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 return cell;
             }
         }
+        /*
         else if (indexPath.section == 2) {
+            
             if (indexPath.row == 0) {
                 UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton1row1"];
                 
@@ -436,8 +472,10 @@ static CGFloat const LXBGViewHeight = 246.f;
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 return cell;
             }
+             
         }
-        else if (indexPath.section == 3) {
+         */
+        else if (indexPath.section == 2) {
             LXAddCareVCTableViewCell2 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell2" owner:self options:nil].firstObject;
             
             [cell.contentView setBackgroundColor:LXVCBackgroundColor];
@@ -449,8 +487,8 @@ static CGFloat const LXBGViewHeight = 246.f;
         }
 
     }else{
-        if (indexPath.section == 0) {
-            if (indexPath.row == 3) {
+         if (indexPath.section == 0) {
+            if (indexPath.row == 4) {
                 UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row3"];
                 
                 [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:75 color:LXCellBorderColor cell:cell];
@@ -462,17 +500,19 @@ static CGFloat const LXBGViewHeight = 246.f;
                 [cell.contentView addSubview:label1];
                 [label1 mas_makeConstraints:^(MASConstraintMaker *make) {
                     make.leading.mas_equalTo(cell.contentView).mas_offset(20);
-                    make.top.mas_equalTo(cell.contentView).mas_offset(10);
+                    make.centerY.mas_equalTo(cell.contentView);
                 }];
                 
                 self.addressTF = [[UITextField alloc] init];
-                self.addressTF.enabled = enbleEidts;
+                self.addressTF.textAlignment = NSTextAlignmentRight;
+                self.addressTF.font =[UIFont systemFontOfSize:14.f];
+                self.addressTF.textColor = LXColorHex(0x4c4c4c);
                 if (self.careDetailModel.address) {
                     [self.addressTF setText:self.careDetailModel.address];
                 }
-                
+                self.addressTF.enabled = enbleEidts;
                 self.addressTF.delegate = self;
-                self.addressTF.textAlignment = NSTextAlignmentLeft;
+               
                 self.addressTF.returnKeyType = UIReturnKeyDefault;
                 [cell.contentView addSubview:self.addressTF];
                 [self.addressTF mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -484,7 +524,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 return cell;
             }
-            else if (indexPath.row == 0) {
+            else if (indexPath.row == 0||indexPath.row==2) {
                 UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton0row0"];
                 
                 [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
@@ -498,22 +538,42 @@ static CGFloat const LXBGViewHeight = 246.f;
                     make.leading.mas_equalTo(cell.contentView).mas_offset(20);
                     make.centerY.mas_equalTo(cell.contentView);
                 }];
-                
-                self.nameTF = [[UITextField alloc] init];
-                self.nameTF.enabled = enbleEidts;
-                if (self.careDetailModel.name) {
-                    [self.nameTF setText:self.careDetailModel.name];
+                if(indexPath.row==0){
+                    self.nameTF = [[UITextField alloc] init];
+                    self.nameTF.enabled = enbleEidts;
+                    if (self.careDetailModel.name) {
+                        [self.nameTF setText:self.careDetailModel.name];
+                    }
+                     self.nameTF.font =[UIFont systemFontOfSize:14.f];
+                    self.nameTF.returnKeyType = UIReturnKeyDefault;
+                    self.nameTF.delegate = self;
+                    self.nameTF.textColor = LXColorHex(0x4c4c4c);
+                    self.nameTF.textAlignment = NSTextAlignmentRight;
+                    [cell.contentView addSubview:self.nameTF];
+                    [self.nameTF mas_makeConstraints:^(MASConstraintMaker *make) {
+                        make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+                        make.leading.mas_equalTo(cell.contentView).mas_offset(100);
+                        make.centerY.mas_equalTo(cell.contentView);
+                    }];
+                }else{
+                    self.carNoTF = [[UITextField alloc] init];
+                    self.carNoTF.enabled = enbleEidts;
+                    if (self.careDetailModel.cardNo) {
+                        [self.carNoTF setText:self.careDetailModel.cardNo];
+                    }
+                     self.carNoTF.font =[UIFont systemFontOfSize:14.f];
+                    self.carNoTF.returnKeyType = UIReturnKeyDefault;
+                    self.carNoTF.delegate = self;
+                    self.carNoTF.textColor = LXColorHex(0x4c4c4c);
+                    self.carNoTF.textAlignment = NSTextAlignmentRight;
+                    [cell.contentView addSubview:self.carNoTF];
+                    [self.carNoTF mas_makeConstraints:^(MASConstraintMaker *make) {
+                        make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+                        make.leading.mas_equalTo(cell.contentView).mas_offset(100);
+                        make.centerY.mas_equalTo(cell.contentView);
+                    }];
                 }
                 
-                self.nameTF.returnKeyType = UIReturnKeyDefault;
-                self.nameTF.delegate = self;
-                self.nameTF.textAlignment = NSTextAlignmentRight;
-                [cell.contentView addSubview:self.nameTF];
-                [self.nameTF mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
-                    make.leading.mas_equalTo(cell.contentView).mas_offset(100);
-                    make.centerY.mas_equalTo(cell.contentView);
-                }];
                 
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 return cell;
@@ -526,7 +586,9 @@ static CGFloat const LXBGViewHeight = 246.f;
                 cell.leadingL.text = leadingString;
                 
                 cell.btnWidth.constant = 0;
-                
+                if(enbleEidts){
+                    cell.btnWidth.constant = 10;
+                }
                 if (indexPath.row == 1) {
                     if ([self.careDetailModel.sexCode isEqualToString:@"1"]) {
                         cell.trailingL.text = @"男";
@@ -535,92 +597,103 @@ static CGFloat const LXBGViewHeight = 246.f;
                         cell.trailingL.text = @"女";
                     }
                 }
-                else if (indexPath.row == 2) {
-                    
-                    cell.trailingL.text = self.careDetailModel.birthday;
-                }
-                else if (indexPath.row == 4) {
-                    cell.btnWidth.constant = 10;
-                    cell.trailingL.text = self.careDetailModel.barthelTotScore;
-                }
-                else if (indexPath.row == 5) {
+                
+                else if (indexPath.row == 3) {
                     if(enbleEidts){
                         cell.btnWidth.constant = 10;
                     }
-                    
+                    cell.trailingL.text = self.careDetailModel.birthday;
+                }
+                else if (indexPath.row == 5) {
+                    cell.btnWidth.constant = 10;
+                    cell.trailingL.text = self.careDetailModel.barthelTotScore;
+                }
+                else if (indexPath.row == 6) {
+                    if(enbleEidts){
+                        cell.btnWidth.constant = 10;
+                    }
                     if(self.careDetailModel.corChkState.length>0){
                         NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@(%@)",self.careDetailModel.corChkState,self.careDetailModel.agencyName]];
                         //设置字体和设置字体的范围
-                        [attrStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12.5f] range:NSMakeRange(self.careDetailModel.corChkState.length, self.careDetailModel.agencyName.length+2)];
+                        [attrStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12.0f] range:NSMakeRange(self.careDetailModel.corChkState.length, self.careDetailModel.agencyName.length+2)];
                         cell.trailingL.attributedText =attrStr;
                     }else{
                         cell.trailingL.text = self.careDetailModel.agencyName;
                         
                     }
-                }
-                [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-                return cell;
-            }
-        }
-        else if (indexPath.section == 1) {
-            if (indexPath.row == 0) {
-                UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton1row1"];
-                
-                [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
-                
-                UILabel *label1 = [[UILabel alloc] init];
-                [label1 setFont:[UIFont systemFontOfSize:16]];
-                [label1 setTextColor:LXColorHex(0x4c4c4c)];
-                [label1 setText:leadingString];
-                [cell.contentView addSubview:label1];
-                [label1 mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.leading.mas_equalTo(cell.contentView).mas_offset(20);
-                    make.centerY.mas_equalTo(cell.contentView);
-                }];
-                
-                self.switch1 = [[UISwitch alloc] init];
-                
-                //            if (self.isSetInfo) {
-                //                self.switch1.on = YES;
-                //            }
-                //            else {
-                //                self.switch1.on = NO;
-                //            }
-                
-                [self.switch1 addTarget:self action:@selector(switchValue) forControlEvents:UIControlEventValueChanged];
-                if([self.msgAuInforModel.ifPass isEqualToString:@"1"]){
-                    self.switch1.on = YES;
+                    
                 }else{
-                    self.switch1.on = NO;
+                    cell.trailingL.text = @"点击查看";
+                    cell.btnWidth.constant = 10;
                 }
-                self.switch1.userInteractionEnabled = enbleEidts;
-                [cell.contentView addSubview:self.switch1];
-                [self.switch1 mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
-                    make.centerY.mas_equalTo(cell.contentView);
-                }];
-                
-                [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-                return cell;
-            }
-            else {
-                LXAddCareVCTableViewCell1 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell1" owner:self options:nil].firstObject;
-                
-                [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
-                if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
-                    cell.leadingL.text =@"信息认证";
-                }
-                else {
-                    cell.leadingL.text = @"等级认证";
-                }
-                
-                cell.trailingL.text = @"去认证";
                 
                 [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
                 return cell;
             }
         }
-        else if (indexPath.section == 2) {
+        /*
+         else if (indexPath.section == 2) {
+         
+         if (indexPath.row == 0) {
+         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton1row1"];
+         
+         [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
+         
+         UILabel *label1 = [[UILabel alloc] init];
+         [label1 setFont:[UIFont systemFontOfSize:16]];
+         [label1 setTextColor:LXColorHex(0x4c4c4c)];
+         [label1 setText:leadingString];
+         [cell.contentView addSubview:label1];
+         [label1 mas_makeConstraints:^(MASConstraintMaker *make) {
+         make.leading.mas_equalTo(cell.contentView).mas_offset(20);
+         make.centerY.mas_equalTo(cell.contentView);
+         }];
+         
+         self.switch1 = [[UISwitch alloc] init];
+         
+         //                            if (self.isSetInfo) {
+         //                                self.switch1.on = YES;
+         //                            }
+         //                            else {
+         //                                self.switch1.on = NO;
+         //                            }
+         
+         [self.switch1 addTarget:self action:@selector(switchValue) forControlEvents:UIControlEventValueChanged];
+         if([self.msgAuInforModel.ifPass isEqualToString:@"1"]){
+         self.switch1.on = YES;
+         }else{
+         self.switch1.on = NO;
+         }
+         self.switch1.userInteractionEnabled = enbleEidts;;
+         [cell.contentView addSubview:self.switch1];
+         [self.switch1 mas_makeConstraints:^(MASConstraintMaker *make) {
+         make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
+         make.centerY.mas_equalTo(cell.contentView);
+         }];
+         
+         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+         return cell;
+         }
+         else {
+         LXAddCareVCTableViewCell1 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell1" owner:self options:nil].firstObject;
+         
+         [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
+         if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
+         cell.leadingL.text =@"信息认证";
+         }
+         else {
+         cell.leadingL.text = @"等级认证";
+         }
+         
+         cell.trailingL.text = @"去认证";
+         
+         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+         return cell;
+         }
+         
+         }
+         */
+        else if (indexPath.section == 1) {
             LXAddCareVCTableViewCell2 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell2" owner:self options:nil].firstObject;
             
             [cell.contentView setBackgroundColor:LXVCBackgroundColor];
@@ -671,10 +744,7 @@ static CGFloat const LXBGViewHeight = 246.f;
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if(_isPass){
-        if (indexPath.section != 2) {
-            NSString *tempString = self.dataSource[indexPath.section][indexPath.row];
-            
-            if (!([tempString isEqualToString:@"是否已通过长护险待遇评定"] || [tempString isEqualToString:@"等级认证"] || [tempString isEqualToString:@"信息认证"])) {
+        if (indexPath.section == 0) {
                 UIButton *starBtn = [UIButton buttonWithType:UIButtonTypeCustom];
                 [starBtn setBackgroundImage:[UIImage imageNamed:@"Mine_care_add"] forState:UIControlStateNormal];
                 [cell.contentView addSubview:starBtn];
@@ -685,12 +755,9 @@ static CGFloat const LXBGViewHeight = 246.f;
                     make.centerY.mas_equalTo(cell.contentView);
                 }];
             }
-        }
+        
     }else{
         if (indexPath.section ==1) {
-            NSString *tempString = self.dataSource[indexPath.section][indexPath.row];
-            
-            if (!([tempString isEqualToString:@"是否已通过长护险待遇评定"] || [tempString isEqualToString:@"等级认证"] || [tempString isEqualToString:@"信息认证"])) {
                 UIButton *starBtn = [UIButton buttonWithType:UIButtonTypeCustom];
                 [starBtn setBackgroundImage:[UIImage imageNamed:@"Mine_care_add"] forState:UIControlStateNormal];
                 [cell.contentView addSubview:starBtn];
@@ -700,7 +767,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                     make.leading.mas_equalTo(cell.contentView).mas_equalTo(8);
                     make.centerY.mas_equalTo(cell.contentView);
                 }];
-            }
+            
         }
     }
     
@@ -722,6 +789,9 @@ static CGFloat const LXBGViewHeight = 246.f;
             [self.search AMapGeocodeSearch:request];
         }
         
+    }
+    if([self.carNoTF isEqual:textField]){
+        self.careDetailModel.cardNo = textField.text;
     }
 
 }
@@ -775,18 +845,20 @@ static CGFloat const LXBGViewHeight = 246.f;
     NSMutableArray *section0 = [NSMutableArray array];
     [section0 addObject:@"姓名"];
     [section0 addObject:@"性别"];
+    [section0 addObject:@"身份证号"];
     [section0 addObject:@"出生日期"];
     [section0 addObject:@"服务地址"];
     [section0 addObject:@"Barthel评定表"];
     [section0 addObject:@"选择护理机构"];
     
-    NSMutableArray *section1 = [NSMutableArray array];
-    [section1 addObject:@"是否已通过长护险待遇评定"];
-    if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
-        [section1 addObject:@"信息认证"];
+    
+    if ([self.msgAuInforModel.ifPass isEqualToString:@"0"]&&[self.ratingInforModel.ratingLeed isEqualToString:@"1"]) {
+        
+        [section0 addObject:@"待遇申请"];
     }
-    else {
-        [section1 addObject:@"等级认证"];
+    else if([self.msgAuInforModel.ifPass isEqualToString:@"1"]&&[self.ratingInforModel.ratingLeed isEqualToString:@"0"]) {
+        
+        [section0 addObject:@"认证信息"];
     }
     
     
@@ -797,7 +869,6 @@ static CGFloat const LXBGViewHeight = 246.f;
     [section2 addObject:@"更换机构，需要机构审核。"];
     
     [self.dataSource addObject:section0];
-    [self.dataSource addObject:section1];
     [self.dataSource addObject:section2];
 }
 
@@ -815,7 +886,7 @@ static CGFloat const LXBGViewHeight = 246.f;
     
     if(!_isPass){
         if(indexPath.section==1){
-            if (indexPath.row==4) {
+            if (indexPath.row==5) {
                 if (bartherArr.count==0) {
                     return;
                 }
@@ -823,18 +894,20 @@ static CGFloat const LXBGViewHeight = 246.f;
                 bVC.bartherLevelArr = bartherArr;
                 bVC.isDetail = YES;
                 bVC.enbleEidts = enbleEidts;
+                bVC.cheackDic = self.cheackDic;
                 LXWeakSelf(self);
                 bVC.barthelBlock = ^(NSDictionary *itemArray, long barthel) {
                     NSMutableString *barthelItem = [NSMutableString string];
                     NSMutableString *barthelScorce = [NSMutableString string];
-
+                    self.cheackDic = itemArray;
                     if (itemArray.count > 0) {
                         NSArray *item = itemArray.allKeys;
                         NSArray *scorce = itemArray.allValues;
                         
                         for (int i = 0; i < itemArray.count; i++) {
-                            [weakself.barthelItem appendString:[NSString stringWithFormat:@"%@,", item[i]]];
-                            [weakself.barthelScorce appendString:[NSString stringWithFormat:@"%@,", scorce[i]]];
+                            [barthelItem appendString:[NSString stringWithFormat:@"%@,", item[i]]];
+                            LXBarthelLevelModel *model = scorce[i];
+                            [barthelScorce appendString:[NSString stringWithFormat:@"%@,", model.dispOrder]];
                         }
                     }
                     //barthelModel =barthel;
@@ -849,7 +922,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                 };
                 [self.navigationController pushViewController:bVC animated:YES];
             }
-            else if (indexPath.row==5) {
+            else if (indexPath.row==6) {
                 if(!enbleEidts){
                     return;
                 }
@@ -860,6 +933,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                     self.careDetailModel.atitude = @"";
                 }
                 sVC.params = @{@"longitude":self.careDetailModel.longitude,@"latitude":self.careDetailModel.atitude};
+                sVC.objID = self.careDetailModel.agencyId;
                 LXWeakSelf(self);
                 sVC.selectOrganizationBlock = ^(LXOrganizaitonModel *model) {
                     weakself.careDetailModel.agencyId = model.corId;
@@ -893,76 +967,77 @@ static CGFloat const LXBGViewHeight = 246.f;
                 UIAlertAction *cancle = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleDefault) handler:nil];
                 [alertController addAction:cancle];
                 [self presentViewController:alertController animated:YES completion:nil];
-            }else if (indexPath.row==2){
+            }else if (indexPath.row==3){
                 if(!enbleEidts){
                     return;
                 }
                 [self.view addSubview:self.bgView];
-            }
-        }else if (indexPath.section==2){
-            if(indexPath.row==1){
-                if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
-                    LXConfirmInfoViewController *sVC = [LXConfirmInfoViewController new];
-                    sVC.infoBlock = ^(LXConfirmInfoModel *confirmInfoModel) {
-                        
-                        self.msgAuInforModel.name = confirmInfoModel.name;
-                        self.msgAuInforModel.acNo = confirmInfoModel.acNo;
-                        self.msgAuInforModel.siCardNo = confirmInfoModel.siCardNo;
-                        self.msgAuInforModel.computerNo = confirmInfoModel.computerNo;
-                        self.msgAuInforModel.msgImageIds = confirmInfoModel.images;
-                        self.msgAuInforModel.msgImageTypes = confirmInfoModel.imageTypes;
-                    };
-                    sVC.enableEdit =enbleEidts;
-                    self.msgAuInforModel.name = self.careDetailModel.name;
-                    sVC.msgAuthenModel = self.msgAuInforModel;
-                    [self.navigationController pushViewController:sVC animated:YES];
-                }else{
-                    LXConfirmLevelViewController *sVC = [LXConfirmLevelViewController new];
-                    sVC.levelBlock = ^(LXConfirmLevelModel *levelModel) {
-                        self.ratingInforModel.ratingLeed = @"1";
-                        self.ratingInforModel.cardNo = levelModel.cardNo;
-                        self.ratingInforModel.personNatureId = levelModel.personNatureId;
-                        self.ratingInforModel.careTypeId = levelModel.careTypeId;
-                        self.ratingInforModel.raImageIds = levelModel.images;
-                        self.ratingInforModel.raImageTypes = levelModel.imageTypes;
-                        self.ratingInforModel.siCardNo = levelModel.siCardNo;
-                        
-                        self.ratingInforModel.livingCareType = levelModel.livingCare;
-                        self.ratingInforModel.serviceType = levelModel.serviceType;
-                        self.ratingInforModel.presentAddress = levelModel.presentAddress;
-                        self.ratingInforModel.careContactPhone = levelModel.careContactPhone;
-                        self.ratingInforModel.mcName = levelModel.mcName;
-                        self.ratingInforModel.mcRela = levelModel.mcRela;
-                        self.ratingInforModel.mcPhone = levelModel.mcPhone;
-                        self.ratingInforModel.msAddress = levelModel.msAddress;
-                        self.ratingInforModel.dmTypeId = levelModel.dmTypeId;
-                    };
-                    sVC.enableEdits = enbleEidts;
-                    sVC.ratingModel = self.ratingInforModel;
-                    
-                    [self.navigationController pushViewController:sVC animated:YES];
-                }
+            }else if (indexPath.row==7){
                 
+                    if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
+                        LXConfirmInfoViewController *sVC = [LXConfirmInfoViewController new];
+                        sVC.infoBlock = ^(LXConfirmInfoModel *confirmInfoModel) {
+                            
+                            self.msgAuInforModel.name = confirmInfoModel.name;
+                            self.msgAuInforModel.acNo = confirmInfoModel.acNo;
+                            self.msgAuInforModel.siCardNo = confirmInfoModel.siCardNo;
+                            self.msgAuInforModel.computerNo = confirmInfoModel.computerNo;
+                            self.msgAuInforModel.msgImageIds = confirmInfoModel.images;
+                            self.msgAuInforModel.msgImageTypes = confirmInfoModel.imageTypes;
+                        };
+                        sVC.enableEdit =enbleEidts;
+                        self.msgAuInforModel.name = self.careDetailModel.name;
+                        sVC.msgAuthenModel = self.msgAuInforModel;
+                        [self.navigationController pushViewController:sVC animated:YES];
+                    }else{
+                        LXConfirmLevelViewController *sVC = [LXConfirmLevelViewController new];
+                        sVC.levelBlock = ^(LXConfirmLevelModel *levelModel) {
+                            self.ratingInforModel.ratingLeed = @"1";
+                            self.ratingInforModel.cardNo = levelModel.cardNo;
+                            self.ratingInforModel.personNatureId = levelModel.personNatureId;
+                            self.ratingInforModel.careTypeId = levelModel.careTypeId;
+                            self.ratingInforModel.raImageIds = levelModel.images;
+                            self.ratingInforModel.raImageTypes = levelModel.imageTypes;
+                            self.ratingInforModel.siCardNo = levelModel.siCardNo;
+                            
+                            self.ratingInforModel.livingCareType = levelModel.livingCare;
+                            self.ratingInforModel.serviceType = levelModel.serviceType;
+                            self.ratingInforModel.presentAddress = levelModel.presentAddress;
+                            self.ratingInforModel.careContactPhone = levelModel.careContactPhone;
+                            self.ratingInforModel.mcName = levelModel.mcName;
+                            self.ratingInforModel.mcRela = levelModel.mcRela;
+                            self.ratingInforModel.mcPhone = levelModel.mcPhone;
+                            self.ratingInforModel.msAddress = levelModel.msAddress;
+                            self.ratingInforModel.dmTypeId = levelModel.dmTypeId;
+                        };
+                        sVC.enableEdits = enbleEidts;
+                        sVC.ratingModel = self.ratingInforModel;
+                        
+                        [self.navigationController pushViewController:sVC animated:YES];
+                    }
             }
         }
     }else{
         if(indexPath.section==0){
-            if (indexPath.row==4) {
+            if (indexPath.row==5) {
                 if (bartherArr.count==0) {
                     return;
                 }
                 LXBarthelViewController *bVC = [[LXBarthelViewController alloc]init];
-                LXWeakSelf(self)
+                bVC.cheackDic = self.cheackDic;
+                LXWeakSelf(self);
                 bVC.barthelBlock = ^(NSDictionary *itemArray, long barthel) {
                     NSMutableString *barthelItem = [NSMutableString string];
-                     NSMutableString *barthelScorce = [NSMutableString string];
+                    NSMutableString *barthelScorce = [NSMutableString string];
+                    self.cheackDic = itemArray;
                     if (itemArray.count > 0) {
                         NSArray *item = itemArray.allKeys;
                         NSArray *scorce = itemArray.allValues;
                         
                         for (int i = 0; i < itemArray.count; i++) {
-                            [barthelItem appendString:[NSString stringWithFormat:@"%@,",item[i]]];
-                            [barthelScorce appendString:[NSString stringWithFormat:@"%@,", scorce[i]]];
+                            [barthelItem appendString:[NSString stringWithFormat:@"%@,", item[i]]];
+                            LXBarthelLevelModel *model = scorce[i];
+                            [barthelScorce appendString:[NSString stringWithFormat:@"%@,", model.dispOrder]];
                         }
                     }
                     //barthelModel =barthel;
@@ -980,7 +1055,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                 bVC.enbleEidts = enbleEidts;
                 [self.navigationController pushViewController:bVC animated:YES];
             }
-            else if (indexPath.row==5) {
+            else if (indexPath.row==6) {
                 if(!enbleEidts){
                     return;
                 }
@@ -991,6 +1066,7 @@ static CGFloat const LXBGViewHeight = 246.f;
                     self.careDetailModel.atitude = @"";
                 }
                 sVC.params = @{@"longitude":self.careDetailModel.longitude,@"latitude":self.careDetailModel.atitude};
+                sVC.objID = self.careDetailModel.agencyId;
                 LXWeakSelf(self);
                 sVC.selectOrganizationBlock = ^(LXOrganizaitonModel *model) {
                     weakself.careDetailModel.agencyId = model.corId;
@@ -1023,191 +1099,199 @@ static CGFloat const LXBGViewHeight = 246.f;
                 UIAlertAction *cancle = [UIAlertAction actionWithTitle:@"取消" style:(UIAlertActionStyleDefault) handler:nil];
                 [alertController addAction:cancle];
                 [self presentViewController:alertController animated:YES completion:nil];
-            }else if (indexPath.row==2){
+            }else if (indexPath.row==3){
                 if(!enbleEidts){
                     return;
                 }
                 [self.view addSubview:self.bgView];
-            }
-        }else if (indexPath.section==1){
-            if(indexPath.row==1){
-                if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
-                    LXConfirmInfoViewController *sVC = [LXConfirmInfoViewController new];
-                    sVC.infoBlock = ^(LXConfirmInfoModel *confirmInfoModel) {
-                        self.msgAuInforModel.name = confirmInfoModel.name;
-                        self.msgAuInforModel.acNo = confirmInfoModel.acNo;
-                        self.msgAuInforModel.siCardNo = confirmInfoModel.siCardNo;
-                        self.msgAuInforModel.computerNo = confirmInfoModel.computerNo;
-                        self.msgAuInforModel.msgImageIds = confirmInfoModel.images;
-                        self.msgAuInforModel.msgImageTypes = confirmInfoModel.imageTypes;
-                    };
-                    sVC.enableEdit =enbleEidts;
-                    self.msgAuInforModel.name = self.careDetailModel.name;
-                    sVC.msgAuthenModel = self.msgAuInforModel;
-                    [self.navigationController pushViewController:sVC animated:YES];
-                }else{
-                    LXConfirmLevelViewController *sVC = [LXConfirmLevelViewController new];
-                    sVC.levelBlock = ^(LXConfirmLevelModel *levelModel) {
-                        self.ratingInforModel.ratingLeed = @"1";
-                        self.ratingInforModel.cardNo = levelModel.cardNo;
-                        self.ratingInforModel.personNatureId = levelModel.personNatureId;
-                        self.ratingInforModel.careTypeId = levelModel.careTypeId;
-                        self.ratingInforModel.raImageIds = levelModel.images;
-                        self.ratingInforModel.raImageTypes = levelModel.imageTypes;
-                        self.ratingInforModel.siCardNo = levelModel.siCardNo;
-                        
-                        self.ratingInforModel.livingCareType = levelModel.livingCare;
-                        self.ratingInforModel.serviceType = levelModel.serviceType;
-                        self.ratingInforModel.presentAddress = levelModel.presentAddress;
-                        self.ratingInforModel.careContactPhone = levelModel.careContactPhone;
-                        self.ratingInforModel.mcName = levelModel.mcName;
-                        self.ratingInforModel.mcRela = levelModel.mcRela;
-                        self.ratingInforModel.mcPhone = levelModel.mcPhone;
-                        self.ratingInforModel.msAddress = levelModel.msAddress;
-                        self.ratingInforModel.dmTypeId = levelModel.dmTypeId;
-                    };
-                    sVC.enableEdits =enbleEidts;
-                    sVC.ratingModel = self.ratingInforModel;
-                    [self.navigationController pushViewController:sVC animated:YES];
+            }else if (indexPath.row==7){
+               
+                    if ([self.msgAuInforModel.ifPass isEqualToString:@"1"]) {
+                        LXConfirmInfoViewController *sVC = [LXConfirmInfoViewController new];
+                        sVC.infoBlock = ^(LXConfirmInfoModel *confirmInfoModel) {
+                            
+                            self.msgAuInforModel.acNo = confirmInfoModel.acNo;
+                            self.msgAuInforModel.siCardNo = confirmInfoModel.siCardNo;
+                            self.msgAuInforModel.computerNo = confirmInfoModel.computerNo;
+                            self.msgAuInforModel.msgImageIds = confirmInfoModel.images;
+                            self.msgAuInforModel.msgImageTypes = confirmInfoModel.imageTypes;
+                        };
+                        sVC.enableEdit =enbleEidts;
+                        self.msgAuInforModel.name = self.careDetailModel.name;
+                        sVC.msgAuthenModel = self.msgAuInforModel;
+                        [self.navigationController pushViewController:sVC animated:YES];
+                    }else{
+                        LXConfirmLevelViewController *sVC = [LXConfirmLevelViewController new];
+                        sVC.levelBlock = ^(LXConfirmLevelModel *levelModel) {
+                            self.ratingInforModel.ratingLeed = @"1";
+                            self.ratingInforModel.personNatureId = levelModel.personNatureId;
+                            self.ratingInforModel.careTypeId = levelModel.careTypeId;
+                            self.ratingInforModel.raImageIds = levelModel.images;
+                            self.ratingInforModel.raImageTypes = levelModel.imageTypes;
+                            self.ratingInforModel.siCardNo = levelModel.siCardNo;
+                            
+                            self.ratingInforModel.livingCareType = levelModel.livingCare;
+                            self.ratingInforModel.serviceType = levelModel.serviceType;
+                            self.ratingInforModel.presentAddress = levelModel.presentAddress;
+                            self.ratingInforModel.careContactPhone = levelModel.careContactPhone;
+                            self.ratingInforModel.mcName = levelModel.mcName;
+                            self.ratingInforModel.mcRela = levelModel.mcRela;
+                            self.ratingInforModel.mcPhone = levelModel.mcPhone;
+                            self.ratingInforModel.msAddress = levelModel.msAddress;
+                            self.ratingInforModel.dmTypeId = levelModel.dmTypeId;
+                        };
+                        sVC.enableEdits =enbleEidts;
+                        sVC.ratingModel = self.ratingInforModel;
+                        [self.navigationController pushViewController:sVC animated:YES];
+                    }
+                    
                 }
-                
-            }
         }
     }
     
 }
 
 - (void)myConfirmBtnClick {
-    self.viewModel2 = [LXAddCareViewModel new];
     
-    LXWeakSelf(self);
-    [SVProgressHUD showWithStatus:@"加载中……"];
-    
-    NSMutableDictionary *dictP = [NSMutableDictionary dictionary];
-    [dictP setValue:self.careId forKey:@"careObjId"];
-    if (self.careDetailModel.name.length>0) {
-        [dictP setValue:self.careDetailModel.name forKey:@"name"];
-    }
-    else {
-        [SVProgressHUD showInfoWithStatus:@"请输入姓名"];
-        return;
-    }
-    
-    if (self.careDetailModel.sexCode.length>0) {
-        [dictP setValue:self.careDetailModel.sexCode forKey:@"sexCode"];
-    }
-    else {
-        [SVProgressHUD showInfoWithStatus:@"请选择性别"];
-        return;
-    }
-    
-    if (self.careDetailModel.birthday.length>0) {
-        [dictP setValue:self.careDetailModel.birthday forKey:@"birthday"];
-    }
-    else {
-        [SVProgressHUD showInfoWithStatus:@"请选择出生日期"];
-        return;
-    }
-    
-    if (self.careDetailModel.address.length>0) {
+    if(enbleEidts){
+        self.viewModel2 = [LXAddCareViewModel new];
         
-        if(self.careDetailModel.longitude.length<=0||self.careDetailModel.atitude.length<=0){
-            self.careDetailModel.longitude = @"";
-            self.careDetailModel.atitude = @"";
+        LXWeakSelf(self);
+        [SVProgressHUD showWithStatus:@"加载中……"];
+        
+        NSMutableDictionary *dictP = [NSMutableDictionary dictionary];
+        [dictP setValue:self.careId forKey:@"careObjId"];
+        if (self.careDetailModel.name.length>0) {
+            [dictP setValue:self.careDetailModel.name forKey:@"name"];
         }
-        [dictP setValue:self.careDetailModel.address forKey:@"address"];
-        [dictP setValue:self.careDetailModel.longitude forKey:@"longitude"];
-        [dictP setValue:self.careDetailModel.atitude forKey:@"atitude"];
-    }
-    else {
-        [SVProgressHUD showInfoWithStatus:@"请输入地址"];
-        return;
-    }
-    
-    //weakself.barthelScorce = ;
-    if (self.barthelItem.length>0) {
-        [dictP setValue:[self.barthelItem substringToIndex:self.barthelItem.length - 1] forKey:@"barthelItem"];
-    }
-    else {
-        [SVProgressHUD showInfoWithStatus:@"请选择Barthel评定"];
-        return;
-    }
-    
-    if (self.careDetailModel.barthelTotScore.length>0&&self.barthelScorce.length>0) {
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请输入姓名"];
+            return;
+        }
         
-        [dictP setValue:[self.barthelScorce substringToIndex:self.barthelScorce.length -1] forKey:@"barthelScore"];
-        [dictP setValue:self.careDetailModel.barthelTotScore forKey:@"barthelTotScore"];
-    }
-    else {
-        [SVProgressHUD showInfoWithStatus:@"请选择Barthel评定"];
-        return;
-    }
-    if (self.careDetailModel.agencyId.length>0) {
-        [dictP setValue:self.careDetailModel.agencyId forKey:@"agencyId"];
-    }
-    else {
-        [SVProgressHUD showInfoWithStatus:@"请选择指定服务机构"];
-        return;
+        if (self.careDetailModel.sexCode.length>0) {
+            [dictP setValue:self.careDetailModel.sexCode forKey:@"sexCode"];
+        }
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请选择性别"];
+            return;
+        }
         
-    }
-    [dictP setValue:self.careDetailModel.addrId forKey:@"addrId"];
-    
-    [dictP setValue:self.msgAuInforModel.ifPass forKey:@"ifPass"];
-    [dictP setValue:self.ratingInforModel.ratingLeed forKey:@"ratingLeed"];
-    
-    
-    if (self.ratingInforModel.cardNo==nil) {
-        self.ratingInforModel.cardNo = @"";
-    }
-    if (self.ratingInforModel.personNatureId==nil) {
-        self.ratingInforModel.personNatureId = @"";
-    }
-    if (self.ratingInforModel.careTypeId==nil) {
-        self.ratingInforModel.careTypeId = @"";
-    }
-    if (self.ratingInforModel.raImageIds.length<2) {
-        self.ratingInforModel.raImageIds = @" ";
-    }
-    if (self.ratingInforModel.raImageTypes.length<2) {
-        self.ratingInforModel.raImageTypes = @" ";
-    }
-   
-        [dictP setValue:self.ratingInforModel.cardNo forKey:@"cardNo"];
+        if (self.careDetailModel.birthday.length>0) {
+            [dictP setValue:self.careDetailModel.birthday forKey:@"birthday"];
+        }
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请选择出生日期"];
+            return;
+        }
+        
+        if (self.careDetailModel.cardNo.length>0) {
+            [dictP setValue:self.careDetailModel.cardNo forKey:@"cardNo"];
+        }
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请输入身份证号"];
+            return;
+        }
+        
+        if (self.careDetailModel.address.length>0) {
+            
+            if(self.careDetailModel.longitude.length<=0||self.careDetailModel.atitude.length<=0){
+                self.careDetailModel.longitude = @"";
+                self.careDetailModel.atitude = @"";
+            }
+            [dictP setValue:self.careDetailModel.address forKey:@"address"];
+            [dictP setValue:self.careDetailModel.longitude forKey:@"longitude"];
+            [dictP setValue:self.careDetailModel.atitude forKey:@"atitude"];
+        }
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请输入地址"];
+            return;
+        }
+        
+        //weakself.barthelScorce = ;
+        if (self.barthelItem.length>0) {
+            [dictP setValue:[self.barthelItem substringToIndex:self.barthelItem.length - 1] forKey:@"barthelItem"];
+        }
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请选择Barthel评定"];
+            return;
+        }
+        
+        if (self.careDetailModel.barthelTotScore.length>0&&self.barthelScorce.length>0) {
+            
+            [dictP setValue:[self.barthelScorce substringToIndex:self.barthelScorce.length -1] forKey:@"barthelScore"];
+            [dictP setValue:self.careDetailModel.barthelTotScore forKey:@"barthelTotScore"];
+        }
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请选择Barthel评定"];
+            return;
+        }
+        if (self.careDetailModel.agencyId.length>0) {
+            [dictP setValue:self.careDetailModel.agencyId forKey:@"agencyId"];
+        }
+        else {
+            [SVProgressHUD showInfoWithStatus:@"请选择指定服务机构"];
+            return;
+            
+        }
+        [dictP setValue:self.careDetailModel.addrId forKey:@"addrId"];
+        
+        [dictP setValue:self.msgAuInforModel.ifPass forKey:@"ifPass"];
+        [dictP setValue:self.ratingInforModel.ratingLeed forKey:@"ratingLeed"];
+        
+        
+        if (self.ratingInforModel.cardNo==nil) {
+            self.ratingInforModel.cardNo = @"";
+        }
+        if (self.ratingInforModel.personNatureId==nil) {
+            self.ratingInforModel.personNatureId = @"";
+        }
+        if (self.ratingInforModel.careTypeId==nil) {
+            self.ratingInforModel.careTypeId = @"";
+        }
+        if (self.ratingInforModel.raImageIds.length<2) {
+            self.ratingInforModel.raImageIds = @" ";
+        }
+        if (self.ratingInforModel.raImageTypes.length<2) {
+            self.ratingInforModel.raImageTypes = @" ";
+        }
+        
+        
         [dictP setValue:self.ratingInforModel.personNatureId forKey:@"personNatureId"];
         [dictP setValue:self.ratingInforModel.careTypeId forKey:@"careTypeId"];
         [dictP setValue:self.ratingInforModel.raImageIds forKey:@"raImageIds"];
         [dictP setValue:self.ratingInforModel.raImageTypes forKey:@"raImageTypes"];
-    
-
-    if (self.ratingInforModel.livingCareType==nil) {
-        self.ratingInforModel.livingCareType = @"";
-    }
-    if (self.ratingInforModel.serviceType==nil) {
-        self.ratingInforModel.serviceType = @"";
-    }
-    if (self.ratingInforModel.presentAddress==nil) {
-        self.ratingInforModel.presentAddress = @"";
-    }
-    if (self.ratingInforModel.careContactPhone==nil) {
-        self.ratingInforModel.careContactPhone = @"";
-    }
-    if (self.ratingInforModel.mcName==nil) {
-        self.ratingInforModel.mcName = @"";
-    }
-    if (self.ratingInforModel.mcRela==nil) {
-        self.ratingInforModel.mcRela = @"";
-    }
-    if (self.ratingInforModel.mcPhone==nil) {
-        self.ratingInforModel.mcPhone = @"";
-    }
-    if (self.ratingInforModel.msAddress==nil) {
-        self.ratingInforModel.msAddress = @"";
-    }
-    if (self.ratingInforModel.dmTypeId==nil) {
-        self.ratingInforModel.dmTypeId = @"";
-    }
-    
-    
+        
+        
+        if (self.ratingInforModel.livingCareType==nil) {
+            self.ratingInforModel.livingCareType = @"";
+        }
+        if (self.ratingInforModel.serviceType==nil) {
+            self.ratingInforModel.serviceType = @"";
+        }
+        if (self.ratingInforModel.presentAddress==nil) {
+            self.ratingInforModel.presentAddress = @"";
+        }
+        if (self.ratingInforModel.careContactPhone==nil) {
+            self.ratingInforModel.careContactPhone = @"";
+        }
+        if (self.ratingInforModel.mcName==nil) {
+            self.ratingInforModel.mcName = @"";
+        }
+        if (self.ratingInforModel.mcRela==nil) {
+            self.ratingInforModel.mcRela = @"";
+        }
+        if (self.ratingInforModel.mcPhone==nil) {
+            self.ratingInforModel.mcPhone = @"";
+        }
+        if (self.ratingInforModel.msAddress==nil) {
+            self.ratingInforModel.msAddress = @"";
+        }
+        if (self.ratingInforModel.dmTypeId==nil) {
+            self.ratingInforModel.dmTypeId = @"";
+        }
+        
+        
         [dictP setValue:self.ratingInforModel.livingCareType forKey:@"livingCareType"];
         [dictP setValue:self.ratingInforModel.serviceType forKey:@"serviceType"];
         [dictP setValue:self.ratingInforModel.presentAddress forKey:@"presentAddress"];
@@ -1217,55 +1301,61 @@ static CGFloat const LXBGViewHeight = 246.f;
         [dictP setValue:self.ratingInforModel.mcPhone forKey:@"mcPhone"];
         [dictP setValue:self.ratingInforModel.msAddress forKey:@"msAddress"];
         [dictP setValue:self.ratingInforModel.dmTypeId forKey:@"dmTypeId"];
-   
-    if (self.msgAuInforModel.acNo==nil) {
-        self.msgAuInforModel.acNo = @"";
-    }if (self.msgAuInforModel.computerNo==nil) {
-        self.msgAuInforModel.computerNo = @"";
-    }if (self.msgAuInforModel.msgImageIds==nil) {
-        self.msgAuInforModel.msgImageIds = @"";
-    }if (self.msgAuInforModel.msgImageTypes==nil) {
-        self.msgAuInforModel.msgImageTypes = @"";
-    }
-
-    
+        
+        if (self.msgAuInforModel.acNo==nil) {
+            self.msgAuInforModel.acNo = @"";
+        }if (self.msgAuInforModel.computerNo==nil) {
+            self.msgAuInforModel.computerNo = @"";
+        }if (self.msgAuInforModel.msgImageIds==nil) {
+            self.msgAuInforModel.msgImageIds = @"";
+        }if (self.msgAuInforModel.msgImageTypes==nil) {
+            self.msgAuInforModel.msgImageTypes = @"";
+        }
+        
+        
         [dictP setValue:self.msgAuInforModel.acNo forKey:@"acNo"];
         [dictP setValue:self.msgAuInforModel.computerNo forKey:@"computerNo"];
         [dictP setValue:self.msgAuInforModel.msgImageIds forKey:@"msgImageIds"];
         [dictP setValue:self.msgAuInforModel.msgImageTypes forKey:@"msgImageTypes"];
-    
-    if (self.ratingInforModel.siCardNo==nil) {
-        self.ratingInforModel.siCardNo = @"";
-    }
-    
-    if (self.msgAuInforModel.siCardNo==nil) {
-        self.msgAuInforModel.siCardNo = @"";
-    }
-    if (self.careDetailModel.siCardNo==nil) {
-        self.careDetailModel.siCardNo = @"";
-    }
-    if(self.careDetailModel.siCardNo.length>1){
-        [dictP setValue:self.careDetailModel.siCardNo forKey:@"siCardNo"];
-    }else if(self.ratingInforModel.siCardNo.length>1){
-        [dictP setValue:self.ratingInforModel.siCardNo forKey:@"siCardNo"];
-    }else {
-        [dictP setValue:self.msgAuInforModel.siCardNo forKey:@"siCardNo"];
-    }
-    [self.viewModel2 upDataCareWithParameters:dictP completionHandler:^(NSError *error, id result) {
-        LXStrongSelf(self);
-        [SVProgressHUD dismiss];
-        int code = [result[@"code"] intValue];
-        if (code == 0) {
-            if(self.reloadBlock){
-                self.reloadBlock();
+        
+        if (self.ratingInforModel.siCardNo==nil) {
+            self.ratingInforModel.siCardNo = @"";
+        }
+        
+        if (self.msgAuInforModel.siCardNo==nil) {
+            self.msgAuInforModel.siCardNo = @"";
+        }
+        if (self.careDetailModel.siCardNo==nil) {
+            self.careDetailModel.siCardNo = @"";
+        }
+        if(self.careDetailModel.siCardNo.length>1){
+            [dictP setValue:self.careDetailModel.siCardNo forKey:@"siCardNo"];
+        }else if(self.ratingInforModel.siCardNo.length>1){
+            [dictP setValue:self.ratingInforModel.siCardNo forKey:@"siCardNo"];
+        }else {
+            [dictP setValue:self.msgAuInforModel.siCardNo forKey:@"siCardNo"];
+        }
+        [self.viewModel2 upDataCareWithParameters:dictP completionHandler:^(NSError *error, id result) {
+            LXStrongSelf(self);
+            [SVProgressHUD dismiss];
+            int code = [result[@"code"] intValue];
+            if (code == 0) {
+                if(self.reloadBlock){
+                    self.reloadBlock();
+                }
+                [SVProgressHUD showInfoWithStatus:@"您的申请已成功提交，审核结果7-15天后通知您，请耐心等待"];
+                [self.navigationController popViewControllerAnimated:YES];
             }
-            [SVProgressHUD showInfoWithStatus:@"您的申请已成功提交，审核结果7-15天后通知您，请耐心等待"];
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-        else {
-            [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
-        }
-    }];
+            else {
+                [SVProgressHUD showErrorWithStatus:@"哎呀，出错了！"];
+            }
+        }];
+
+    }else{
+        enbleEidts = YES;
+        [_myConfirmBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [self.tableView reloadData];
+    }
 }
 
 #pragma mark - Aciton
@@ -1352,7 +1442,7 @@ static CGFloat const LXBGViewHeight = 246.f;
 - (UIButton *)myConfirmBtn {
     if (!_myConfirmBtn) {
         _myConfirmBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_myConfirmBtn setTitle:@"确定" forState:UIControlStateNormal];
+        [_myConfirmBtn setTitle:@"编辑" forState:UIControlStateNormal];
         [_myConfirmBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_myConfirmBtn.titleLabel setFont:[UIFont systemFontOfSize:16]];
         [_myConfirmBtn setFrame:CGRectMake(0, 0, 40, 30)];

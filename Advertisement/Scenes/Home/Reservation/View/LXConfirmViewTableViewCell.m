@@ -25,8 +25,17 @@
 
 - (void)setServiceModel:(LXServiceProjectModel *)serviceModel {
     [self.leadingL setText:serviceModel.goodsName];
-    [self.middleL setText:@"x1"];
+    
+   
     [self.trailingL setText:serviceModel.price];
 }
-
+-(void)setCount:(NSInteger)count{
+    _count = count;
+    if(_count==0){
+        [self.middleL setText:@"x1"];
+    }else{
+         [self.middleL setText:[NSString stringWithFormat:@"x%ld",self.count]];
+    }
+   
+}
 @end

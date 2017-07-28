@@ -14,6 +14,7 @@ typedef void(^BarthelConfirm)(NSDictionary *itemArray, long barthel);
 
 @property (nonatomic, copy) BarthelConfirm barthelBlock;
 @property (nonatomic,strong)NSMutableArray *bartherLevelArr;
+@property (nonatomic,strong)NSDictionary *cheackDic;
 @property (nonatomic)BOOL isDetail;
 @property (nonatomic)BOOL enbleEidts;
 @end

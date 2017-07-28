@@ -60,7 +60,7 @@
     [self.trailingB setBackgroundColor:LXMainColor];
     [self.trailingB.titleLabel setTextColor:[UIColor whiteColor]];
     [self.trailingB.titleLabel setFont:[UIFont systemFontOfSize:18]];
-    [self.trailingB setTitle:@"确认下单" forState:UIControlStateNormal];
+    [self.trailingB setTitle:@"" forState:UIControlStateNormal];
     [self.trailingB addTarget:self action:@selector(trailingBtnClick) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.trailingB];
     [self.trailingB mas_makeConstraints:^(MASConstraintMaker *make) {

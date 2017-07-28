@@ -13,7 +13,7 @@
 @interface LXConfirmViewTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) LXServiceProjectModel *serviceModel;
-
+@property (nonatomic) NSInteger count;
 @property (weak, nonatomic) IBOutlet UIButton *dotBtn;
 @property (weak, nonatomic) IBOutlet UILabel *leadingL;
 @property (weak, nonatomic) IBOutlet UILabel *middleL;

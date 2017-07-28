@@ -41,12 +41,11 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    //self.window.rootViewController = [LXRootTabbarViewController new];
+    
+    sleep(2);
+    
     NSString *userId=[LXStandardUserDefaults objectForKey:@"userId"];
     [AMapServices sharedServices].apiKey = AMapAPIKey;
-    
-   // self.window.rootViewController = [[LXRootNavViewController alloc] initWithRootViewController:[LXCareViewController new]];
     
     NSString *key = (NSString *)kCFBundleVersionKey;
     //新版本号
@@ -71,7 +70,7 @@
     // 推送
     [self configureJPushWithOptions:launchOptions];
     
-    [self.window setBackgroundColor:[UIColor whiteColor]];
+    self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
 }

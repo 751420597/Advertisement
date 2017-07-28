@@ -11,5 +11,6 @@
 @interface LXAddCareViewController : LXRootTableViewController
 @property(nonatomic,copy)void (^reloadBlock)();
 @property (nonatomic, copy) NSString *careId;
+@property (nonatomic,assign)int states;//0.申请长护险  1//有长护险 2.//没有
 
 @end

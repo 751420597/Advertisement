@@ -13,5 +13,5 @@
 @property (nonatomic, copy) NSString *goodsId;
 @property (nonatomic, copy) NSString *goodsName;
 @property (nonatomic, copy) NSString *price;
-
+@property (nonatomic) BOOL isSelect;
 @end

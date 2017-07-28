@@ -14,7 +14,7 @@
 @property (nonatomic, copy) NSString *barContent;
 @property (nonatomic, copy) NSString *barGrade;
 @property (nonatomic, copy) NSString *bcId;
-@property (nonatomic, copy) NSString *dispOrder;
+@property (nonatomic, copy) NSString *dispOrder;//单项分
 
 @property (nonatomic, copy) NSString *updTime;
 

@@ -24,6 +24,7 @@
 @property (nonatomic, copy) NSString *addrId;
 @property (nonatomic, copy) NSString *agencyId;
 @property (nonatomic,copy) NSString *siCardNo;
+@property (nonatomic,copy) NSString *cardNo;
 //-(LXCareDetailModel*)LXCareDetailModelWithDic:(NSDictionary*)dic;
 @end
 

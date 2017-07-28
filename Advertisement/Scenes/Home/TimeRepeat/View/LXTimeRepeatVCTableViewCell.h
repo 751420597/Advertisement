@@ -12,5 +12,5 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *indexB;
 @property (weak, nonatomic) IBOutlet UILabel *repeatL;
-
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated;
 @end

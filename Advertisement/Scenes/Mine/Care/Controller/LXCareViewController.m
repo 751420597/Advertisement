@@ -15,7 +15,6 @@
 
 #import "LXCareModel.h"
 #import "LXCareViewModel.h"
-
 static NSString *const LXCareVCTableCellID = @"LXCareVCTableCellID";
 static CGFloat LXCareTableViewOriginX = 10;
 static CGFloat LXCareTableViewOriginY = 10;
@@ -61,8 +60,79 @@ static CGFloat LXCareTableViewRowHeight = 70;
     
     [self getServiceData];
 }
+#pragma mark 导航栏右侧点击事件
+-(void)moreOperation
+{
+    NSMutableArray *obj = [NSMutableArray array];
+    
+    for (NSInteger i = 0; i < [self titles].count; i++) {
+        
+        WBPopMenuModel * info = [WBPopMenuModel new];
+        info.title = [self titles][i];
+        [obj addObject:info];
+    }
+    
+    [[WBPopMenuSingleton shareManager]showPopMenuSelecteWithFrame:150
+                                                             item:obj
+                                                           action:^(NSInteger index) {
+                                                               NSLog(@"index:%ld",(long)index);
+                                                               if (index ==0) {
+                                                                   [self changhuxian];
+                                                                   
+                                                               }
+                                                               if(index==1){
+                                                                   [self haveCHangehuxian];
+                                                               }
+                                                               if(index==2){
+                                                                   [self NoChanghuxian];
+                                                               }
+                                                               
+                                                           }];
+}
+- (NSArray *) titles
+{
+    return @[@"申请长护险待遇",@"已有长护险待遇",@"没有参保长护险"];
+}
 
-
+-(void)changhuxian{
+    
+    LXAddCareViewController *acVC = [LXAddCareViewController new];
+    acVC.states = 0;
+    acVC.reloadBlock = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self getServiceData];
+        });
+        
+    };
+    [self.navigationController pushViewController:acVC animated:YES];
+    
+}
+-(void)haveCHangehuxian{
+    
+    LXAddCareViewController *acVC = [LXAddCareViewController new];
+    acVC.states = 1;
+    acVC.reloadBlock = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self getServiceData];
+        });
+        
+    };
+    [self.navigationController pushViewController:acVC animated:YES];
+    
+}
+-(void)NoChanghuxian{
+    
+    LXAddCareViewController *acVC = [LXAddCareViewController new];
+    acVC.states = 2;
+    acVC.reloadBlock = ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self getServiceData];
+        });
+        
+    };
+    [self.navigationController pushViewController:acVC animated:YES];
+     
+}
 #pragma mark - Service
 
 - (void)getServiceData {
@@ -131,17 +201,6 @@ static CGFloat LXCareTableViewRowHeight = 70;
     }
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-//    NSDictionary *dict1 = @{@"小伙子":@"审核中"};
-//    NSDictionary *dict2 = @{@"小伙子":@"已通过"};
-//    NSDictionary *dict3 = @{@"小伙子":@"未认证"};
-//    NSDictionary *dict4 = @{@"小伙子":@"未通过"};
-//    NSDictionary *dict5 = @{@"小伙子":@"重新申请"};
-//    [self.dataSource addObject:dict1];
-//    [self.dataSource addObject:dict2];
-//    [self.dataSource addObject:dict3];
-//    [self.dataSource addObject:dict4];
-//    [self.dataSource addObject:dict5];
-    
     [self.view addSubview:self.tableView];
 }
 
@@ -165,14 +224,32 @@ static CGFloat LXCareTableViewRowHeight = 70;
             nameL.font =[UIFont systemFontOfSize:15.f];
             nameL.tag = 100;
             [cell_1.contentView addSubview:nameL];
+            
+            UIImageView *iamgeV =[[UIImageView alloc]init];
+            iamgeV.contentMode =UIViewContentModeScaleAspectFit;
+            iamgeV.tag = 101;
+            
+            [cell_1.contentView addSubview:iamgeV];
         }
         UILabel *nameL =[cell_1.contentView viewWithTag:100];
+        UIImageView *iamgeV =[cell_1.contentView viewWithTag:101];
         [nameL mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerY.equalTo(cell_1);
             make.leading.equalTo(cell_1).offset(15);
         }];
-        LXCareModel *careModel = self.dataSource[indexPath.row];
         
+        [iamgeV mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(cell_1);
+            make.trailing.equalTo(cell_1.contentView).offset(-15);
+            make.width.offset(20);
+            make.height.offset(20);
+        }];
+        LXCareModel *careModel = self.dataSource[indexPath.row];
+        if([careModel.careObjId isEqualToString:self.careID_0]){
+            iamgeV.image =[UIImage imageNamed:@"Home_cell_selected"];
+        }else{
+            iamgeV.image =[UIImage imageNamed:@""];
+        }
         nameL.text = careModel.careObjName;
        
         
@@ -276,14 +353,7 @@ static CGFloat LXCareTableViewRowHeight = 70;
 #pragma mark - Action
 
 - (void)addBtnClick {
-    LXAddCareViewController *acVC = [LXAddCareViewController new];
-    acVC.reloadBlock = ^{
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self getServiceData];
-        });
-        
-    };
-    [self.navigationController pushViewController:acVC animated:YES];
+    [self moreOperation];
 }
 
 

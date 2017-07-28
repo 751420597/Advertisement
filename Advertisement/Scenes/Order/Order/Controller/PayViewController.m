@@ -12,6 +12,7 @@
 #import "LXZhiFuBaoPayModel.h"
 #import "LXPayCallUp.h"
 #import "LXOrderViewController.h"
+#import  "LXOrderCommentViewController.h"
 @interface PayViewController ()<UITableViewDelegate, UITableViewDataSource>
 {
     UIButton *secondView;
@@ -108,21 +109,22 @@
 
                 [LXPayCallUp  gotoZhiFuBaoPayWithModel:payModel successBlock:^(NSDictionary *result) {
                     [SVProgressHUD showInfoWithStatus:@"支付成功!"];
-                    [orderViewModel upDataOrderWithParameters:@{@"orderNo":self.orderId,@"orderPrice":@"0.01"} completionHandler:^(NSError *error, id result) {
-                        int code = [result[@"code"] intValue];
-                        if(code==0){
-                            for (UIViewController *vc in self.navigationController.viewControllers) {
-                                if([vc isKindOfClass:[LXOrderViewController class]]){
-                                    [[NSNotificationCenter defaultCenter]postNotificationName:@"payOK" object:nil];
-                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                        [self.navigationController popToViewController:vc animated:YES];
-                                    });
-                                    
-                                }
-                            }
-                            
-                        }
-                    }];
+                    [SVProgressHUD dismissWithDelay:1.5];
+//                    for (UIViewController *vc in self.navigationController.viewControllers) {
+//                        if([vc isKindOfClass:[LXOrderViewController class]]){
+                            [[NSNotificationCenter defaultCenter]postNotificationName:@"payOK" object:nil];
+                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//
+                                LXOrderCommentViewController *VC = [LXOrderCommentViewController new];
+                                
+                                VC.orderId = self.orderId;
+                                VC.payOK = @"ok";
+                                [self.navigationController pushViewController:VC animated:YES];
+                                
+                            });
+//                            
+//                        }
+//                    }
 
                 } failureBlock:^(NSDictionary *error) {
 

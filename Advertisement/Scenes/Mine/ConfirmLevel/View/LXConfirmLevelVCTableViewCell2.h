@@ -11,5 +11,6 @@
 @interface LXConfirmLevelVCTableViewCell2 : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *leadingL;
 @property (weak, nonatomic) IBOutlet UILabel *trailingL;
+@property (weak, nonatomic) IBOutlet UIButton *arrowBT;
 
 @end

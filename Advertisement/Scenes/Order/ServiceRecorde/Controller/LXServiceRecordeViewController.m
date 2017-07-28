@@ -107,14 +107,20 @@ static NSString *const LXServiceRecordeVCTableViewCellID2 = @"LXServiceRecordeVC
         if (code == 0) {
         
             self.model = [LXServiceRecordeModel modelWithDictionary:result];
-            if(self.model.takOrdTime!=nil){
+            if(self.model.takOrdTime.length>2){
                  self.model.takOrdTime = [self.model.takOrdTime substringWithRange:NSMakeRange(0, self.model.takOrdTime.length-2)];
+            }else if(self.model.takOrdTime!=nil){
+                self.model.takOrdTime = @"";
             }
-            if(self.model.startTime!=nil){
+            if(self.model.startTime.length>2){
                 self.model.startTime =[self.model.startTime substringWithRange:NSMakeRange(0, self.model.startTime.length-2)];
+            }else if(self.model.startTime!=nil){
+                self.model.startTime = @"";
             }
-            if(self.model.subOrdTime!=nil){
+            if(self.model.subOrdTime.length>2){
                 self.model.subOrdTime =[self.model.subOrdTime substringWithRange:NSMakeRange(0, self.model.subOrdTime.length-2)];
+            }else if(self.model.subOrdTime!=nil){
+                self.model.subOrdTime = @"";
             }
             
             [self setUpTabale];
@@ -153,6 +159,9 @@ static NSString *const LXServiceRecordeVCTableViewCellID2 = @"LXServiceRecordeVC
     
     self.secitonTitles = [NSMutableArray array];
     [self.secitonTitles addObject:@"服务已提交"];
+    if([self.model.ordStateId isEqualToString:@"98"]){
+        [self.secitonTitles addObject:@"服务已取消"];
+    }
     if(self.model.takOrdTime!=nil){
         [self.secitonTitles addObject:@"服务已接单"];
     }
@@ -162,7 +171,7 @@ static NSString *const LXServiceRecordeVCTableViewCellID2 = @"LXServiceRecordeVC
     if(self.model.longitude!=nil){
          [self.secitonTitles addObject:@"护工位置"];
     }
-    if(self.model.serviceRecordList!=nil){
+    if(self.model.serviceRecordList.count>0){
         for (NSDictionary *itemDic in self.model.serviceRecordList) {
             itemModel *itemM=[itemModel modelWithDictionary:itemDic];
             [self.secitonTitles addObject:itemM];
@@ -296,15 +305,17 @@ static NSString *const LXServiceRecordeVCTableViewCellID2 = @"LXServiceRecordeVC
             }
 
             keyLabel.text = tempString;
-            if([tempString isEqualToString:@"服务已提交"]||[tempString isEqualToString:@"服务已接单"]){
+            if([tempString isEqualToString:@"服务已提交"]||[tempString isEqualToString:@"服务已接单"]||[tempString isEqualToString:@"服务已取消"]){
             if(indexPath.row==0){
                 contentLabel.hidden = NO;
                 timeLabel.text =self.model.subOrdTime;
                 contentLabel.text=@"请耐心等待护理接单";
-            }else{
+            }else {
                 contentLabel.hidden = NO;
                 timeLabel.text =self.model.takOrdTime;
+                if(![tempString isEqualToString:@"服务已取消"]){
                 contentLabel.text=@"请耐心等待服务";
+                }
             }
             [keyLabel mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.mas_equalTo(cell.contentView).mas_offset(40);
@@ -497,7 +508,7 @@ static NSString *const LXServiceRecordeVCTableViewCellID2 = @"LXServiceRecordeVC
         itemM =self.secitonTitles[indexPath.row];
     }
     if(indexPath.section==0){
-        if ([tempString isEqualToString:@"服务已提交"] || [tempString isEqualToString:@"服务已接单"] ) {
+        if ([tempString isEqualToString:@"服务已提交"] || [tempString isEqualToString:@"服务已接单"] ||[tempString isEqualToString:@"服务已取消"]) {
             return 60;
         }
         else if ([tempString isEqualToString:@"服务完成"]|| [tempString isEqualToString:@"开始服务"]) {

@@ -88,9 +88,13 @@ static NSString *const LXSelectOrganizationVCTableViewCellID = @"LXBarthelVCTabl
         cell.selectionStyle = UITableViewCellSeparatorStyleNone;
         [self addCustomeLineWithArray:[self.dataSource copy] indexPath:indexPath width:LXScreenWidth - 20 height:68 color:LXCellBorderColor cell:cell];
     }
-    
-    cell.organizationModel = self.dataSource[indexPath.row];
-    
+    LXOrganizaitonModel *model = self.dataSource[indexPath.row];
+    cell.organizationModel =model;
+    if([self.objID isEqualToString:model.corId]){
+        cell.backgroundColor = LXCellBorderColor;
+    }else{
+        cell.backgroundColor = LXVCBackgroundColor;
+    }
     return cell;
 }
 

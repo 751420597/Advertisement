@@ -11,7 +11,7 @@
 typedef void(^TimeSelect)(NSArray *timeArray, NSString *repeat);
 
 @interface LXTimeSelectViewController : LXRootViewController
-
+@property(nonatomic ,strong)NSMutableArray *timeStringArr;
 @property (nonatomic, copy) TimeSelect selectBlock;
-
+@property (nonatomic) NSInteger repeatTimeInter;
 @end
