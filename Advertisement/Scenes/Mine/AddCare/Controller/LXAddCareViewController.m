@@ -28,7 +28,7 @@
 static NSString *const LXAddCareVCTableViewCellID = @"LXAddCareVCTableViewCellID";
 static CGFloat const LXBGViewHeight = 246.f;
 
-@interface LXAddCareViewController () <UITextFieldDelegate,MAMapViewDelegate,AMapSearchDelegate,AMapLocationManagerDelegate>
+@interface LXAddCareViewController () <UITextFieldDelegate,MAMapViewDelegate,AMapSearchDelegate,AMapLocationManagerDelegate,UITextViewDelegate>
 {
     LXBarthelTotalModel *barthelModel;
     BOOL isAddressBT;
@@ -36,7 +36,7 @@ static CGFloat const LXBGViewHeight = 246.f;
 @property (nonatomic, strong) NSMutableArray *trailingArray;
 
 @property (nonatomic, strong) UITextField *nameTF;
-@property (nonatomic, strong) UITextField *addressTF;
+@property (nonatomic, strong) UITextView *addressTF;
 @property (nonatomic, strong) UITextField * carNoTF;
 //@property (nonatomic, strong) UISwitch *switch1;
 @property (nonatomic, assign) BOOL isSetInfo;
@@ -287,39 +287,33 @@ static CGFloat const LXBGViewHeight = 246.f;
             
             UILabel *label1 = [[UILabel alloc] init];
             [label1 setFont:[UIFont systemFontOfSize:14.5]];
-            [label1 setTextColor:LXColorHex(0x4c4c4c)];
+            
             [label1 setText:leadingString];
             [cell.contentView addSubview:label1];
             [label1 mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.leading.mas_equalTo(cell.contentView).mas_offset(20);
-                make.centerY.mas_equalTo(cell.contentView);
+                make.top.mas_equalTo(cell.contentView).mas_offset(10);
             }];
             
-            self.addressTF = [[UITextField alloc] init];
-            
-            if (self.addCareModel.address) {
-                [self.addressTF setText:self.addCareModel.address];
-            }
-            else {
-                self.addressTF.placeholder = @"请输入地址";
-            }
+            self.addressTF = [[UITextView alloc] init];
             self.addressTF.font = [UIFont systemFontOfSize:14.5f];
             self.addressTF.delegate = self;
-            self.addressTF.textAlignment = NSTextAlignmentLeft;
             self.addressTF.returnKeyType = UIReturnKeyDefault;
+            
             [cell.contentView addSubview:self.addressTF];
             [self.addressTF mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.trailing.mas_equalTo(cell.contentView).mas_offset(-15);
                 make.leading.mas_equalTo(cell.contentView).mas_offset(100);
-                make.height.mas_offset(50);
-                make.centerY.mas_equalTo(cell.contentView);
+                make.top.mas_equalTo(label1).mas_offset(-8);
+                make.bottom.mas_equalTo(cell.contentView).mas_offset(-10);
             }];
-//            UIButton *addressBT =[UIButton buttonWithType:UIButtonTypeCustom];
-//            addressBT.frame = CGRectMake(LXScreenWidth - 55, cell.contentView.centerY, 20, 25);
-//            [addressBT addTarget:self action:@selector(location) forControlEvents:UIControlEventTouchUpInside];
-//            [addressBT setBackgroundImage:[UIImage imageNamed:@"Home_reservation_ pin"] forState:UIControlStateNormal];
-//            addressBT.imageView.contentMode  =UIViewContentModeScaleAspectFit;
-//            [cell.contentView addSubview:addressBT];
+            if (self.addCareModel.address) {
+                [self.addressTF setText:self.addCareModel.address];
+            }
+            else {
+                self.addressTF.text = @"请输入地址";
+                [self.addressTF setTextColor:LXColorHex(0xb2b2b2)];
+            }
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             
             return cell;
@@ -411,58 +405,7 @@ static CGFloat const LXBGViewHeight = 246.f;
             return cell;
         }
     }
-    /*
-    else if (indexPath.section == 1) {
-        
-        if (indexPath.row == 0) {
-            UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"seciton1row1"];
-            
-             [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
-            
-            UILabel *label1 = [[UILabel alloc] init];
-            [label1 setFont:[UIFont systemFontOfSize:16]];
-            [label1 setTextColor:LXColorHex(0x4c4c4c)];
-            [label1 setText:leadingString];
-            [cell.contentView addSubview:label1];
-            [label1 mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.leading.mas_equalTo(cell.contentView).mas_offset(20);
-                make.top.mas_equalTo(cell.contentView).mas_offset(10);
-            }];
-            
-            self.switch1 = [[UISwitch alloc] init];
-            if (self.isSetInfo) {
-                self.switch1.on = YES;
-            }
-            else {
-                self.switch1.on = NO;
-            }
-            
-            [self.switch1 addTarget:self action:@selector(switchValue) forControlEvents:UIControlEventValueChanged];
-            [cell.contentView addSubview:self.switch1];
-            [self.switch1 mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.trailing.mas_equalTo(cell.contentView).mas_offset(-10);
-                make.centerY.mas_equalTo(cell.contentView);
-            }];
-            
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-            return cell;
-         
-        }
-        else
-         
-         if{
-            LXAddCareVCTableViewCell1 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell1" owner:self options:nil].firstObject;
-            
-             [self addCustomeLineWithArray:cutomArray indexPath:indexPath width:LXScreenWidth - 20 height:50 color:LXCellBorderColor cell:cell];
-            cell.leadingL.text = leadingString;
-            cell.trailingL.text = trailingString;
-            
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-            return cell;
-        }
-    }
-     */
-    else if (indexPath.section == 1) {
+        else if (indexPath.section == 1) {
         LXAddCareVCTableViewCell2 *cell = [[NSBundle mainBundle] loadNibNamed:@"LXAddCareVCTableViewCell2" owner:self options:nil].firstObject;
         
         [cell.contentView setBackgroundColor:LXVCBackgroundColor];
@@ -608,6 +551,7 @@ static CGFloat const LXBGViewHeight = 246.f;
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section != 1) {
+        if(indexPath.row !=4){
             UIButton *starBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             [starBtn setBackgroundImage:[UIImage imageNamed:@"Mine_care_add"] forState:UIControlStateNormal];
             [cell.contentView addSubview:starBtn];
@@ -617,26 +561,48 @@ static CGFloat const LXBGViewHeight = 246.f;
                 make.leading.mas_equalTo(cell.contentView).mas_equalTo(8);
                 make.centerY.mas_equalTo(cell.contentView);
             }];
+        }else{
+            UIButton *starBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+            [starBtn setBackgroundImage:[UIImage imageNamed:@"Mine_care_add"] forState:UIControlStateNormal];
+            [cell.contentView addSubview:starBtn];
+            [starBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.width.mas_equalTo(10);
+                make.height.mas_equalTo(10);
+                make.leading.mas_equalTo(cell.contentView).mas_equalTo(8);
+                make.top.mas_offset(15);
+            }];
+        }
+        
         }
     
 }
-
-
+-(void)textViewDidBeginEditing:(UITextView *)textView{
+    
+        if([textView.text isEqualToString:@"请输入地址"]){
+            textView.text=@"";
+            textView.textColor =[UIColor blackColor];
+        }
+}
+-(void)textViewDidEndEditing:(UITextView *)textView{
+   if(textView.text.length>0){
+        if(![self.addressTF.text isEqualToString:self.addCareModel.address]){
+            
+                self.addCareModel.address =_addressTF.text;
+                AMapGeocodeSearchRequest *request = [[AMapGeocodeSearchRequest alloc]init];
+                request.address = _addressTF.text;
+                [self.search AMapGeocodeSearch:request];
+            }
+    
+   }else if (textView.text.length<=0){
+       self.addressTF.text = @"请输入地址";
+       [textView setTextColor:LXColorHex(0xb2b2b2)];
+   }
+}
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     if ([self.nameTF isEqual:textField]) {
         self.addCareModel.name = textField.text;
-    }
-    
-    if ([self.addressTF isEqual:textField]) {
-        if(![textField.text isEqualToString:self.addCareModel.address]){
-            self.addCareModel.address = textField.text;
-            AMapGeocodeSearchRequest *request = [[AMapGeocodeSearchRequest alloc]init];
-            request.address = textField.text;
-            [self.search AMapGeocodeSearch:request];
-        }
-        
     }
     if (textField== self.carNoTF) {
         self.addCareModel.cardNo = textField.text;
@@ -662,21 +628,7 @@ static CGFloat const LXBGViewHeight = 246.f;
        
     }
 }
-//- (void)onReGeocodeSearchDone:(AMapReGeocodeSearchRequest *)request response:(AMapReGeocodeSearchResponse *)response
-//{
-//    [SVProgressHUD dismiss];
-//    if (response.regeocode != nil )
-//    {
-//        //判断是否为空
-//        if (response) {
-//            //取出搜索到的POI（POI：Point Of Interest）
-//            isAddressBT = YES;
-//           self.addCareModel.address =  response.regeocode.formattedAddress;
-//            [self updateView];
-//            
-//        }
-//    }
-//}
+
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
@@ -720,20 +672,7 @@ static CGFloat const LXBGViewHeight = 246.f;
     [self updateView];
 }
 
-/*
-- (void)switchValue {
-    if (self.switch1.isOn) {
-        self.addCareModel.ifPass = @"1";
-        self.isSetInfo = YES;
-    }
-    else {
-        self.addCareModel.ifPass = @"2";
-        self.isSetInfo = NO;
-    }
-    
-    [self updateView];
-}
-*/
+
 - (void)myConfirmBtnClick {
     self.viewModel = [LXAddCareViewModel new];
     

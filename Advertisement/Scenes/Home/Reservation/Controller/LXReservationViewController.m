@@ -252,7 +252,7 @@
         }
         else {
             LXReservationVCTableViewCellNormal *cell = [[NSBundle mainBundle] loadNibNamed:@"LXReservationVCTableViewCellNormal" owner:self options:nil].firstObject;
-            
+            cell.trailingTF.borderStyle = UITextBorderStyleNone;
             if (indexPath.row == 0) {
                 self.nameTF = cell.trailingTF;
                 self.nameTF.delegate = self;

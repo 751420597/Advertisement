@@ -458,9 +458,26 @@
             _scrollView.panGestureRecognizer.delaysTouchesBegan = YES;
             [cell.contentView addSubview:_scrollView];
             _scrollView.frame = CGRectMake(30, 50, LXScreenWidth-30-15, 100);
-            _scrollView.contentSize = CGSizeMake(155*6, 100);
 
-            
+            if(_enableEdits){
+                _scrollView.contentSize = CGSizeMake(155*6, 100);
+            }else{
+                int count = 0;
+                if(self.bottomeImageID1.length>0){
+                    count ++;
+                }if(self.bottomeImageID2.length>0){
+                    count ++;
+                }if(self.bottomeImageID3.length>0){
+                    count ++;
+                }if(self.bottomeImageID4.length>0){
+                    count ++;
+                }if(self.bottomeImageID5.length>0){
+                    count ++;
+                }if(self.bottomeImageID6.length>0){
+                    count ++;
+                }
+                 _scrollView.contentSize = CGSizeMake(155*count, 100);
+            }
             //photo1
             self.leftBottomUploadBtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
             NSString *requestString3 = [NSString stringWithFormat:@"%@.htm?id=%@", GetImage, self.bottomeImageID1];
