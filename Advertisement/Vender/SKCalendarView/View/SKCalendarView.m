@@ -15,7 +15,9 @@
 #import "LXCalendarCollectionViewCell.h"
 
 @interface SKCalendarView () <UICollectionViewDelegate, UICollectionViewDataSource>
-
+{
+    NSMutableArray *arr ;
+}
 @property (nonatomic, strong) UICollectionView * weekCollectionView;
 @property (nonatomic, strong) UICollectionView * calendarCollectionView;
 @property (nonatomic, strong) UICollectionView * extraCollectionView;
@@ -39,9 +41,8 @@
 @property (nonatomic, strong) NSDate *currenDate;
 @property (nonatomic, strong) NSDate *nextMonthDate;
 
-@property (nonatomic, strong) NSMutableDictionary *cureRecordDictionary;
 @property (nonatomic, strong) NSMutableDictionary *nextRecordDictionary;
-
+@property (nonatomic, strong) NSMutableDictionary *cureRecordDictionary;
 @end
 
 @implementation SKCalendarView
@@ -51,7 +52,7 @@
         if (self) {
             self.cureRecordDictionary = [NSMutableDictionary dictionary];
             self.nextRecordDictionary = [NSMutableDictionary dictionary];
-            
+            arr = [NSMutableArray array];
             self.frame = frame;
             self.calendarConfigure = [LXCalendarConfigure new];
             _nextCalendarManage = [SKCalendarManage manage];
@@ -71,25 +72,23 @@
     if (!_currentCalendarManage) {
         _currentCalendarManage = [SKCalendarManage manage];
         
+        self.currenDate = [NSDate dateWithTimeIntervalSinceNow:0 * 24 * 60 * 60];
+        
         [_currentCalendarManage checkThisMonthRecordFromToday:self.currenDate];
         
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-        NSString *nextMothFirstDay = [dateFormatter stringFromDate:self.nextMonthDate];
-        NSString *temp =[nextMothFirstDay substringFromIndex:nextMothFirstDay.length-2];
         self.aWeekValue = [NSMutableArray array];
-        //int days =(int)_nextCalendarManage.calendarDate.count;
-        int days = 7;
-        if ([temp isEqualToString:@"01"] ) {
-            
-            for(int i=0;i<days;i++){
-                [self.aWeekValue addObject:_nextCalendarManage.calendarDate[i]];
-            }
+        if (_currentCalendarManage.days + _currentCalendarManage.dayInWeek- _currentCalendarManage.todayInMonth - 1 >7 ) {
+            [self.aWeekValue addObject:_currentCalendarManage.calendarDate[_currentCalendarManage.todayInMonth + 1]];
+            [self.aWeekValue addObject:_currentCalendarManage.calendarDate[_currentCalendarManage.todayInMonth + 2]];
+            [self.aWeekValue addObject:_currentCalendarManage.calendarDate[_currentCalendarManage.todayInMonth + 3]];
+            [self.aWeekValue addObject:_currentCalendarManage.calendarDate[_currentCalendarManage.todayInMonth + 4]];
+            [self.aWeekValue addObject:_currentCalendarManage.calendarDate[_currentCalendarManage.todayInMonth + 5]];
+            [self.aWeekValue addObject:_currentCalendarManage.calendarDate[_currentCalendarManage.todayInMonth + 6]];
+            [self.aWeekValue addObject:_currentCalendarManage.calendarDate[_currentCalendarManage.todayInMonth + 7]];
         }
         else {
             for (int i = (int)_currentCalendarManage.todayInMonth+1; i <= _currentCalendarManage.days + _currentCalendarManage.dayInWeek - 2; i++) {
                 [self.aWeekValue addObject:_currentCalendarManage.calendarDate[i]];
-                
             }
             
             self.aWeekValueExtra = [NSMutableArray array];
@@ -105,18 +104,15 @@
             self.nextCalendarManage = [[SKCalendarManage alloc] init];
             [self.nextCalendarManage checkThisMonthRecordFromToday:self.nextMonthDate];
             
-//            NSInteger firstCount = self.aWeekValue.count;
-//            NSInteger lastCount = _currentCalendarManage.days - firstCount;
-//            for (int i =0 ; i<42-self.aWeekValue.count; i++) {
-//                [self.aWeekValue addObject:@""];
-//            }
-//            for (int j = 0; j < lastCount; j++) {
-//                [self.aWeekValueExtra addObject:self.nextCalendarManage.calendarDate[self.nextCalendarManage.dayInWeek + j - 1]];
-//            }
             NSInteger firstCount = self.aWeekValue.count;
             NSInteger lastCount = 7 - firstCount;
             for (int j = 0; j < lastCount; j++) {
                 [self.aWeekValueExtra addObject:self.nextCalendarManage.calendarDate[self.nextCalendarManage.dayInWeek + j - 1]];
+            }
+            for (id data in self.currentCalendarManage.calendarDate) {
+                if(![data isEqual:@""]){
+                    [arr addObject:data];
+                }
             }
         }
     }
@@ -202,7 +198,7 @@
         make.centerY.mas_equalTo(dateView);
     }];
     self.currentCalendarManage;
-    if ([self.aWeekValue count] == _nextCalendarManage.calendarDate.count) {
+    if ([self.aWeekValue count] == 7) {
         dateLabel.text = [NSString stringWithFormat:@"%@年%@月", @(self.currentCalendarManage.year),@(self.nextCalendarManage.month)];
         // 日期
         UICollectionViewFlowLayout * dateLayout = [[UICollectionViewFlowLayout alloc] init];
@@ -235,7 +231,7 @@
             make.top.equalTo(dateView.mas_bottom);
             make.left.equalTo(self);
             make.right.equalTo(self);
-            make.height.mas_equalTo(140);
+            make.height.mas_equalTo(65);
             //make.height.mas_equalTo(dateView);
         }];
 
@@ -491,6 +487,9 @@
     
     if (_currentCalendarManage.theMonth ==month.integerValue ) {
         [self.cureRecordDictionary setValue:hourMinute forKey:days];
+        if(_aWeekValue.count==7){
+            [self.calendarCollectionView reloadData];
+        }else
          [self.extraCollectionView reloadData];
     }else{
         [self.nextRecordDictionary setValue:hourMinute forKey:days];
@@ -509,31 +508,15 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    if ([self.aWeekValue count] == _nextCalendarManage.calendarDate.count) {
-        if(_nextCalendarManage.dayInWeek>5 &&_nextCalendarManage.days==31){
-            return 42;
-        }else{
-            return 35;
-        }
-       
-        
+    if ([self.aWeekValue count] == 7) {
+        return 35;
     }
     else {
-        if (collectionView == self.extraCollectionView) {
-            if(_currentCalendarManage.dayInWeek>5 &&_currentCalendarManage.days==31){
-                return  42;
-            }else{
-                return 35;
-            }
-
+        if (collectionView == self.calendarCollectionView) {
+            return 28;
         }
         else {
-            if(_nextCalendarManage.dayInWeek>5 &&_nextCalendarManage.days==31){
-                return  42;
-            }else{
-                return 35;
-            }
-           
+            return 7;
         }
     }
     
@@ -542,21 +525,23 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.aWeekValue count] == _nextCalendarManage.calendarDate.count) {
+    if ([self.aWeekValue count] == 7) {
         // 日期
         if (collectionView == self.calendarCollectionView) {
             LXCalendarCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Calendar" forIndexPath:indexPath];
             
             cell.dateLabel.text = getNoneNil(self.currentCalendarManage.calendarDate[indexPath.row]);
             
-            if (self.nextRecordDictionary) {
-                if ([self.nextRecordDictionary.allKeys containsObject:cell.dateLabel.text]) {
-                    cell.hourMinuteL.text = self.nextRecordDictionary[cell.dateLabel.text];
+            
+            if (self.cureRecordDictionary) {
+                if ([self.cureRecordDictionary.allKeys containsObject:cell.dateLabel.text]) {
+                    cell.hourMinuteL.text = self.cureRecordDictionary[cell.dateLabel.text];
                 }
                 else {
                     cell.hourMinuteL.text = @"";
                 }
             }
+            
             
             if ([self.aWeekValue containsObject:cell.dateLabel.text.numberValue]) {
                 [cell.dateLabel setTextColor:LXColorHex(0x4c4c4c)];
@@ -584,7 +569,6 @@
         }
     }
     else {
-        //下个月
         if (collectionView == self.calendarCollectionView) {
             LXCalendarCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Calendar2" forIndexPath:indexPath];
             
@@ -609,12 +593,10 @@
             return cell;
         }
         else if (collectionView == self.extraCollectionView) {
-        //本月
             LXCalendarCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Calendar1" forIndexPath:indexPath];
             
-            
-            cell.dateLabel.text = getNoneNil(self.currentCalendarManage.calendarDate[indexPath.row]);
-            
+            NSInteger arrayIndex = arr.count-6+indexPath.row;
+            cell.dateLabel.text = [NSString stringWithFormat:@"%ld",arrayIndex];
             if (self.cureRecordDictionary) {
                 if ([self.cureRecordDictionary.allKeys containsObject:cell.dateLabel.text]) {
                     cell.hourMinuteL.text = self.cureRecordDictionary[cell.dateLabel.text];
@@ -623,14 +605,13 @@
                     cell.hourMinuteL.text = @"";
                 }
             }
-            
             if ([self.aWeekValue containsObject:cell.dateLabel.text.numberValue]) {
                 [cell.dateLabel setTextColor:LXColorHex(0x4c4c4c)];
             }
             else {
                 [cell.dateLabel setTextColor:LXColorHex(0xb2b2b2)];
             }
-        
+            
             return cell;
         }
         else if (collectionView == self.weekCollectionView) {
@@ -649,6 +630,9 @@
             return cell;
         }
     }
+    
+    
+    
     return nil;
 }
 
@@ -666,22 +650,49 @@
         
         NSString *yearMonthDay = nil;
         
-        if ([self.aWeekValue count] == _nextCalendarManage.calendarDate.count) {
-            yearMonthDay = [NSString stringWithFormat:@"%ld-%ld-%@", _nextCalendarManage.year,_nextCalendarManage.month, _nextCalendarManage.calendarDate[indexPath.row]];
+        if ([self.aWeekValue count] == 7) {
+            NSString *days= [NSString stringWithFormat:@"%@",_currentCalendarManage.calendarDate[indexPath.row]];
+            if (days.integerValue<10) {
+                days=[NSString stringWithFormat:@"0%@",days];
+            }
+            
+            NSString *month = [NSString stringWithFormat:@"%ld",_currentCalendarManage.month];;
+            if (month.integerValue<10) {
+                month=[NSString stringWithFormat:@"0%@",month];
+            }
+            yearMonthDay = [NSString stringWithFormat:@"%ld-%@-%@", _currentCalendarManage.year,month, days];
             
              LXLog(@"%@ ", yearMonthDay);
         }
         else {
             if (collectionView == self.calendarCollectionView) {
-                //下月
-                yearMonthDay = [NSString stringWithFormat:@"%lu-%lu-%@", (unsigned long)self.nextCalendarManage.year, (unsigned long)self.nextCalendarManage.month, self.nextCalendarManage.calendarDate[indexPath.row]];
+                NSString *days= [NSString stringWithFormat:@"%@",_nextCalendarManage.calendarDate[indexPath.row]];
+                if (days.integerValue<10) {
+                    days=[NSString stringWithFormat:@"0%@",days];
+                }
+                
+                NSString *month = [NSString stringWithFormat:@"%ld",_nextCalendarManage.month];;
+                if (month.integerValue<10) {
+                    month=[NSString stringWithFormat:@"0%@",month];
+                }
+                yearMonthDay = [NSString stringWithFormat:@"%ld-%@-%@", _nextCalendarManage.year,month, days];
                 
                  LXLog(@"%@ ", yearMonthDay);
             }
             else if (collectionView == self.extraCollectionView) {
                 //本月
                 //NSInteger arrayIndex = self.currentCalendarManage.calendarDate.count - 7 * 2 + indexPath.row;
-                yearMonthDay = [NSString stringWithFormat:@"%lu-%lu-%@", (unsigned long)self.currentCalendarManage.year, (unsigned long)self.currentCalendarManage.month, self.currentCalendarManage.calendarDate[indexPath.row]];
+                NSString *days= [NSString stringWithFormat:@"%@",arr[arr.count-7+indexPath.row]];
+                if (days.integerValue<10) {
+                    days=[NSString stringWithFormat:@"0%@",days];
+                }
+                
+                NSString *month = [NSString stringWithFormat:@"%ld",_currentCalendarManage.month];;
+                if (month.integerValue<10) {
+                    month=[NSString stringWithFormat:@"0%@",month];
+                }
+               
+                yearMonthDay = [NSString stringWithFormat:@"%lu-%@-%@", (unsigned long)self.currentCalendarManage.year, month, days];
                 
                 LXLog(@"%@", yearMonthDay);
                 

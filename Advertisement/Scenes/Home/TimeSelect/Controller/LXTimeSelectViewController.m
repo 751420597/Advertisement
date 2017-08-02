@@ -64,7 +64,6 @@
     self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
     NSThread *thread = [[NSThread alloc]initWithTarget:self selector:@selector(creatView) object:nil];
     [thread start];
-    
     self.repeatTime = self.repeatTimeInter;
     [self.repeatL setText:[self generateRepestStringWithInteger:self.repeatTime]];
     [SVProgressHUD showWithStatus:@"加载中……"];
@@ -77,11 +76,9 @@
        
         for (NSString *time in self.timeArray) {
             NSArray *tempArr0 =[time componentsSeparatedByString:@" "];
-            NSArray *tempArray = [tempArr0[0] componentsSeparatedByString:@"-"];
-            NSString *month = tempArray[1];
-            NSString *date = [NSString stringWithFormat:@"%@-%d-%@",tempArray[0],month.intValue ,tempArray.lastObject];
-            [self.dateArr addObject:date];
-            [self.calendarView reloadWithSelectTime:[time substringWithRange:NSMakeRange(11, 5)] day:date];
+            
+            [self.dateArr addObject:tempArr0[0]];
+            [self.calendarView reloadWithSelectTime:[time substringWithRange:NSMakeRange(11, 5)] day:tempArr0[0]];
         }
         
     }
@@ -194,12 +191,7 @@
     NSArray *tempArray = [self.mouthTime componentsSeparatedByString:@"-"];
     currentDay = tempArray.lastObject;
     mouth = tempArray[1];
-    if(currentDay.intValue<10){
-        currentDay = [NSString stringWithFormat:@"0%@", currentDay];
-    }
-    if(mouth.intValue<10){
-        mouth =[NSString stringWithFormat:@"0%@", mouth];
-    }
+    
     self.mouthTime = [NSString stringWithFormat:@"%@-%@-%@",tempArray[0],mouth,currentDay];
     NSString *hourTime = nil;
     if (!self.hourTime) {
