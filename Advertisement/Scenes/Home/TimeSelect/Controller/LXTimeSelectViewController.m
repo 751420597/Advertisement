@@ -51,7 +51,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+     [SVProgressHUD showWithStatus:@"加载中……"];
     self.navigationItem.title = @"服务时间";
     self.view.backgroundColor = LXVCBackgroundColor;
     
@@ -62,17 +62,18 @@
     fixedSpaceBarButtonItem.width = -10;
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.myConfirmB];
     self.navigationItem.rightBarButtonItems = @[fixedSpaceBarButtonItem, barButtonItem];
-    NSThread *thread = [[NSThread alloc]initWithTarget:self selector:@selector(creatView) object:nil];
-    [thread start];
+//    NSThread *thread = [[NSThread alloc]initWithTarget:self selector:@selector(creatView) object:nil];
+//    [thread start];
+    
     self.repeatTime = self.repeatTimeInter;
     [self.repeatL setText:[self generateRepestStringWithInteger:self.repeatTime]];
-    [SVProgressHUD showWithStatus:@"加载中……"];
+   
 }
 -(void)creatView{
      [self.view addSubview:self.calendarView];
     [self.view addSubview:self.repeatView];
     if(self.timeStringArr.count>0&&![self.timeStringArr[0] isEqualToString:@""]){
-        self.timeArray = self.timeStringArr;
+        self.timeArray =[NSMutableArray arrayWithArray:self.timeStringArr] ;
        
         for (NSString *time in self.timeArray) {
             NSArray *tempArr0 =[time componentsSeparatedByString:@" "];
@@ -91,6 +92,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [self creatView];
 }
 
 
@@ -103,7 +105,9 @@
             for (NSString *d in (NSArray*)self.dateArr) {
                 if([date isEqualToString:d]){
                     [self.calendarView reloadWithSelectTime:@"" day:date];
-                    for (NSString *timeS in self.timeArray) {
+                    NSMutableArray *tempA = [NSMutableArray arrayWithArray:self.timeArray];
+                    for (int i = 0; i < self.timeArray.count; i++) {
+                        NSString *timeS = self.timeArray[i];
                         NSArray *tempArray = [timeS componentsSeparatedByString:@"-"];
                         NSArray *dataArray =[date componentsSeparatedByString:@"-"];
                         NSString *temp0 = tempArray[0];
@@ -115,10 +119,11 @@
                          NSString *data2  = dataArray.lastObject;
                         
                         if(temp0.intValue==data0.intValue&&temp1.intValue==data1.intValue&&temp2.intValue==data2.intValue){
-                            [self.timeArray removeObject:timeS];
+                            [tempA removeObjectAtIndex:i];
                             break;
                         }
                     }
+                    self.timeArray = tempA;
                     [self.dateArr removeObject:date];
                     self.dateStr = @"";
                     isHave = YES;
@@ -226,6 +231,7 @@
     [self.calendarView reloadWithSelectTime:string1 day:self.mouthTime];
     
     NSString *timeString = [NSString stringWithFormat:@"%@ %@", self.mouthTime, string];
+    
     if (![self.timeArray containsObject:timeString]) {
         [self.timeArray addObject:timeString];
     }

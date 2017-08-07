@@ -113,10 +113,7 @@
     
 }
 
--(void)setTimeArr:(NSArray *)timeArr{
-    _timeArr = timeArr;
-    [self.tableView reloadData];
-}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -154,7 +151,7 @@
         
         cell.serviceModel = self.dataSource[indexPath.row];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.count = _timeArr.count;
+        cell.count = self.timeArrCount;
         return cell;
     }
     

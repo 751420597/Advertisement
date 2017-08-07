@@ -12,7 +12,7 @@
 
 @property (nonatomic, copy) NSString *totalSum;
 @property (nonatomic, copy) NSArray *dataSource;
-@property (nonatomic, copy) NSArray *timeArr;
+@property (nonatomic) NSInteger timeArrCount;
 - (instancetype)initWithDetailBlock:(dispatch_block_t)dBlock confirmBlock:(dispatch_block_t)cBlock;
 
 @end

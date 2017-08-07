@@ -184,11 +184,22 @@
 #pragma mark - Configure
 
 - (void)congfigreView {
+    NSString *repeatWeek = nil;
+    repeatWeek = self.repeatLString;
+    if([repeatWeek isEqualToString:@"一周"]){
+        repeatWeek=@"1";
+    }else if([repeatWeek isEqualToString:@"两周"]){
+        repeatWeek = @"2";
+    }else if([repeatWeek isEqualToString:@"三周"]){
+        repeatWeek = @"3";
+    } else{
+        repeatWeek=@"0";
+    }
     [self.confirmView removeFromSuperview];
     self.confirmView = nil;
     [self.view addSubview:self.confirmView];
-    self.confirmView.totalSum = [NSString stringWithFormat:@"总价：%ld", (long)self.totalPrice*self.timeArray_0.count];
-    self.confirmView.timeArr = self.timeArray_0;
+    self.confirmView.totalSum = [NSString stringWithFormat:@"总价：%ld", (long)self.totalPrice*self.timeArray_0.count*(repeatWeek.integerValue+1)];
+    self.confirmView.timeArrCount = self.timeArray_0.count*(repeatWeek.integerValue+1);
     self.confirmView.dataSource = self.orderArray;
     [self.view bringSubviewToFront:self.confirmView];
     
